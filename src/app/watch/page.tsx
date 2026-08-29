@@ -166,6 +166,7 @@ export default function WatchPage() {
         <CustomMoviePlayer
           key={`${movie.id}:${seasonNumber ?? ""}:${episodeNumber ?? ""}`}
           tmdbId={movie.tmdb_id ?? movie.id}
+          imdbId={movie.id}
           mediaType={isSeries ? "tv" : "movie"}
           seasonNumber={seasonNumber}
           episodeNumber={episodeNumber}
@@ -219,3 +220,4 @@ export default function WatchPage() {
     </main>
   );
 }
+
