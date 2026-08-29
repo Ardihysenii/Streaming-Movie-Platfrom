@@ -3,6 +3,7 @@ declare module "@/components/CustomMoviePlayer" {
 
   const CustomMoviePlayer: ComponentType<{
     tmdbId: string | number;
+    imdbId?: string | number;
     mediaType?: "movie" | "tv";
     seasonNumber?: number;
     episodeNumber?: number;
@@ -12,3 +13,4 @@ declare module "@/components/CustomMoviePlayer" {
 
   export default CustomMoviePlayer;
 }
+
