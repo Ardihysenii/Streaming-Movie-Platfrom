@@ -1,0 +1,11 @@
+name = "nova-stream-resolver"
+main = "src/index.ts"
+compatibility_date = "2026-08-24"
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:3000,https://your-nova-domain.example"
+
+# Add a KV binding after creating the namespace:
+# [[kv_namespaces]]
+# binding = "STREAM_CATALOG"
+# id = "your_kv_namespace_id"

@@ -1,0 +1,19 @@
+{
+  "movieId": "12345",
+  "sources": [
+    {
+      "url": "https://licensed-cdn.example/movies/12345/master.m3u8",
+      "type": "hls",
+      "label": "Adaptive",
+      "quality": "Auto up to 4K"
+    }
+  ],
+  "subtitles": [
+    {
+      "url": "https://licensed-cdn.example/movies/12345/subtitles/en.vtt",
+      "label": "English",
+      "language": "en",
+      "default": true
+    }
+  ]
+}

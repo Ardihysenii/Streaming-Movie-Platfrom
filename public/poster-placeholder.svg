@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750" viewBox="0 0 500 750">
+  <rect width="500" height="750" fill="#111417"/>
+  <path d="M80 100h340v550H80z" fill="none" stroke="#2c3238" stroke-width="2"/>
+  <text x="250" y="365" fill="#666d73" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" letter-spacing="12">NOVA</text>
+  <text x="250" y="410" fill="#3f464c" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" letter-spacing="5">ARTWORK UNAVAILABLE</text>
+</svg>
