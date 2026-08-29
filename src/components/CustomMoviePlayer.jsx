@@ -12,6 +12,27 @@ import {
   ForwardIcon,
   VolumeIcon,
 } from "@/components/Icons";
+import { useNovaSettings } from "@/components/Providers";
+
+function parseSubtitleCues(value) {
+  return value
+    .replace(/^WEBVTT[^\n]*\n/i, "")
+    .split(/\n\s*\n/)
+    .flatMap((block) => {
+      const match = block.match(/(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[.,]\d{3})/);
+      if (!match) return [];
+      const toSeconds = (timestamp) => {
+        const [hours, minutes, seconds] = timestamp.replace(",", ".").split(":");
+        return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+      };
+      const text = block
+        .slice(match.index + match[0].length)
+        .replace(/^\s*\n/, "")
+        .replace(/<[^>]+>/g, "")
+        .trim();
+      return text ? [{ start: toSeconds(match[1]), end: toSeconds(match[2]), text }] : [];
+    });
+}
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -23,12 +44,14 @@ function formatTime(seconds) {
 
 export default function CustomMoviePlayer({
   tmdbId,
+  imdbId,
   mediaType = "movie",
   seasonNumber,
   episodeNumber,
   resumeAt = 0,
   onProgress,
 }) {
+  const { settings } = useNovaSettings();
   const [isClient, setIsClient] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,7 +65,9 @@ export default function CustomMoviePlayer({
   const [quality, setQuality] = useState("1080");
   const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
-  const [subtitleMode, setSubtitleMode] = useState(false);
+  const [subtitleCues, setSubtitleCues] = useState([]);
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
+  const [subtitleStatus, setSubtitleStatus] = useState("idle");
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const iframeRef = useRef(null);
@@ -53,6 +78,12 @@ export default function CustomMoviePlayer({
 
   const queryId = searchParams ? searchParams.get("id") : null;
   const activeId = tmdbId || queryId || "";
+  const activeSubtitle = useMemo(
+    () => subtitlesEnabled
+      ? subtitleCues.find((cue) => currentTime >= cue.start && currentTime <= cue.end)
+      : null,
+    [currentTime, subtitleCues, subtitlesEnabled],
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -82,16 +113,56 @@ export default function CustomMoviePlayer({
       params.set("e", String(episodeNumber ?? 1));
     }
     if (isCineSrc) {
-      // CineSrc owns subtitle tracks inside its iframe. Keep NOVA's controls
-      // for normal playback, then expose the provider controls when the user
-      // opens the captions button so its CC track picker is interactive.
-      params.set("controls", subtitleMode ? "true" : "false");
+      params.set("controls", "false");
       params.set("autoplay", "false");
       params.set("quality", quality);
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, subtitleMode]);
+  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+
+  useEffect(() => {
+    if (!activeId) return undefined;
+    const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
+    if (!subtitleService) {
+      setSubtitleCues([]);
+      setSubtitlesEnabled(false);
+      setSubtitleStatus("empty");
+      return undefined;
+    }
+    const controller = new AbortController();
+    const query = new URLSearchParams({
+      tmdbId: String(activeId),
+      type: mediaType,
+      language: settings.subtitleLanguage || "en",
+    });
+    if (imdbId) query.set("imdbId", String(imdbId));
+    if (mediaType === "tv") {
+      query.set("season", String(seasonNumber ?? 1));
+      query.set("episode", String(episodeNumber ?? 1));
+    }
+    setSubtitleStatus("loading");
+    setSubtitleCues([]);
+    fetch(`${subtitleService.replace(/\/+$/, "")}/v1/subtitles?${query.toString()}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Subtitle service unavailable");
+        return parseSubtitleCues(await response.text());
+      })
+      .then((cues) => {
+        if (controller.signal.aborted) return;
+        setSubtitleCues(cues);
+        setSubtitlesEnabled(cues.length > 0);
+        setSubtitleStatus(cues.length ? "ready" : "empty");
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setSubtitleCues([]);
+          setSubtitlesEnabled(false);
+          setSubtitleStatus("empty");
+        }
+      });
+    return () => controller.abort();
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -342,20 +413,25 @@ export default function CustomMoviePlayer({
   return (
     <div
       ref={playerRef}
-      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}${mobileFullscreen ? " is-mobile-fullscreen" : ""}${subtitleMode ? " native-subtitle-mode" : ""}`}
+      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}${mobileFullscreen ? " is-mobile-fullscreen" : ""}`}
       onPointerMove={showControls}
       onPointerDown={showControls}
       onKeyDown={showControls}
       onFocusCapture={showControls}
-    >
-      <iframe
+      >
+        <iframe
         ref={iframeRef}
         src={embedUrl}
         className="provider-player-frame"
         title="NOVA video player"
         allowFullScreen
-        allow="autoplay; fullscreen; picture-in-picture"
-      />
+          allow="autoplay; fullscreen; picture-in-picture"
+        />
+      {activeSubtitle ? (
+        <div className="custom-subtitle-overlay" aria-live="polite">
+          {activeSubtitle.text}
+        </div>
+      ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
           <button className="player-gesture-layer" type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
@@ -434,12 +510,11 @@ export default function CustomMoviePlayer({
               <button
                 type="button"
                 onClick={() => {
-                  setSubtitleMode(true);
+                  setSubtitlesEnabled((enabled) => !enabled);
                   setSubtitleNoticeVisible(true);
-                  setControlsVisible(true);
                 }}
-                aria-label="Open subtitle controls"
-                title="Open subtitle controls"
+                aria-label={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
+                title={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
               >
                 <CaptionsIcon />
               </button>
@@ -449,7 +524,11 @@ export default function CustomMoviePlayer({
             </div>
             {subtitleNoticeVisible ? (
               <div className="player-subtitle-notice" role="status">
-                Use the player’s CC control to choose an available subtitle track.
+                {subtitleStatus === "loading"
+                  ? "Loading subtitles…"
+                  : subtitleStatus === "ready"
+                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    : "No subtitle track is available for this title."}
               </div>
             ) : null}
           </div>
