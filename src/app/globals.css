@@ -887,6 +887,7 @@ img {
 .poster-link {
   aspect-ratio: 2 / 3;
   background: var(--surface-raised);
+  border-radius: 6px;
   display: block;
   overflow: hidden;
   position: relative;
@@ -5102,7 +5103,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .home-page .content-section {
-    margin-bottom: 2px;
+    margin-bottom: 10px;
   }
 
   .home-page .section-heading {
