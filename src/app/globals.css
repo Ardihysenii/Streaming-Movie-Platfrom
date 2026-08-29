@@ -1345,7 +1345,7 @@ img {
   }
 
   .movie-card-body > .wishlist-toggle {
-    opacity: 0.9;
+    display: none;
   }
 
   .bottom-dock .browse-popover-grid a {
