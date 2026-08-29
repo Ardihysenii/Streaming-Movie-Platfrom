@@ -4192,11 +4192,30 @@ body:has(.watch-page) .bottom-dock {
   pointer-events: none;
 }
 
-/* CineSrc native controls are disabled; keep NOVA's controls visible over the iframe. */
+/* NOVA owns playback controls and renders subtitle cues above the provider frame. */
 .custom-player-ui .custom-provider-controls {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.custom-subtitle-overlay {
+  background: rgba(5, 6, 8, 0.72);
+  border-radius: 6px;
+  bottom: 88px;
+  color: #fff;
+  font-size: clamp(0.85rem, 1.8vw, 1.15rem);
+  font-weight: 600;
+  left: 50%;
+  line-height: 1.4;
+  max-width: min(82%, 760px);
+  padding: 5px 12px;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.92);
+  transform: translateX(-50%);
+  z-index: 7;
 }
 
 .custom-movie-player:fullscreen {
@@ -4930,6 +4949,28 @@ body:has(.watch-page) .bottom-dock {
 }
 
 @media (max-width: 680px) {
+  body:has(.custom-movie-player.is-mobile-fullscreen) {
+    overflow: hidden;
+  }
+
+  .player-shell:has(.custom-movie-player.is-mobile-fullscreen) {
+    aspect-ratio: auto;
+    height: 100dvh;
+    inset: 0;
+    max-height: none;
+    position: fixed;
+    width: 100vw;
+    z-index: 1000;
+  }
+
+  .custom-movie-player.is-mobile-fullscreen,
+  .custom-movie-player.is-mobile-fullscreen .provider-player-frame {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+
   :root {
     --page-gutter: 18px;
     --card-width: 148px;
@@ -5509,3 +5550,4 @@ body:has(.watch-page) .bottom-dock {
     padding: 0;
   }
 }
+
