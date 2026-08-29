@@ -5567,7 +5567,7 @@ body:has(.watch-page) .bottom-dock {
 
 /* iPhones and Android phones use their landscape viewport width here, so the
    portrait-only fullscreen fallback must also cover landscape orientation. */
-@media (max-width: 1024px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 1024px) and (orientation: landscape) {
   body:has(.custom-movie-player.is-mobile-fullscreen) {
     overflow: hidden;
   }
