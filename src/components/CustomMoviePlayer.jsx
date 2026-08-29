@@ -351,7 +351,9 @@ export default function CustomMoviePlayer({
     const player = playerRef.current;
     if (!player) return;
 
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    // Use input capability as well as width so a phone in landscape keeps the
+    // mobile fallback path (landscape iPhones are wider than 767px).
+    const isMobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
     const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
 
     if (activeFullscreenElement) {
@@ -541,4 +543,3 @@ export default function CustomMoviePlayer({
     </div>
   );
 }
-
