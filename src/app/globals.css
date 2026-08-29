@@ -5120,6 +5120,13 @@ body:has(.watch-page) .bottom-dock {
     top: 2px;
   }
 
+  /* content-visibility reserves the desktop intrinsic height on narrow
+     screens; match the real mobile poster + metadata height so rails do not
+     leave a large blank band before the next section. */
+  .movie-card {
+    contain-intrinsic-size: auto calc(var(--card-width) * 1.5 + 58px);
+  }
+
   .section-heading {
     align-items: start;
   }
@@ -5555,5 +5562,31 @@ body:has(.watch-page) .bottom-dock {
 
   .watch-page .inner-page-content {
     padding: 0;
+  }
+}
+
+/* iPhones and Android phones use their landscape viewport width here, so the
+   portrait-only fullscreen fallback must also cover landscape orientation. */
+@media (max-width: 1024px) and (orientation: landscape) and (pointer: coarse) {
+  body:has(.custom-movie-player.is-mobile-fullscreen) {
+    overflow: hidden;
+  }
+
+  .player-shell:has(.custom-movie-player.is-mobile-fullscreen) {
+    aspect-ratio: auto;
+    height: 100dvh;
+    inset: 0;
+    max-height: none;
+    position: fixed;
+    width: 100vw;
+    z-index: 1000;
+  }
+
+  .custom-movie-player.is-mobile-fullscreen,
+  .custom-movie-player.is-mobile-fullscreen .provider-player-frame {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
   }
 }
