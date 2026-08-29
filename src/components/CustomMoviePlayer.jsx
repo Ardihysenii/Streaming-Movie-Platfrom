@@ -280,7 +280,7 @@ export default function CustomMoviePlayer({
     const player = playerRef.current;
     const iframe = iframeRef.current;
     const handleFullscreenChange = () => {
-      const activeFullscreenElement = document.fullscreenElement;
+      const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       const active = activeFullscreenElement === player || activeFullscreenElement === iframe;
       setIsFullscreen(active);
       if (!active && !activeFullscreenElement) setMobileFullscreen(false);
@@ -290,14 +290,16 @@ export default function CustomMoviePlayer({
         player?.webkitDisplayingFullscreen
         || iframe?.webkitDisplayingFullscreen
         || document.fullscreenElement === player
-        || document.fullscreenElement === iframe,
+        || document.fullscreenElement === iframe
+        || document.webkitFullscreenElement === player
+        || document.webkitFullscreenElement === iframe,
       );
       setIsFullscreen(active);
       if (!active) setMobileFullscreen(false);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    document.addEventListener("webkitfullscreenchange", handleWebkitFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
     player?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
     player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
@@ -305,7 +307,7 @@ export default function CustomMoviePlayer({
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener("webkitfullscreenchange", handleWebkitFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       player?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
       player?.removeEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
       iframe?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
@@ -350,10 +352,12 @@ export default function CustomMoviePlayer({
     if (!player) return;
 
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    const activeFullscreenElement = document.fullscreenElement;
+    const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
 
     if (activeFullscreenElement) {
-      await document.exitFullscreen();
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exitFullscreen) await exitFullscreen.call(document);
+      else setMobileFullscreen(false);
       return;
     }
 
