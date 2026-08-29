@@ -658,7 +658,7 @@ img {
 /* Keep the homepage rails visually connected without changing their card
    sizing, colors, or internal heading spacing. */
 .home-page .content-section {
-  margin-bottom: clamp(30px, 3.4vw, 54px);
+  margin-bottom: clamp(16px, 1.9vw, 30px);
 }
 
 .section-heading {
@@ -768,11 +768,11 @@ img {
 .movie-rail {
   -webkit-overflow-scrolling: touch;
   display: flex;
-  gap: clamp(14px, 1.5vw, 24px);
+  gap: clamp(10px, 1.1vw, 18px);
   margin: 0;
   overscroll-behavior-inline: contain;
   overflow-x: auto;
-  padding: 2px var(--page-gutter) 18px;
+  padding: 2px var(--page-gutter) 8px;
   scroll-padding-left: var(--page-gutter);
   scroll-behavior: auto;
   scrollbar-width: none;
@@ -5102,15 +5102,16 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .home-page .content-section {
-    margin-bottom: 10px;
+    margin-bottom: 2px;
   }
 
   .home-page .section-heading {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
 
   .home-page .movie-rail {
-    padding-bottom: 4px;
+    gap: 8px;
+    padding-bottom: 2px;
   }
 
   .movie-rail-shell .rail-arrow {
@@ -5556,4 +5557,3 @@ body:has(.watch-page) .bottom-dock {
     padding: 0;
   }
 }
-
