@@ -353,8 +353,9 @@ export default function CustomMoviePlayer({
 
     // Use input capability as well as width so a phone in landscape keeps the
     // mobile fallback path (landscape iPhones are wider than 767px).
-    const isMobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
-      || navigator.maxTouchPoints > 0;
+    const isMobile = window.innerWidth <= 1024
+      && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
+        || navigator.maxTouchPoints > 0);
     const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
 
     if (activeFullscreenElement) {
