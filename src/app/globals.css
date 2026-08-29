@@ -4974,7 +4974,7 @@ body:has(.watch-page) .bottom-dock {
 
   :root {
     --page-gutter: 18px;
-    --card-width: 148px;
+    --card-width: 156px;
   }
 
   .site-header {
