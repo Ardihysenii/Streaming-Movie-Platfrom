@@ -37,10 +37,12 @@ export default function CustomMoviePlayer({
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mobileFullscreen, setMobileFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [quality, setQuality] = useState("1080");
   const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
+  const [subtitleMode, setSubtitleMode] = useState(false);
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const iframeRef = useRef(null);
@@ -80,13 +82,16 @@ export default function CustomMoviePlayer({
       params.set("e", String(episodeNumber ?? 1));
     }
     if (isCineSrc) {
-      params.set("controls", "false");
+      // CineSrc owns subtitle tracks inside its iframe. Keep NOVA's controls
+      // for normal playback, then expose the provider controls when the user
+      // opens the captions button so its CC track picker is interactive.
+      params.set("controls", subtitleMode ? "true" : "false");
       params.set("autoplay", "false");
       params.set("quality", quality);
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, subtitleMode]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -201,9 +206,40 @@ export default function CustomMoviePlayer({
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
 
   useEffect(() => {
-    const handleFullscreenChange = () => setIsFullscreen(document.fullscreenElement === playerRef.current);
+    const player = playerRef.current;
+    const iframe = iframeRef.current;
+    const handleFullscreenChange = () => {
+      const activeFullscreenElement = document.fullscreenElement;
+      const active = activeFullscreenElement === player || activeFullscreenElement === iframe;
+      setIsFullscreen(active);
+      if (!active && !activeFullscreenElement) setMobileFullscreen(false);
+    };
+    const handleWebkitFullscreenChange = () => {
+      const active = Boolean(
+        player?.webkitDisplayingFullscreen
+        || iframe?.webkitDisplayingFullscreen
+        || document.fullscreenElement === player
+        || document.fullscreenElement === iframe,
+      );
+      setIsFullscreen(active);
+      if (!active) setMobileFullscreen(false);
+    };
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleWebkitFullscreenChange);
+    player?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+    player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+    iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+    iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleWebkitFullscreenChange);
+      player?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+      player?.removeEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+      iframe?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+      iframe?.removeEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+    };
   }, []);
 
   const showCenterFeedback = (nextPlaying) => {
@@ -239,12 +275,57 @@ export default function CustomMoviePlayer({
     sendCommand("setMuted", [nextMuted]);
   };
   const toggleFullscreen = async () => {
-    if (!playerRef.current) return;
-    if (document.fullscreenElement) {
+    const player = playerRef.current;
+    if (!player) return;
+
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const activeFullscreenElement = document.fullscreenElement;
+
+    if (activeFullscreenElement) {
       await document.exitFullscreen();
-    } else {
-      await playerRef.current.requestFullscreen();
+      return;
     }
+
+    // A number of mobile webviews expose the fullscreen button but reject the
+    // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
+    // so the player still expands to the viewport on those devices.
+    if (isMobile && mobileFullscreen) {
+      setMobileFullscreen(false);
+      setIsFullscreen(false);
+      return;
+    }
+
+    // Touch browsers can reject fullscreen on an absolutely-positioned wrapper
+    // or require their prefixed request method. Keep the desktop path exactly
+    // as-is, while trying the mobile-compatible targets only on mobile.
+    if (isMobile) {
+      setMobileFullscreen(true);
+      setIsFullscreen(true);
+      const mobileTarget = player;
+      const requestFullscreen = mobileTarget.requestFullscreen || mobileTarget.webkitRequestFullscreen;
+      if (requestFullscreen) {
+        try {
+          await requestFullscreen.call(mobileTarget, { navigationUI: "hide" });
+          return;
+        } catch {
+          // Some mobile browsers only allow fullscreen on the embedded frame.
+        }
+      }
+
+      const frame = iframeRef.current;
+      const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
+      if (frame && requestFrameFullscreen) {
+        try {
+          await requestFrameFullscreen.call(frame, { navigationUI: "hide" });
+        } catch {
+          // The in-page mobile fallback above remains active.
+        }
+        return;
+      }
+      return;
+    }
+
+    await player.requestFullscreen();
   };
 
   const handleQualityChange = (nextQuality) => {
@@ -261,7 +342,7 @@ export default function CustomMoviePlayer({
   return (
     <div
       ref={playerRef}
-      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}`}
+      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}${mobileFullscreen ? " is-mobile-fullscreen" : ""}${subtitleMode ? " native-subtitle-mode" : ""}`}
       onPointerMove={showControls}
       onPointerDown={showControls}
       onKeyDown={showControls}
@@ -352,9 +433,13 @@ export default function CustomMoviePlayer({
               </div>
               <button
                 type="button"
-                onClick={() => setSubtitleNoticeVisible((visible) => !visible)}
-                aria-label="Subtitle information"
-                title="Subtitle settings"
+                onClick={() => {
+                  setSubtitleMode(true);
+                  setSubtitleNoticeVisible(true);
+                  setControlsVisible(true);
+                }}
+                aria-label="Open subtitle controls"
+                title="Open subtitle controls"
               >
                 <CaptionsIcon />
               </button>
@@ -364,7 +449,7 @@ export default function CustomMoviePlayer({
             </div>
             {subtitleNoticeVisible ? (
               <div className="player-subtitle-notice" role="status">
-                Subtitles are supplied and managed by the selected CineSrc source.
+                Use the player’s CC control to choose an available subtitle track.
               </div>
             ) : null}
           </div>
@@ -373,3 +458,4 @@ export default function CustomMoviePlayer({
     </div>
   );
 }
+
