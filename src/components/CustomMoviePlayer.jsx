@@ -16,14 +16,15 @@ import { useNovaSettings } from "@/components/Providers";
 
 function parseSubtitleCues(value) {
   return value
-    .replace(/^WEBVTT[^\n]*\n/i, "")
+    .replace(/^\uFEFF?WEBVTT[^\n]*\n/i, "")
     .split(/\n\s*\n/)
     .flatMap((block) => {
-      const match = block.match(/(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[.,]\d{3})/);
+      const match = block.match(/((?:\d{1,2}:)?\d{2}:\d{2}[.,]\d{3})\s+-->\s+((?:\d{1,2}:)?\d{2}:\d{2}[.,]\d{3})/);
       if (!match) return [];
       const toSeconds = (timestamp) => {
-        const [hours, minutes, seconds] = timestamp.replace(",", ".").split(":");
-        return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+        const parts = timestamp.replace(",", ".").split(":").map(Number);
+        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        return parts[0] * 3600 + parts[1] * 60 + parts[2];
       };
       const text = block
         .slice(match.index + match[0].length)
@@ -68,6 +69,7 @@ export default function CustomMoviePlayer({
   const [subtitleCues, setSubtitleCues] = useState([]);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
+  const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState("bottom");
@@ -141,18 +143,12 @@ export default function CustomMoviePlayer({
 
   useEffect(() => {
     if (!activeId) return undefined;
-    const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
-    if (!subtitleService) {
-      setSubtitleCues([]);
-      setSubtitlesEnabled(false);
-      setSubtitleStatus("empty");
-      return undefined;
-    }
+    const subtitleService = "/api/subtitles";
     const controller = new AbortController();
     const query = new URLSearchParams({
       tmdbId: String(activeId),
       type: mediaType,
-      language: subtitleLanguage,
+      language: settings.subtitleLanguage || "en",
     });
     if (imdbId) query.set("imdbId", String(imdbId));
     if (mediaType === "tv") {
@@ -160,27 +156,40 @@ export default function CustomMoviePlayer({
       query.set("episode", String(episodeNumber ?? 1));
     }
     setSubtitleStatus("loading");
+    setSubtitleError("");
     setSubtitleCues([]);
-    fetch(`${subtitleService.replace(/\/+$/, "")}/v1/subtitles?${query.toString()}`, { signal: controller.signal })
+    fetch(`${subtitleService}?${query.toString()}`, { signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Subtitle service unavailable");
-        return parseSubtitleCues(await response.text());
+        const body = await response.text();
+        if (!response.ok) {
+          let message = "Subtitle service unavailable";
+          try {
+            const payload = JSON.parse(body);
+            message = payload.error || message;
+          } catch {
+            // Keep a stable user-facing message for non-JSON upstream errors.
+          }
+          throw new Error(message);
+        }
+        return parseSubtitleCues(body);
       })
       .then((cues) => {
         if (controller.signal.aborted) return;
         setSubtitleCues(cues);
         setSubtitlesEnabled(cues.length > 0);
         setSubtitleStatus(cues.length ? "ready" : "empty");
+        setSubtitleError("");
       })
-      .catch(() => {
+      .catch((error) => {
         if (!controller.signal.aborted) {
           setSubtitleCues([]);
           setSubtitlesEnabled(false);
-          setSubtitleStatus("empty");
+          setSubtitleStatus("error");
+          setSubtitleError(error instanceof Error ? error.message : "Subtitle service unavailable");
         }
       });
     return () => controller.abort();
-  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage]);
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -639,6 +648,8 @@ export default function CustomMoviePlayer({
                   ? "Loading subtitles…"
                   : subtitleStatus === "ready"
                     ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    : subtitleStatus === "error"
+                      ? subtitleError
                     : "No subtitle track is available for this title."}
               </div>
             ) : null}
