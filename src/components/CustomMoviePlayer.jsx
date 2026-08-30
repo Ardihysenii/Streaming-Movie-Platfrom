@@ -76,6 +76,8 @@ export default function CustomMoviePlayer({
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
+  const gestureClickTimerRef = useRef(null);
+  const seekFeedbackTimerRef = useRef(null);
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
@@ -86,6 +88,7 @@ export default function CustomMoviePlayer({
     setMobileFullscreen(next);
   };
   const [centerFeedback, setCenterFeedback] = useState(null);
+  const [seekFeedback, setSeekFeedback] = useState(null);
   const searchParams = useSearchParams();
 
   const queryId = searchParams ? searchParams.get("id") : null;
@@ -199,6 +202,8 @@ export default function CustomMoviePlayer({
 
   useEffect(() => () => {
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
+    if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
+    if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
   }, []);
 
   const sendCommand = useCallback((command, args = []) => {
@@ -349,12 +354,36 @@ export default function CustomMoviePlayer({
     showCenterFeedback(nextPlaying);
     sendCommand(nextPlaying ? "play" : "pause");
   };
+  const showSeekFeedback = (amount) => {
+    setSeekFeedback(amount > 0 ? "+10s" : "−10s");
+    if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
+    seekFeedbackTimerRef.current = window.setTimeout(() => {
+      setSeekFeedback(null);
+      seekFeedbackTimerRef.current = null;
+    }, 720);
+  };
+
   const seekBy = (amount) => {
     const nextTime = Math.max(0, currentTime + amount);
-    showCenterFeedback(amount > 0 ? "forward" : "back");
+    showSeekFeedback(amount);
     sendCommand("seek", [nextTime]);
   };
+
+  const handleGestureClick = () => {
+    if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
+    gestureClickTimerRef.current = window.setTimeout(() => {
+      gestureClickTimerRef.current = null;
+      togglePlay();
+    }, 240);
+  };
+
   const handleGestureDoubleClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (gestureClickTimerRef.current !== null) {
+      window.clearTimeout(gestureClickTimerRef.current);
+      gestureClickTimerRef.current = null;
+    }
     const rect = event.currentTarget.getBoundingClientRect();
     seekBy(event.clientX - rect.left < rect.width / 2 ? -10 : 10);
   };
@@ -471,7 +500,7 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
-          <button className="player-gesture-layer" type="button" onClick={togglePlay} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
+          <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
             className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
             type="button"
@@ -482,6 +511,9 @@ export default function CustomMoviePlayer({
           >
             {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
           </button>
+          {seekFeedback ? (
+            <div className={`player-seek-feedback `{seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">{seekFeedback}</div>
+          ) : null}
           <div className={`nova-player-controls custom-provider-controls${controlsVisible ? "" : " controls-hidden"}`}>
             <input
               className="player-progress"
