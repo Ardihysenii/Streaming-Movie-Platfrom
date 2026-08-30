@@ -288,7 +288,7 @@ export default function CustomMoviePlayer({
     const handleFullscreenChange = () => {
       const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       const active = activeFullscreenElement === player || activeFullscreenElement === iframe;
-      setIsFullscreen(active);
+      
     };
     const handleWebkitFullscreenChange = () => {
       const active = Boolean(
@@ -299,7 +299,7 @@ export default function CustomMoviePlayer({
         || document.webkitFullscreenElement === player
         || document.webkitFullscreenElement === iframe,
       );
-      setIsFullscreen(active);
+      
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
