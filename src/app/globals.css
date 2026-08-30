@@ -5591,3 +5591,10 @@ body:has(.watch-page) .bottom-dock {
     width: 100%;
   }
 }
+
+.player-subtitle-control { position: relative; display: inline-flex; align-items: center; }
+.player-subtitle-menu { position: absolute; right: 0; bottom: calc(100% + 12px); z-index: 20; display: grid; gap: 10px; min-width: 190px; padding: 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 12px; background: rgba(13,15,20,.96); box-shadow: 0 16px 40px rgba(0,0,0,.45); color: rgba(255,255,255,.82); font-size: .72rem; }
+.player-subtitle-menu label { display: grid; gap: 5px; color: rgba(255,255,255,.58); letter-spacing: .08em; text-transform: uppercase; }
+.player-subtitle-menu select, .player-subtitle-menu input { width: 100%; accent-color: #e21d2f; }
+.player-subtitle-menu select { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; padding: 6px 8px; background: #191c23; color: #fff; font-size: .78rem; }
+@media (max-width: 680px) { .player-subtitle-menu { right: -8px; min-width: 170px; } }
