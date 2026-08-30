@@ -5853,3 +5853,9 @@ body:has(.watch-page) .bottom-dock {
   opacity: 1;
   transform: scale(1);
 }
+
+
+/* Keep the control bar single-purpose; skip/play feedback stays in the buttons. */
+.custom-movie-player .player-center-play {
+  display: none !important;
+}
