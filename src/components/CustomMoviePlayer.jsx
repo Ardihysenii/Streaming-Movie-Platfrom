@@ -68,6 +68,11 @@ export default function CustomMoviePlayer({
   const [subtitleCues, setSubtitleCues] = useState([]);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
+  const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
+  const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
+  const [subtitlePosition, setSubtitlePosition] = useState("bottom");
+  const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
+  const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const iframeRef = useRef(null);
@@ -134,7 +139,7 @@ export default function CustomMoviePlayer({
     const query = new URLSearchParams({
       tmdbId: String(activeId),
       type: mediaType,
-      language: settings.subtitleLanguage || "en",
+      language: subtitleLanguage,
     });
     if (imdbId) query.set("imdbId", String(imdbId));
     if (mediaType === "tv") {
@@ -162,7 +167,7 @@ export default function CustomMoviePlayer({
         }
       });
     return () => controller.abort();
-  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -436,7 +441,7 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
       {activeSubtitle ? (
-        <div className="custom-subtitle-overlay" aria-live="polite">
+        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: subtitleFontSize + "rem", bottom: subtitlePosition === "top" ? "76%" : subtitlePosition === "center" ? "46%" : "8%" }}>
           {activeSubtitle.text}
         </div>
       ) : null}
@@ -515,17 +520,18 @@ export default function CustomMoviePlayer({
                   </div>
                 ) : null}
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setSubtitlesEnabled((enabled) => !enabled);
-                  setSubtitleNoticeVisible(true);
-                }}
-                aria-label={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
-                title={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
-              >
-                <CaptionsIcon />
-              </button>
+              <div className="player-subtitle-control">
+                <button type="button" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); setSubtitleMenuOpen((open) => !open); }} aria-label={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"} title={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}>
+                  <CaptionsIcon />
+                </button>
+                {subtitleMenuOpen ? (
+                  <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
+                    <label>Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                    <label>Size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                    <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
+                  </div>
+                ) : null}
+              </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
                 <FullscreenIcon />
               </button>
