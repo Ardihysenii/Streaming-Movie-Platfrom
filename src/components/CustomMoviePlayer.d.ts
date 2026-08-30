@@ -13,3 +13,4 @@ declare module "@/components/CustomMoviePlayer" {
 
   export default CustomMoviePlayer;
 }
+

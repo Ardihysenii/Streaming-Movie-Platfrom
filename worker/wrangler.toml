@@ -9,3 +9,4 @@ ALLOWED_ORIGINS = "http://localhost:3000,https://streaming-movie-platfrom.vercel
 # [[kv_namespaces]]
 # binding = "STREAM_CATALOG"
 # id = "your_kv_namespace_id"
+
