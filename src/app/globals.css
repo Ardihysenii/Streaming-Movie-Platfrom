@@ -5598,3 +5598,11 @@ body:has(.watch-page) .bottom-dock {
 .player-subtitle-menu select, .player-subtitle-menu input { width: 100%; accent-color: #e21d2f; }
 .player-subtitle-menu select { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; padding: 6px 8px; background: #191c23; color: #fff; font-size: .78rem; }
 @media (max-width: 680px) { .player-subtitle-menu { right: -8px; min-width: 170px; } }
+
+.player-subtitle-menu { gap: 12px; min-width: 220px; padding: 16px; border: 1px solid rgba(226,29,47,.34); border-radius: 14px; background: linear-gradient(145deg, rgba(24,18,25,.98), rgba(10,13,18,.98)); backdrop-filter: blur(16px); }
+.player-subtitle-menu-header { align-items: center; display: flex; justify-content: space-between; color: #fff; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+.player-subtitle-menu-header button { border: 0; background: transparent; color: rgba(255,255,255,.6); font-size: 1.2rem; line-height: 1; }
+.player-subtitle-toggle { border: 1px solid rgba(226,29,47,.5); border-radius: 8px; padding: 8px 10px; background: rgba(226,29,47,.14); color: #fff; font-size: .72rem; text-align: left; }
+.player-subtitle-menu label { align-items: center; display: grid; gap: 6px; }
+.player-subtitle-menu label span { color: #e21d2f; font-size: .68rem; justify-self: end; margin-top: -20px; }
+.player-subtitle-menu input[type=range] { accent-color: #e21d2f; }
