@@ -5937,3 +5937,43 @@ body:has(.watch-page) .bottom-dock {
   .custom-movie-player .player-subtitle-menu select { min-height: 38px; }
   .custom-movie-player .player-seek-feedback { font-size: .78rem; height: 38px; width: 66px; }
 }
+
+
+/* Compact subtitle controls for narrow phone screens. */
+@media (max-width: 680px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: calc(100% + 6px) !important;
+    box-sizing: border-box;
+    gap: 8px;
+    left: 8px !important;
+    max-height: min(54svh, 300px) !important;
+    min-height: 0;
+    padding: 12px !important;
+    right: 8px !important;
+    width: auto !important;
+  }
+  .custom-movie-player .player-subtitle-menu-header {
+    margin-bottom: 2px;
+    padding-bottom: 8px !important;
+  }
+  .custom-movie-player .player-subtitle-menu label {
+    gap: 4px;
+    font-size: .68rem;
+    line-height: 1.1;
+  }
+  .custom-movie-player .player-subtitle-menu select,
+  .custom-movie-player .player-subtitle-menu .player-subtitle-toggle {
+    font-size: .82rem;
+    min-height: 34px !important;
+    padding: 7px 10px;
+  }
+  .custom-movie-player .player-subtitle-menu input[type=range] {
+    min-height: 22px !important;
+  }
+}
+@media (max-width: 390px) {
+  .custom-movie-player .player-subtitle-menu {
+    max-height: min(50svh, 270px) !important;
+    padding: 10px !important;
+  }
+}
