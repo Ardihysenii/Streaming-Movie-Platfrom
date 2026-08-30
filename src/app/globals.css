@@ -5859,3 +5859,36 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player .player-center-play {
   display: none !important;
 }
+
+
+/* Mobile player sheet: keep caption controls inside the safe viewport. */
+@media (max-width: 680px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: calc(100% + 10px);
+    left: 12px;
+    max-height: min(66dvh, 390px);
+    min-width: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    right: 12px;
+    width: auto;
+  }
+  .custom-movie-player .player-subtitle-menu select,
+  .custom-movie-player .player-subtitle-menu input[type="range"] {
+    min-height: 34px;
+  }
+  .custom-movie-player .player-subtitle-menu-header {
+    position: sticky;
+    top: -18px;
+    z-index: 1;
+  }
+}
+
+/* The fullscreen fallback owns the viewport on phones; never show rotate guidance. */
+.custom-movie-player .rotate-phone,
+.custom-movie-player .rotate-prompt,
+.custom-movie-player .orientation-prompt,
+.custom-movie-player [class*="rotate"],
+.custom-movie-player [class*="orientation"] {
+  display: none !important;
+}
