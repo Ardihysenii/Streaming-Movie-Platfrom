@@ -6090,3 +6090,253 @@ body:has(.watch-page) .bottom-dock {
     max-height: min(62svh, 300px) !important;
   }
 }
+
+
+/* Cinema subtitle drawer: a true side panel on desktop, compact sheet on phones. */
+.custom-movie-player .player-subtitle-menu {
+  align-content: flex-start;
+  background: #050506;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 20px 0 0 20px;
+  bottom: 0 !important;
+  box-shadow: -24px 0 72px rgba(0,0,0,.58);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  height: 100dvh !important;
+  left: auto !important;
+  max-height: none !important;
+  overflow-y: auto;
+  padding: 30px 24px 34px;
+  position: fixed !important;
+  right: 0 !important;
+  top: 0 !important;
+  transform: none !important;
+  width: min(390px, 92vw) !important;
+  z-index: 10000 !important;
+}
+.custom-movie-player .player-subtitle-menu-header {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  position: sticky;
+  top: -30px;
+  z-index: 2;
+}
+.custom-movie-player .player-subtitle-menu-header > div {
+  display: grid;
+  gap: 5px;
+}
+.custom-movie-player .player-subtitle-kicker,
+.custom-movie-player .player-subtitle-section-title {
+  color: var(--accent);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.custom-movie-player .player-subtitle-menu-header strong {
+  color: #fff;
+  font-size: 1.35rem;
+  letter-spacing: -.02em;
+}
+.custom-movie-player .player-subtitle-menu-header > button {
+  align-items: center;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.1rem;
+  height: 34px;
+  justify-content: center;
+  line-height: 1;
+  width: 34px;
+}
+.custom-movie-player .player-subtitle-menu-header > button:hover {
+  background: rgba(226,29,47,.16);
+  border-color: rgba(226,29,47,.7);
+  color: #fff;
+}
+.custom-movie-player .player-subtitle-language-section,
+.custom-movie-player .player-subtitle-customize-section {
+  display: grid;
+  gap: 11px;
+}
+.custom-movie-player .player-subtitle-language-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.custom-movie-player .player-subtitle-language-list button {
+  background: #0d0e11;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: #c5c7ca;
+  cursor: pointer;
+  min-height: 42px;
+  padding: 9px 10px;
+  text-align: left;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+.custom-movie-player .player-subtitle-language-list button:hover {
+  background: #15161a;
+  border-color: rgba(226,29,47,.6);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.custom-movie-player .player-subtitle-language-list button.is-selected {
+  background: rgba(226,29,47,.14);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 1px rgba(226,29,47,.18), 0 8px 22px rgba(226,29,47,.12);
+}
+.custom-movie-player .player-subtitle-customize {
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: grid;
+  gap: 16px;
+  padding-top: 16px;
+}
+.custom-movie-player .player-subtitle-customize label {
+  color: #aeb1b5;
+  display: grid;
+  font-size: .72rem;
+  font-weight: 700;
+  gap: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.custom-movie-player .player-subtitle-customize label span {
+  color: #fff;
+  font-size: .8rem;
+  letter-spacing: 0;
+  justify-self: end;
+  margin-bottom: -23px;
+  text-transform: none;
+}
+.custom-movie-player .player-subtitle-customize input[type="range"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+  width: 100%;
+}
+.custom-movie-player .player-subtitle-customize select {
+  background: #0d0e11;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: #fff;
+  min-height: 42px;
+  padding: 8px 11px;
+}
+.custom-movie-player .player-subtitle-toggle {
+  align-items: center;
+  background: var(--accent);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  margin-top: auto;
+  min-height: 44px;
+  padding: 10px 14px;
+  transition: filter .18s ease, transform .18s ease;
+  width: 100%;
+}
+.custom-movie-player .player-subtitle-toggle:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.custom-movie-player .player-subtitle-control > button {
+  align-items: center;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+  width: 40px;
+}
+.custom-movie-player .player-subtitle-control > button:hover {
+  background: rgba(226,29,47,.16);
+  border-color: rgba(226,29,47,.7);
+  transform: translateY(-1px);
+}
+.custom-movie-player .player-subtitle-control > button svg {
+  height: 21px;
+  width: 21px;
+}
+.custom-movie-player .player-seek-feedback {
+  align-items: center;
+  animation: nova-seek-feedback .42s cubic-bezier(.2,.8,.2,1) both;
+  backdrop-filter: blur(12px);
+  background: rgba(7,8,9,.78);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 1.08rem;
+  font-weight: 700;
+  left: 50%;
+  letter-spacing: .04em;
+  padding: 10px 17px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+.custom-movie-player .player-seek-feedback.is-forward {
+  border-color: rgba(226,29,47,.72);
+  color: #ff7380;
+}
+.custom-movie-player .player-seek-feedback.is-back {
+  border-color: rgba(255,255,255,.36);
+  color: #f2f0eb;
+}
+@keyframes nova-seek-feedback {
+  0% { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(.9); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% - 8px)) scale(1.02); }
+}
+@media (max-width: 900px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    height: auto !important;
+    left: 8px !important;
+    max-height: min(84svh, 560px) !important;
+    padding: 18px 16px max(18px, env(safe-area-inset-bottom)) !important;
+    right: 8px !important;
+    top: auto !important;
+    transform: none !important;
+    width: calc(100vw - 16px) !important;
+    border-radius: 20px !important;
+  }
+  .custom-movie-player .player-subtitle-menu-header {
+    top: -18px;
+  }
+  .custom-movie-player .player-subtitle-language-list {
+    gap: 7px;
+  }
+  .custom-movie-player .player-subtitle-language-list button {
+    min-height: 38px;
+    padding: 8px;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    left: 50% !important;
+    max-height: calc(100svh - 16px) !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(92vw, 520px) !important;
+  }
+}
