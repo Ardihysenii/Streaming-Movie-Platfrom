@@ -68,10 +68,11 @@ export default function CustomMoviePlayer({
   const [subtitleCues, setSubtitleCues] = useState([]);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
-  const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
+  const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState("bottom");
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
+  const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
@@ -85,9 +86,9 @@ export default function CustomMoviePlayer({
   const activeId = tmdbId || queryId || "";
   const activeSubtitle = useMemo(
     () => subtitlesEnabled
-      ? subtitleCues.find((cue) => currentTime >= cue.start && currentTime <= cue.end)
+      ? subtitleCues.find((cue) => currentTime + subtitleOffset >= cue.start && currentTime + subtitleOffset <= cue.end)
       : null,
-    [currentTime, subtitleCues, subtitlesEnabled],
+    [currentTime, subtitleCues, subtitlesEnabled, subtitleOffset],
   );
 
   useEffect(() => {
@@ -521,14 +522,17 @@ export default function CustomMoviePlayer({
                 ) : null}
               </div>
               <div className="player-subtitle-control">
-                <button type="button" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); setSubtitleMenuOpen((open) => !open); }} aria-label={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"} title={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}>
+                <button type="button" onClick={() => setSubtitleMenuOpen(true)} aria-label="Subtitle settings" title="Subtitle settings">
                   <CaptionsIcon />
                 </button>
                 {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
+                    <div className="player-subtitle-menu-header"><strong>Subtitle settings</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
+                    <button type="button" className="player-subtitle-toggle" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); }}>{subtitlesEnabled ? "Subtitles on" : "Subtitles off"}</button>
                     <label>Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
                     <label>Size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
                     <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
+                    <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                   </div>
                 ) : null}
               </div>
