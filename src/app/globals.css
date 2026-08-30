@@ -6001,3 +6001,21 @@ body:has(.watch-page) .bottom-dock {
     width: calc(100vw - 16px) !important;
   }
 }
+
+
+/* Landscape phones need the same viewport-safe subtitle sheet. */
+@media (max-width: 900px) and (orientation: landscape) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: 54px !important;
+    left: 10px !important;
+    max-height: calc(100svh - 66px) !important;
+    max-width: none !important;
+    position: fixed !important;
+    right: 10px !important;
+    top: auto !important;
+    transform: none !important;
+    width: calc(100vw - 20px) !important;
+    z-index: 10000 !important;
+  }
+  .custom-movie-player .player-subtitle-menu label { gap: 3px; }
+}
