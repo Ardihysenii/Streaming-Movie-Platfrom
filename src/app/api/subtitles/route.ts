@@ -125,6 +125,7 @@ export async function GET(request: Request) {
   let subtitleResponse: Response;
   try {
     subtitleResponse = await fetch(downloadUrl, {
+      headers: { "x-api-key": apiKey },
       cache: "no-store",
     });
   } catch {
@@ -133,7 +134,7 @@ export async function GET(request: Request) {
   if (!subtitleResponse.ok) {
     if (subtitleResponse.status === 429) {
       return errorResponse(
-        "SubDL’s anonymous subtitle-download limit has been reached. Please try again later.",
+        "Your SubDL Free key has used its 50 daily subtitle downloads. The 2,000-request allowance is separate; try again after the download counter resets.",
         429,
         { "Retry-After": subtitleResponse.headers.get("retry-after") || "" },
       );
