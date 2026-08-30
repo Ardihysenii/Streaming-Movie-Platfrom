@@ -289,7 +289,6 @@ export default function CustomMoviePlayer({
       const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       const active = activeFullscreenElement === player || activeFullscreenElement === iframe;
       setIsFullscreen(active);
-      if (!active && !activeFullscreenElement) setMobileFullscreen(false);
     };
     const handleWebkitFullscreenChange = () => {
       const active = Boolean(
@@ -301,7 +300,6 @@ export default function CustomMoviePlayer({
         || document.webkitFullscreenElement === iframe,
       );
       setIsFullscreen(active);
-      if (!active) setMobileFullscreen(false);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -322,7 +320,7 @@ export default function CustomMoviePlayer({
   }, []);
 
   const showCenterFeedback = (nextPlaying) => {
-    setCenterFeedback(nextPlaying ? "play" : "pause");
+    setCenterFeedback(nextPlaying === true ? "play" : nextPlaying === false ? "pause" : nextPlaying);
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
     centerFeedbackTimerRef.current = window.setTimeout(() => {
       setCenterFeedback(null);
@@ -335,7 +333,15 @@ export default function CustomMoviePlayer({
     showCenterFeedback(nextPlaying);
     sendCommand(nextPlaying ? "play" : "pause");
   };
-  const seekBy = (amount) => sendCommand("seek", [Math.max(0, currentTime + amount)]);
+  const seekBy = (amount) => {
+    const nextTime = Math.max(0, currentTime + amount);
+    showCenterFeedback(amount > 0 ? "forward" : "back");
+    sendCommand("seek", [nextTime]);
+  };
+  const handleGestureDoubleClick = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    seekBy(event.clientX - rect.left < rect.width / 2 ? -10 : 10);
+  };
   const handleSeek = (event) => {
     const nextTime = Number(event.target.value);
     setCurrentTime(nextTime);
@@ -448,16 +454,16 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
-          <button className="player-gesture-layer" type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
+          <button className="player-gesture-layer" type="button" onClick={togglePlay} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
             className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
             type="button"
             onClick={togglePlay}
             aria-hidden={!centerFeedback}
             tabIndex={centerFeedback ? 0 : -1}
-            aria-label={centerFeedback === "play" ? "Play" : "Pause"}
+            aria-label={centerFeedback === "play" ? "Play" : centerFeedback === "pause" ? "Pause" : "Seek"}
           >
-            {centerFeedback === "play" ? <PlayIcon /> : <PauseIcon />}
+            {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
           </button>
           <div className={`nova-player-controls custom-provider-controls${controlsVisible ? "" : " controls-hidden"}`}>
             <input
