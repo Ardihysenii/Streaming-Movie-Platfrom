@@ -79,6 +79,12 @@ export default function CustomMoviePlayer({
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
+  const mobileFullscreenRef = useRef(false);
+
+  const setMobileFullscreenState = (next) => {
+    mobileFullscreenRef.current = next;
+    setMobileFullscreen(next);
+  };
   const [centerFeedback, setCenterFeedback] = useState(null);
   const searchParams = useSearchParams();
 
@@ -302,6 +308,14 @@ export default function CustomMoviePlayer({
       
     };
 
+    const keepMobileFullscreen = () => {
+      if (!mobileFullscreenRef.current) return;
+      setMobileFullscreen(true);
+      setIsFullscreen(true);
+    };
+
+    window.addEventListener("orientationchange", keepMobileFullscreen);
+    window.addEventListener("resize", keepMobileFullscreen);
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
     player?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
@@ -310,6 +324,8 @@ export default function CustomMoviePlayer({
     iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
 
     return () => {
+      window.removeEventListener("orientationchange", keepMobileFullscreen);
+      window.removeEventListener("resize", keepMobileFullscreen);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       player?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
@@ -372,8 +388,9 @@ export default function CustomMoviePlayer({
 
     if (activeFullscreenElement) {
       const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      mobileFullscreenRef.current = false;
+      setMobileFullscreen(false);
       if (exitFullscreen) await exitFullscreen.call(document);
-      else setMobileFullscreen(false);
       return;
     }
 
@@ -381,7 +398,7 @@ export default function CustomMoviePlayer({
     // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
     // so the player still expands to the viewport on those devices.
     if (isMobile && mobileFullscreen) {
-      setMobileFullscreen(false);
+      setMobileFullscreenState(false);
       setIsFullscreen(false);
       return;
     }
