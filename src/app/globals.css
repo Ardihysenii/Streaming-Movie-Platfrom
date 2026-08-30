@@ -6019,3 +6019,74 @@ body:has(.watch-page) .bottom-dock {
   }
   .custom-movie-player .player-subtitle-menu label { gap: 3px; }
 }
+
+
+/* Responsive subtitle menu: compact controls on phones, centered in landscape. */
+.custom-movie-player .player-subtitle-menu {
+  gap: 10px;
+}
+.custom-movie-player .player-subtitle-menu-header strong {
+  letter-spacing: -0.01em;
+}
+.custom-movie-player .player-subtitle-language,
+.custom-movie-player .player-subtitle-customize label {
+  display: grid;
+  gap: 6px;
+}
+.custom-movie-player .player-subtitle-action,
+.custom-movie-player .player-subtitle-toggle {
+  align-items: center;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: var(--text);
+  display: flex;
+  font: inherit;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 9px 11px;
+  width: 100%;
+}
+.custom-movie-player .player-subtitle-action:hover,
+.custom-movie-player .player-subtitle-toggle:hover {
+  background: rgba(255,255,255,.1);
+}
+.custom-movie-player .player-subtitle-customize {
+  display: grid;
+  gap: 9px;
+  padding: 2px 0 0;
+}
+@media (max-width: 900px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(54px, env(safe-area-inset-bottom)) !important;
+    left: 8px !important;
+    max-height: min(68svh, 340px) !important;
+    overflow-y: auto !important;
+    position: fixed !important;
+    right: 8px !important;
+    top: auto !important;
+    transform: none !important;
+    width: calc(100vw - 16px) !important;
+  }
+  .custom-movie-player .player-subtitle-menu-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(50px, env(safe-area-inset-bottom)) !important;
+    left: 50% !important;
+    max-height: calc(100svh - 62px) !important;
+    right: auto !important;
+    top: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(92vw, 520px) !important;
+  }
+}
+@media (max-width: 390px) {
+  .custom-movie-player .player-subtitle-menu {
+    max-height: min(62svh, 300px) !important;
+  }
+}
