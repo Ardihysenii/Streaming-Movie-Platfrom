@@ -5892,3 +5892,48 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player [class*="orientation"] {
   display: none !important;
 }
+
+
+/* Mobile seek feedback stays on the tapped side and fades cleanly. */
+.custom-movie-player .player-seek-feedback {
+  align-items: center;
+  animation: nova-seek-feedback .72s ease-out both;
+  background: rgba(8, 10, 13, .58);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  color: rgba(255,255,255,.94);
+  display: inline-flex;
+  font-size: .85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  height: 42px;
+  justify-content: center;
+  letter-spacing: .02em;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 72px;
+  z-index: 7;
+}
+.custom-movie-player .player-seek-feedback.is-back { left: clamp(18px, 8%, 96px); }
+.custom-movie-player .player-seek-feedback.is-forward { right: clamp(18px, 8%, 96px); }
+@keyframes nova-seek-feedback {
+  0% { opacity: 0; transform: translateY(-50%) scale(.9); }
+  18% { opacity: 1; transform: translateY(-50%) scale(1); }
+  76% { opacity: 1; transform: translateY(-50%) scale(1); }
+  100% { opacity: 0; transform: translateY(-50%) scale(1.03); }
+}
+@media (max-width: 680px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: calc(100% + 8px);
+    left: 8px;
+    max-height: min(60dvh, 360px);
+    padding: 14px;
+    right: 8px;
+    width: auto;
+  }
+  .custom-movie-player .player-subtitle-menu-header { padding-bottom: 10px; }
+  .custom-movie-player .player-subtitle-menu select { min-height: 38px; }
+  .custom-movie-player .player-seek-feedback { font-size: .78rem; height: 38px; width: 66px; }
+}
