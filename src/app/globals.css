@@ -6340,3 +6340,47 @@ body:has(.watch-page) .bottom-dock {
     width: min(92vw, 520px) !important;
   }
 }
+
+
+/* Final viewport anchoring: no bottom-right clipping on any phone orientation. */
+.custom-movie-player .player-subtitle-menu {
+  inset: 0 0 0 auto !important;
+}
+@media (max-width: 900px) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    height: auto !important;
+    inset: auto 10px max(8px, env(safe-area-inset-bottom)) 10px !important;
+    max-height: min(72svh, 460px) !important;
+    min-height: 0 !important;
+    padding: 16px 14px max(16px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+  }
+  .custom-movie-player .player-subtitle-menu-header {
+    padding-bottom: 12px;
+    top: -16px;
+  }
+  .custom-movie-player .player-subtitle-menu-header strong {
+    font-size: 1.18rem;
+  }
+  .custom-movie-player .player-subtitle-section-title {
+    font-size: .62rem;
+  }
+  .custom-movie-player .player-subtitle-language-list button {
+    font-size: .82rem;
+    min-height: 36px;
+  }
+  .custom-movie-player .player-subtitle-customize {
+    gap: 12px;
+    padding-top: 12px;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  .custom-movie-player .player-subtitle-menu {
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    inset: auto auto max(8px, env(safe-area-inset-bottom)) 50% !important;
+    max-height: calc(100svh - 16px) !important;
+    transform: translateX(-50%) !important;
+    width: min(90vw, 500px) !important;
+  }
+}
