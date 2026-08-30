@@ -512,7 +512,7 @@ export default function CustomMoviePlayer({
             {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
           </button>
           {seekFeedback ? (
-            <div className={`player-seek-feedback `{seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">{seekFeedback}</div>
+            <div className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">{seekFeedback}</div>
           ) : null}
           <div className={`nova-player-controls custom-provider-controls${controlsVisible ? "" : " controls-hidden"}`}>
             <input
