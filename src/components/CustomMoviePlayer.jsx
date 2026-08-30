@@ -3,6 +3,10 @@
 
 
 
+
+
+
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -16,6 +20,10 @@ import {
   VolumeIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
+
+
+
+
 
 
 
@@ -44,6 +52,10 @@ function parseSubtitleCues(value) {
 
 
 
+
+
+
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const total = Math.floor(seconds);
@@ -51,6 +63,10 @@ function formatTime(seconds) {
   const remaining = total % 60;
   return `${minutes}:${remaining.toString().padStart(2, "0")}`;
 }
+
+
+
+
 
 
 
@@ -86,6 +102,7 @@ export default function CustomMoviePlayer({
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState("bottom");
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
+  const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
   const controlsTimerRef = useRef(null);
@@ -103,6 +120,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   const setMobileFullscreenState = (next) => {
     mobileFullscreenRef.current = next;
     setMobileFullscreen(next);
@@ -110,6 +131,10 @@ export default function CustomMoviePlayer({
   const [centerFeedback, setCenterFeedback] = useState(null);
   const [seekFeedback, setSeekFeedback] = useState(null);
   const searchParams = useSearchParams();
+
+
+
+
 
 
 
@@ -126,9 +151,17 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+
+
+
 
 
 
@@ -142,6 +175,10 @@ export default function CustomMoviePlayer({
       return "";
     }
   }, [providerBase]);
+
+
+
+
 
 
 
@@ -167,6 +204,10 @@ export default function CustomMoviePlayer({
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
   }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+
+
+
+
 
 
 
@@ -230,11 +271,19 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => {
     resumeAppliedRef.current = false;
     setCurrentTime(0);
     setDuration(0);
   }, [embedUrl]);
+
+
+
+
 
 
 
@@ -250,6 +299,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => {
     showControls();
     return () => {
@@ -260,11 +313,19 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => () => {
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
   }, []);
+
+
+
+
 
 
 
@@ -280,8 +341,16 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => {
     if (!isCineSrc) return undefined;
+
+
+
+
 
 
 
@@ -291,6 +360,10 @@ export default function CustomMoviePlayer({
       const message = event.data;
       if (!message || typeof message.type !== "string") return;
       const payload = message.data ?? message;
+
+
+
+
 
 
 
@@ -346,9 +419,17 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
+
+
+
+
 
 
 
@@ -365,6 +446,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   useEffect(() => {
     // CineSrc can announce readiness before the selected movie has loaded its
     // metadata. Waiting for a real duration makes the seek reliable for films
@@ -373,6 +458,10 @@ export default function CustomMoviePlayer({
     resumeAppliedRef.current = true;
     sendCommand("seek", [Math.max(0, resumeAt)]);
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
+
+
+
+
 
 
 
@@ -400,11 +489,19 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
     const keepMobileFullscreen = () => {
       if (!mobileFullscreenRef.current) return;
       setMobileFullscreen(true);
       setIsFullscreen(true);
     };
+
+
+
+
 
 
 
@@ -417,6 +514,10 @@ export default function CustomMoviePlayer({
     player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+
+
+
+
 
 
 
@@ -436,6 +537,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   const showCenterFeedback = (nextPlaying) => {
     setCenterFeedback(nextPlaying === true ? "play" : nextPlaying === false ? "pause" : nextPlaying);
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
@@ -444,6 +549,10 @@ export default function CustomMoviePlayer({
       centerFeedbackTimerRef.current = null;
     }, 500);
   };
+
+
+
+
 
 
 
@@ -465,11 +574,19 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   const seekBy = (amount) => {
     const nextTime = Math.max(0, currentTime + amount);
     showSeekFeedback(amount);
     sendCommand("seek", [nextTime]);
   };
+
+
+
+
 
 
 
@@ -482,6 +599,10 @@ export default function CustomMoviePlayer({
       togglePlay();
     }, 240);
   };
+
+
+
+
 
 
 
@@ -515,6 +636,10 @@ export default function CustomMoviePlayer({
       togglePlay();
     }, 270);
   };
+
+
+
+
 
 
 
@@ -557,12 +682,20 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
     // Use input capability as well as width so a phone in landscape keeps the
     // mobile fallback path (landscape iPhones are wider than 767px).
     const isMobile = window.innerWidth <= 1024
       && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
         || navigator.maxTouchPoints > 0);
     const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+
+
+
 
 
 
@@ -578,6 +711,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
     // A number of mobile webviews expose the fullscreen button but reject the
     // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
     // so the player still expands to the viewport on those devices.
@@ -586,6 +723,10 @@ export default function CustomMoviePlayer({
       setIsFullscreen(false);
       return;
     }
+
+
+
+
 
 
 
@@ -610,6 +751,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
       const frame = iframeRef.current;
       const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
       if (frame && requestFrameFullscreen) {
@@ -626,8 +771,16 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
     await player.requestFullscreen();
   };
+
+
+
+
 
 
 
@@ -642,9 +795,17 @@ export default function CustomMoviePlayer({
 
 
 
+
+
+
+
   if (!isClient || !activeId) {
     return <div className="w-full h-96 bg-zinc-950 rounded-xl" />;
   }
+
+
+
+
 
 
 
@@ -755,12 +916,17 @@ export default function CustomMoviePlayer({
                 </button>
                 {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
-                    <div className="player-subtitle-menu-header"><strong>Subtitle settings</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
-                    <button type="button" className="player-subtitle-toggle" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); }}>{subtitlesEnabled ? "Subtitles on" : "Subtitles off"}</button>
-                    <label>Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-                    <label>Size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
-                    <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
-                    <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
+                    <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
+                    <label className="player-subtitle-language">Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                    <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>Customize</span><span aria-hidden="true">{subtitleCustomizeOpen ? "⌃" : "⌄"}</span></button>
+                    {subtitleCustomizeOpen ? (
+                      <div className="player-subtitle-customize">
+                        <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                        <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
+                        <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
+                      </div>
+                    ) : null}
+                    <button type="button" className="player-subtitle-toggle" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); }}>{subtitlesEnabled ? "Turn off subtitles" : "Turn on subtitles"}</button>
                   </div>
                 ) : null}
               </div>
