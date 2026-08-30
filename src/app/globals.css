@@ -5606,3 +5606,236 @@ body:has(.watch-page) .bottom-dock {
 .custom-subtitle-overlay { background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,.28); padding: 7px 16px; transition: bottom 180ms ease, font-size 180ms ease; }
 .custom-player-ui .player-center-play { background: rgba(12,14,18,.58); border: 1px solid rgba(255,255,255,.28); box-shadow: 0 10px 30px rgba(0,0,0,.42), 0 0 0 5px rgba(226,29,47,.08); }
 .custom-player-ui .player-center-play svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+
+
+/* NOVA player controls — refined, cinematic, and intentionally quiet */
+.custom-player-ui .nova-player-controls {
+  background: linear-gradient(180deg, rgba(6, 8, 11, .04) 0%, rgba(6, 8, 11, .9) 68%);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 34px 24px 18px;
+  gap: 10px;
+}
+.custom-player-ui .player-control-row {
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+}
+.custom-player-ui .player-control-row > button,
+.custom-player-ui .player-quality-button,
+.custom-player-ui .player-subtitle-control > button {
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: rgba(245, 246, 247, .78);
+  cursor: pointer;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+  padding: 0 10px;
+  transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.custom-player-ui .player-control-row > button:hover,
+.custom-player-ui .player-quality-button:hover,
+.custom-player-ui .player-subtitle-control > button:hover {
+  background: rgba(255,255,255,.08) !important;
+  border-color: rgba(255,255,255,.16);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.custom-player-ui .player-control-row > button:focus-visible,
+.custom-player-ui .player-quality-button:focus-visible,
+.custom-player-ui .player-subtitle-control > button:focus-visible {
+  outline: 2px solid rgba(255,255,255,.78);
+  outline-offset: 2px;
+}
+.custom-player-ui .player-control-row svg {
+  height: 19px;
+  width: 19px;
+}
+.custom-player-ui .player-progress,
+.custom-player-ui .player-volume {
+  accent-color: #e4e6e8;
+  filter: none;
+}
+.custom-player-ui .player-progress {
+  height: 4px;
+  margin: 0 0 3px;
+  opacity: .86;
+}
+.custom-player-ui .player-volume {
+  height: 3px;
+  max-width: 96px;
+  opacity: .72;
+}
+.custom-player-ui .player-time {
+  color: rgba(255,255,255,.68);
+  font-variant-numeric: tabular-nums;
+  font-size: .76rem;
+  letter-spacing: .01em;
+  margin-left: 6px;
+}
+.custom-player-ui .player-quality-control { position: relative; }
+.custom-player-ui .player-quality-button {
+  gap: 8px;
+  min-width: 112px;
+  justify-content: space-between;
+}
+.custom-player-ui .player-quality-button .player-setting-label {
+  color: rgba(255,255,255,.48);
+  font-size: .64rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.custom-player-ui .player-quality-button strong { color: #fff; font-size: .75rem; }
+.custom-player-ui .player-quality-menu {
+  backdrop-filter: blur(18px);
+  background: rgba(15,17,22,.96);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 13px;
+  bottom: 48px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.5);
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  width: 126px;
+  z-index: 22;
+}
+.custom-player-ui .player-quality-menu button {
+  background: transparent;
+  border-radius: 8px;
+  color: rgba(255,255,255,.68);
+  cursor: pointer;
+  padding: 9px 10px;
+  text-align: left;
+}
+.custom-player-ui .player-quality-menu button:hover,
+.custom-player-ui .player-quality-menu button.is-selected {
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+
+/* Captions are clean type over picture — never a boxed bubble */
+.custom-player-ui .custom-subtitle-overlay {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #fff;
+  font-size: calc(1rem * var(--subtitle-scale, 1));
+  font-weight: 600;
+  letter-spacing: .01em;
+  max-width: min(86%, 900px);
+  padding: 0 !important;
+  text-align: center;
+  text-shadow: 0 2px 3px rgba(0,0,0,.95), 0 0 14px rgba(0,0,0,.7);
+}
+.custom-player-ui .player-subtitle-menu {
+  backdrop-filter: blur(24px) saturate(125%);
+  background: linear-gradient(145deg, rgba(22,24,30,.98), rgba(10,12,16,.98));
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.62), 0 1px 0 rgba(255,255,255,.08) inset;
+  display: grid;
+  gap: 16px;
+  min-width: 320px;
+  padding: 18px;
+}
+.custom-player-ui .player-subtitle-menu-header {
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 14px;
+}
+.custom-player-ui .player-subtitle-menu-header strong {
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+.custom-player-ui .player-subtitle-menu-header button {
+  align-items: center;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 50%;
+  color: rgba(255,255,255,.65);
+  cursor: pointer;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  transition: background .2s ease, color .2s ease;
+  width: 28px;
+}
+.custom-player-ui .player-subtitle-menu-header button:hover { background: rgba(255,255,255,.14); color: #fff; }
+.custom-player-ui .player-subtitle-toggle {
+  align-items: center;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: .78rem;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+.custom-player-ui .player-subtitle-toggle::after {
+  background: #d9dde2;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(217,221,226,.14);
+  content: "";
+  height: 7px;
+  width: 7px;
+}
+.custom-player-ui .player-subtitle-menu label {
+  color: rgba(255,255,255,.5);
+  display: grid;
+  font-size: .63rem;
+  font-weight: 600;
+  gap: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.custom-player-ui .player-subtitle-menu select {
+  appearance: none;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-size: .85rem;
+  letter-spacing: 0;
+  padding: 11px 12px;
+  text-transform: none;
+}
+.custom-player-ui .player-subtitle-menu select:hover { border-color: rgba(255,255,255,.32); }
+.custom-player-ui .player-subtitle-menu input[type="range"] {
+  accent-color: #d9dde2;
+  cursor: ew-resize;
+  height: 4px;
+}
+.custom-player-ui .player-subtitle-menu label span {
+  color: rgba(255,255,255,.78);
+  float: right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.custom-player-ui .player-subtitle-notice {
+  background: transparent;
+  color: rgba(255,255,255,.66);
+  font-size: .7rem;
+  text-align: right;
+}
+@media (max-width: 680px) {
+  .custom-player-ui .nova-player-controls { padding: 28px 12px 12px; }
+  .custom-player-ui .player-subtitle-menu { bottom: 48px; min-width: min(320px, calc(100vw - 24px)); right: -8px; }
+  .custom-player-ui .player-control-row > button { min-width: 34px; padding: 0 7px; }
+  .custom-player-ui .player-volume { display: none; }
+}
