@@ -5839,3 +5839,17 @@ body:has(.watch-page) .bottom-dock {
   .custom-player-ui .player-control-row > button { min-width: 34px; padding: 0 7px; }
   .custom-player-ui .player-volume { display: none; }
 }
+
+
+/* Keep skip symbols clean: the action is communicated by the icon itself. */
+.custom-movie-player .player-control-row svg text,
+.custom-movie-player .player-center-play svg text {
+  display: none !important;
+}
+.custom-movie-player .player-center-play {
+  isolation: isolate;
+}
+.custom-movie-player .player-center-play.is-visible svg {
+  opacity: 1;
+  transform: scale(1);
+}
