@@ -5599,10 +5599,10 @@ body:has(.watch-page) .bottom-dock {
 .player-subtitle-menu select { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; padding: 6px 8px; background: #191c23; color: #fff; font-size: .78rem; }
 @media (max-width: 680px) { .player-subtitle-menu { right: -8px; min-width: 170px; } }
 
-.player-subtitle-menu { gap: 12px; min-width: 220px; padding: 16px; border: 1px solid rgba(226,29,47,.34); border-radius: 14px; background: linear-gradient(145deg, rgba(24,18,25,.98), rgba(10,13,18,.98)); backdrop-filter: blur(16px); }
-.player-subtitle-menu-header { align-items: center; display: flex; justify-content: space-between; color: #fff; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
-.player-subtitle-menu-header button { border: 0; background: transparent; color: rgba(255,255,255,.6); font-size: 1.2rem; line-height: 1; }
-.player-subtitle-toggle { border: 1px solid rgba(226,29,47,.5); border-radius: 8px; padding: 8px 10px; background: rgba(226,29,47,.14); color: #fff; font-size: .72rem; text-align: left; }
-.player-subtitle-menu label { align-items: center; display: grid; gap: 6px; }
-.player-subtitle-menu label span { color: #e21d2f; font-size: .68rem; justify-self: end; margin-top: -20px; }
-.player-subtitle-menu input[type=range] { accent-color: #e21d2f; }
+.player-subtitle-control > button, .player-subtitle-control > button:hover { background: transparent !important; border: 0; box-shadow: none; cursor: pointer; }
+.player-subtitle-control > button:hover { color: #fff; transform: translateY(-1px); }
+.player-subtitle-menu { border-color: rgba(226,29,47,.42); background: linear-gradient(145deg, rgba(20,16,24,.98), rgba(7,10,15,.98)); box-shadow: 0 18px 55px rgba(0,0,0,.58), 0 0 0 1px rgba(255,255,255,.04) inset; }
+.player-subtitle-menu-header button, .player-subtitle-toggle { cursor: pointer; }
+.custom-subtitle-overlay { background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,.28); padding: 7px 16px; transition: bottom 180ms ease, font-size 180ms ease; }
+.custom-player-ui .player-center-play { background: rgba(12,14,18,.58); border: 1px solid rgba(255,255,255,.28); box-shadow: 0 10px 30px rgba(0,0,0,.42), 0 0 0 5px rgba(226,29,47,.08); }
+.custom-player-ui .player-center-play svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
