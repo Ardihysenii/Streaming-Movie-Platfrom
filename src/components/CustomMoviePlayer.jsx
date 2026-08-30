@@ -528,7 +528,7 @@ export default function CustomMoviePlayer({
                 ) : null}
               </div>
               <div className="player-subtitle-control">
-                <button type="button" onClick={() => setSubtitleMenuOpen(true)} aria-label="Subtitle settings" title="Subtitle settings">
+                <button type="button" onClick={() => setSubtitleMenuOpen((open) => !open)} aria-label="Subtitle settings" title="Subtitle settings">
                   <CaptionsIcon />
                 </button>
                 {subtitleMenuOpen ? (
