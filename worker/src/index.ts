@@ -2,9 +2,11 @@ interface KVNamespace {
   get<T = unknown>(key: string, type: "json"): Promise<T | null>;
 }
 
+
 type WorkerHandler<Environment> = {
   fetch(request: Request, env: Environment): Promise<Response>;
 };
+
 
 type StreamSource = {
   url: string;
@@ -13,12 +15,14 @@ type StreamSource = {
   quality?: string;
 };
 
+
 type SubtitleTrack = {
   url: string;
   label: string;
   language: string;
   default?: boolean;
 };
+
 
 type PlaybackManifest = {
   movieId: string;
@@ -27,6 +31,7 @@ type PlaybackManifest = {
   expiresAt?: string;
 };
 
+
 interface Env {
   STREAM_CATALOG?: KVNamespace;
   SOURCE_API_BASE_URL?: string;
@@ -34,6 +39,7 @@ interface Env {
   SUBDL_API_KEY?: string;
   ALLOWED_ORIGINS?: string;
 }
+
 
 function json(body: unknown, status: number, origin: string | null, headers?: HeadersInit) {
   return new Response(JSON.stringify(body), {
@@ -50,6 +56,7 @@ function json(body: unknown, status: number, origin: string | null, headers?: He
   });
 }
 
+
 function allowedOrigin(request: Request, env: Env) {
   const origin = request.headers.get("Origin");
   if (!origin) return "*";
@@ -60,6 +67,7 @@ function allowedOrigin(request: Request, env: Env) {
   return allowed.includes(origin) ? origin : null;
 }
 
+
 function isSecureMediaUrl(value: unknown): value is string {
   if (typeof value !== "string") return false;
   try {
@@ -68,6 +76,7 @@ function isSecureMediaUrl(value: unknown): value is string {
     return false;
   }
 }
+
 
 function normalizeManifest(value: unknown, movieId: string): PlaybackManifest | null {
   if (!value || typeof value !== "object") return null;
@@ -88,6 +97,7 @@ function normalizeManifest(value: unknown, movieId: string): PlaybackManifest | 
   });
   if (!sources.length) return null;
 
+
   const rawSubtitles = Array.isArray(record.subtitles) ? record.subtitles : [];
   const subtitles = rawSubtitles.flatMap((entry): SubtitleTrack[] => {
     if (!entry || typeof entry !== "object") return [];
@@ -107,6 +117,7 @@ function normalizeManifest(value: unknown, movieId: string): PlaybackManifest | 
     }];
   });
 
+
   return {
     movieId,
     sources,
@@ -114,6 +125,7 @@ function normalizeManifest(value: unknown, movieId: string): PlaybackManifest | 
     expiresAt: typeof record.expiresAt === "string" ? record.expiresAt : undefined,
   };
 }
+
 
 async function readCatalog(env: Env, movieId: string, imdbId: string | null) {
   if (!env.STREAM_CATALOG) return null;
@@ -125,6 +137,7 @@ async function readCatalog(env: Env, movieId: string, imdbId: string | null) {
   }
   return null;
 }
+
 
 async function readAuthorizedUpstream(env: Env, movieId: string, imdbId: string | null) {
   if (!env.SOURCE_API_BASE_URL) return null;
@@ -141,6 +154,7 @@ async function readAuthorizedUpstream(env: Env, movieId: string, imdbId: string 
   return response.json();
 }
 
+
 function toWebVtt(value: string) {
   if (/^\uFEFF?WEBVTT/i.test(value.trim())) return value;
   const normalized = value.replace(/\r\n?/g, "\n");
@@ -151,6 +165,7 @@ function toWebVtt(value: string) {
   return `WEBVTT\n\n${converted}`;
 }
 
+
 function subtitleDownloadUrl(value: unknown) {
   if (typeof value !== "string" || !value) return null;
   try {
@@ -159,6 +174,7 @@ function subtitleDownloadUrl(value: unknown) {
     return null;
   }
 }
+
 
 async function readSubtitle(request: Request, env: Env) {
   const apiKey = env.SUBDL_API_KEY?.trim();
@@ -169,6 +185,7 @@ async function readSubtitle(request: Request, env: Env) {
   const type = requestUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
   const language = (requestUrl.searchParams.get("language") || "en").trim().toUpperCase();
   if (!tmdbId && !imdbId) return new Response("A title identifier is required.", { status: 400 });
+
 
   const endpoint = new URL("https://api.subdl.com/api/v1/subtitles");
   endpoint.searchParams.set("api_key", apiKey);
@@ -183,6 +200,7 @@ async function readSubtitle(request: Request, env: Env) {
     endpoint.searchParams.set("season_number", requestUrl.searchParams.get("season") || "1");
     endpoint.searchParams.set("episode_number", requestUrl.searchParams.get("episode") || "1");
   }
+
 
   const searchResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
   if (!searchResponse.ok) return new Response("Subtitle search failed.", { status: 502 });
@@ -202,7 +220,10 @@ async function readSubtitle(request: Request, env: Env) {
   });
   const downloadUrl = subtitleDownloadUrl(selected?.url);
   if (!downloadUrl) return new Response("No subtitle track is available.", { status: 404 });
-  const subtitleResponse = await fetch(downloadUrl, { headers: { "x-api-key": apiKey } });
+  let subtitleResponse = await fetch(downloadUrl);
+  if (!subtitleResponse.ok) {
+    subtitleResponse = await fetch(downloadUrl, { headers: { "x-api-key": apiKey } });
+  }
   if (!subtitleResponse.ok) return new Response("Subtitle download failed.", { status: 502 });
   const text = await subtitleResponse.text();
   if (/\.ass\b|\[Script Info\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
@@ -216,6 +237,7 @@ async function readSubtitle(request: Request, env: Env) {
   });
 }
 
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = allowedOrigin(request, env);
@@ -223,10 +245,12 @@ export default {
     if (request.method === "OPTIONS") return json(null, 204, origin);
     if (request.method !== "GET") return json({ error: "Method not allowed." }, 405, origin);
 
+
     const url = new URL(request.url);
     if (url.pathname === "/health") {
       return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY) }, 200, origin);
     }
+
 
     if (url.pathname === "/v1/subtitles") {
       try {
@@ -242,8 +266,10 @@ export default {
       }
     }
 
+
     const match = url.pathname.match(/^\/v1\/movie\/([^/]+)$/);
     if (!match) return json({ error: "Route not found." }, 404, origin);
+
 
     const movieId = decodeURIComponent(match[1]);
     const imdbId = url.searchParams.get("imdbId");
@@ -264,4 +290,3 @@ export default {
     }
   },
 } satisfies WorkerHandler<Env>;
-
