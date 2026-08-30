@@ -12,6 +12,27 @@ import {
   ForwardIcon,
   VolumeIcon,
 } from "@/components/Icons";
+import { useNovaSettings } from "@/components/Providers";
+
+function parseSubtitleCues(value) {
+  return value
+    .replace(/^WEBVTT[^\n]*\n/i, "")
+    .split(/\n\s*\n/)
+    .flatMap((block) => {
+      const match = block.match(/(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[.,]\d{3})/);
+      if (!match) return [];
+      const toSeconds = (timestamp) => {
+        const [hours, minutes, seconds] = timestamp.replace(",", ".").split(":");
+        return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+      };
+      const text = block
+        .slice(match.index + match[0].length)
+        .replace(/^\s*\n/, "")
+        .replace(/<[^>]+>/g, "")
+        .trim();
+      return text ? [{ start: toSeconds(match[1]), end: toSeconds(match[2]), text }] : [];
+    });
+}
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -23,12 +44,14 @@ function formatTime(seconds) {
 
 export default function CustomMoviePlayer({
   tmdbId,
+  imdbId,
   mediaType = "movie",
   seasonNumber,
   episodeNumber,
   resumeAt = 0,
   onProgress,
 }) {
+  const { settings } = useNovaSettings();
   const [isClient, setIsClient] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -37,10 +60,14 @@ export default function CustomMoviePlayer({
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mobileFullscreen, setMobileFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [quality, setQuality] = useState("1080");
   const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
+  const [subtitleCues, setSubtitleCues] = useState([]);
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
+  const [subtitleStatus, setSubtitleStatus] = useState("idle");
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const iframeRef = useRef(null);
@@ -51,6 +78,12 @@ export default function CustomMoviePlayer({
 
   const queryId = searchParams ? searchParams.get("id") : null;
   const activeId = tmdbId || queryId || "";
+  const activeSubtitle = useMemo(
+    () => subtitlesEnabled
+      ? subtitleCues.find((cue) => currentTime >= cue.start && currentTime <= cue.end)
+      : null,
+    [currentTime, subtitleCues, subtitlesEnabled],
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -87,6 +120,49 @@ export default function CustomMoviePlayer({
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
   }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+
+  useEffect(() => {
+    if (!activeId) return undefined;
+    const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
+    if (!subtitleService) {
+      setSubtitleCues([]);
+      setSubtitlesEnabled(false);
+      setSubtitleStatus("empty");
+      return undefined;
+    }
+    const controller = new AbortController();
+    const query = new URLSearchParams({
+      tmdbId: String(activeId),
+      type: mediaType,
+      language: settings.subtitleLanguage || "en",
+    });
+    if (imdbId) query.set("imdbId", String(imdbId));
+    if (mediaType === "tv") {
+      query.set("season", String(seasonNumber ?? 1));
+      query.set("episode", String(episodeNumber ?? 1));
+    }
+    setSubtitleStatus("loading");
+    setSubtitleCues([]);
+    fetch(`${subtitleService.replace(/\/+$/, "")}/v1/subtitles?${query.toString()}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Subtitle service unavailable");
+        return parseSubtitleCues(await response.text());
+      })
+      .then((cues) => {
+        if (controller.signal.aborted) return;
+        setSubtitleCues(cues);
+        setSubtitlesEnabled(cues.length > 0);
+        setSubtitleStatus(cues.length ? "ready" : "empty");
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setSubtitleCues([]);
+          setSubtitlesEnabled(false);
+          setSubtitleStatus("empty");
+        }
+      });
+    return () => controller.abort();
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -201,9 +277,42 @@ export default function CustomMoviePlayer({
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
 
   useEffect(() => {
-    const handleFullscreenChange = () => setIsFullscreen(document.fullscreenElement === playerRef.current);
+    const player = playerRef.current;
+    const iframe = iframeRef.current;
+    const handleFullscreenChange = () => {
+      const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      const active = activeFullscreenElement === player || activeFullscreenElement === iframe;
+      setIsFullscreen(active);
+      if (!active && !activeFullscreenElement) setMobileFullscreen(false);
+    };
+    const handleWebkitFullscreenChange = () => {
+      const active = Boolean(
+        player?.webkitDisplayingFullscreen
+        || iframe?.webkitDisplayingFullscreen
+        || document.fullscreenElement === player
+        || document.fullscreenElement === iframe
+        || document.webkitFullscreenElement === player
+        || document.webkitFullscreenElement === iframe,
+      );
+      setIsFullscreen(active);
+      if (!active) setMobileFullscreen(false);
+    };
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    player?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+    player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+    iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+    iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      player?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+      player?.removeEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+      iframe?.removeEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
+      iframe?.removeEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+    };
   }, []);
 
   const showCenterFeedback = (nextPlaying) => {
@@ -239,12 +348,63 @@ export default function CustomMoviePlayer({
     sendCommand("setMuted", [nextMuted]);
   };
   const toggleFullscreen = async () => {
-    if (!playerRef.current) return;
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
-    } else {
-      await playerRef.current.requestFullscreen();
+    const player = playerRef.current;
+    if (!player) return;
+
+    // Use input capability as well as width so a phone in landscape keeps the
+    // mobile fallback path (landscape iPhones are wider than 767px).
+    const isMobile = window.innerWidth <= 1024
+      && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
+        || navigator.maxTouchPoints > 0);
+    const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (activeFullscreenElement) {
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exitFullscreen) await exitFullscreen.call(document);
+      else setMobileFullscreen(false);
+      return;
     }
+
+    // A number of mobile webviews expose the fullscreen button but reject the
+    // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
+    // so the player still expands to the viewport on those devices.
+    if (isMobile && mobileFullscreen) {
+      setMobileFullscreen(false);
+      setIsFullscreen(false);
+      return;
+    }
+
+    // Touch browsers can reject fullscreen on an absolutely-positioned wrapper
+    // or require their prefixed request method. Keep the desktop path exactly
+    // as-is, while trying the mobile-compatible targets only on mobile.
+    if (isMobile) {
+      setMobileFullscreen(true);
+      setIsFullscreen(true);
+      const mobileTarget = player;
+      const requestFullscreen = mobileTarget.requestFullscreen || mobileTarget.webkitRequestFullscreen;
+      if (requestFullscreen) {
+        try {
+          await requestFullscreen.call(mobileTarget, { navigationUI: "hide" });
+          return;
+        } catch {
+          // Some mobile browsers only allow fullscreen on the embedded frame.
+        }
+      }
+
+      const frame = iframeRef.current;
+      const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
+      if (frame && requestFrameFullscreen) {
+        try {
+          await requestFrameFullscreen.call(frame, { navigationUI: "hide" });
+        } catch {
+          // The in-page mobile fallback above remains active.
+        }
+        return;
+      }
+      return;
+    }
+
+    await player.requestFullscreen();
   };
 
   const handleQualityChange = (nextQuality) => {
@@ -261,20 +421,25 @@ export default function CustomMoviePlayer({
   return (
     <div
       ref={playerRef}
-      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}`}
+      className={`custom-movie-player${isCineSrc ? " custom-movie-player-cinesrc" : ""}${isCineSrc && !controlsVisible ? " custom-player-controls-hidden" : ""}${mobileFullscreen ? " is-mobile-fullscreen" : ""}`}
       onPointerMove={showControls}
       onPointerDown={showControls}
       onKeyDown={showControls}
       onFocusCapture={showControls}
-    >
-      <iframe
+      >
+        <iframe
         ref={iframeRef}
         src={embedUrl}
         className="provider-player-frame"
         title="NOVA video player"
         allowFullScreen
-        allow="autoplay; fullscreen; picture-in-picture"
-      />
+          allow="autoplay; fullscreen; picture-in-picture"
+        />
+      {activeSubtitle ? (
+        <div className="custom-subtitle-overlay" aria-live="polite">
+          {activeSubtitle.text}
+        </div>
+      ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
           <button className="player-gesture-layer" type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
@@ -352,9 +517,12 @@ export default function CustomMoviePlayer({
               </div>
               <button
                 type="button"
-                onClick={() => setSubtitleNoticeVisible((visible) => !visible)}
-                aria-label="Subtitle information"
-                title="Subtitle settings"
+                onClick={() => {
+                  setSubtitlesEnabled((enabled) => !enabled);
+                  setSubtitleNoticeVisible(true);
+                }}
+                aria-label={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
+                title={subtitlesEnabled ? "Disable subtitles" : "Enable subtitles"}
               >
                 <CaptionsIcon />
               </button>
@@ -364,7 +532,11 @@ export default function CustomMoviePlayer({
             </div>
             {subtitleNoticeVisible ? (
               <div className="player-subtitle-notice" role="status">
-                Subtitles are supplied and managed by the selected CineSrc source.
+                {subtitleStatus === "loading"
+                  ? "Loading subtitles…"
+                  : subtitleStatus === "ready"
+                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    : "No subtitle track is available for this title."}
               </div>
             ) : null}
           </div>
