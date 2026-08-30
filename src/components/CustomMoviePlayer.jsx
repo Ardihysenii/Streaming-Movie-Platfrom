@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -13,6 +14,7 @@ import {
   VolumeIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
+
 
 function parseSubtitleCues(value) {
   return value
@@ -35,6 +37,7 @@ function parseSubtitleCues(value) {
     });
 }
 
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const total = Math.floor(seconds);
@@ -42,6 +45,7 @@ function formatTime(seconds) {
   const remaining = total % 60;
   return `${minutes}:${remaining.toString().padStart(2, "0")}`;
 }
+
 
 export default function CustomMoviePlayer({
   tmdbId,
@@ -88,6 +92,7 @@ export default function CustomMoviePlayer({
   const resumeAppliedRef = useRef(false);
   const mobileFullscreenRef = useRef(false);
 
+
   const setMobileFullscreenState = (next) => {
     mobileFullscreenRef.current = next;
     setMobileFullscreen(next);
@@ -95,6 +100,7 @@ export default function CustomMoviePlayer({
   const [centerFeedback, setCenterFeedback] = useState(null);
   const [seekFeedback, setSeekFeedback] = useState(null);
   const searchParams = useSearchParams();
+
 
   const queryId = searchParams ? searchParams.get("id") : null;
   const activeId = tmdbId || queryId || "";
@@ -105,9 +111,11 @@ export default function CustomMoviePlayer({
     [currentTime, subtitleCues, subtitlesEnabled, subtitleOffset],
   );
 
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
 
   const providerBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
   const isCineSrc = /cinesrc\.st/i.test(providerBase);
@@ -118,6 +126,7 @@ export default function CustomMoviePlayer({
       return "";
     }
   }, [providerBase]);
+
 
   const embedUrl = useMemo(() => {
     if (!activeId) return "";
@@ -141,9 +150,16 @@ export default function CustomMoviePlayer({
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
   }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
 
+
   useEffect(() => {
     if (!activeId) return undefined;
-    const subtitleService = "/api/subtitles";
+    const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
+    if (!subtitleService) {
+      setSubtitleCues([]);
+      setSubtitlesEnabled(false);
+      setSubtitleStatus("empty");
+      return undefined;
+    }
     const controller = new AbortController();
     const query = new URLSearchParams({
       tmdbId: String(activeId),
@@ -191,11 +207,13 @@ export default function CustomMoviePlayer({
     return () => controller.abort();
   }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
 
+
   useEffect(() => {
     resumeAppliedRef.current = false;
     setCurrentTime(0);
     setDuration(0);
   }, [embedUrl]);
+
 
   const showControls = useCallback(() => {
     setControlsVisible(true);
@@ -205,6 +223,7 @@ export default function CustomMoviePlayer({
     }
   }, [isPlaying]);
 
+
   useEffect(() => {
     showControls();
     return () => {
@@ -212,11 +231,13 @@ export default function CustomMoviePlayer({
     };
   }, [isPlaying, showControls]);
 
+
   useEffect(() => () => {
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
   }, []);
+
 
   const sendCommand = useCallback((command, args = []) => {
     if (!isCineSrc || !providerOrigin || !iframeRef.current?.contentWindow) return;
@@ -226,14 +247,17 @@ export default function CustomMoviePlayer({
     );
   }, [isCineSrc, providerOrigin]);
 
+
   useEffect(() => {
     if (!isCineSrc) return undefined;
+
 
     const handleMessage = (event) => {
       if (event.origin !== providerOrigin || event.source !== iframeRef.current?.contentWindow) return;
       const message = event.data;
       if (!message || typeof message.type !== "string") return;
       const payload = message.data ?? message;
+
 
       switch (message.type) {
         case "cinesrc:ready":
@@ -283,9 +307,11 @@ export default function CustomMoviePlayer({
       }
     };
 
+
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
+
 
   useEffect(() => {
     if (!isCineSrc || !isReady) return;
@@ -296,6 +322,7 @@ export default function CustomMoviePlayer({
     sendCommand("getMuted");
   }, [isCineSrc, isReady, sendCommand]);
 
+
   useEffect(() => {
     // CineSrc can announce readiness before the selected movie has loaded its
     // metadata. Waiting for a real duration makes the seek reliable for films
@@ -304,6 +331,7 @@ export default function CustomMoviePlayer({
     resumeAppliedRef.current = true;
     sendCommand("seek", [Math.max(0, resumeAt)]);
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
+
 
   useEffect(() => {
     const player = playerRef.current;
@@ -325,11 +353,13 @@ export default function CustomMoviePlayer({
       
     };
 
+
     const keepMobileFullscreen = () => {
       if (!mobileFullscreenRef.current) return;
       setMobileFullscreen(true);
       setIsFullscreen(true);
     };
+
 
     window.addEventListener("orientationchange", keepMobileFullscreen);
     window.addEventListener("resize", keepMobileFullscreen);
@@ -339,6 +369,7 @@ export default function CustomMoviePlayer({
     player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
+
 
     return () => {
       window.removeEventListener("orientationchange", keepMobileFullscreen);
@@ -352,6 +383,7 @@ export default function CustomMoviePlayer({
     };
   }, []);
 
+
   const showCenterFeedback = (nextPlaying) => {
     setCenterFeedback(nextPlaying === true ? "play" : nextPlaying === false ? "pause" : nextPlaying);
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
@@ -360,6 +392,7 @@ export default function CustomMoviePlayer({
       centerFeedbackTimerRef.current = null;
     }, 500);
   };
+
 
   const togglePlay = () => {
     const nextPlaying = !isPlaying;
@@ -375,11 +408,13 @@ export default function CustomMoviePlayer({
     }, 720);
   };
 
+
   const seekBy = (amount) => {
     const nextTime = Math.max(0, currentTime + amount);
     showSeekFeedback(amount);
     sendCommand("seek", [nextTime]);
   };
+
 
   const handleGestureClick = () => {
     if (touchSuppressRef.current) return;
@@ -389,6 +424,7 @@ export default function CustomMoviePlayer({
       togglePlay();
     }, 240);
   };
+
 
   const handleGestureTouchEnd = (event) => {
     const touch = event.changedTouches?.[0];
@@ -419,6 +455,7 @@ export default function CustomMoviePlayer({
       togglePlay();
     }, 270);
   };
+
 
   const handleGestureDoubleClick = (event) => {
     if (ignoreDoubleClickRef.current) {
@@ -455,12 +492,14 @@ export default function CustomMoviePlayer({
     const player = playerRef.current;
     if (!player) return;
 
+
     // Use input capability as well as width so a phone in landscape keeps the
     // mobile fallback path (landscape iPhones are wider than 767px).
     const isMobile = window.innerWidth <= 1024
       && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
         || navigator.maxTouchPoints > 0);
     const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
 
     if (activeFullscreenElement) {
       const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
@@ -470,6 +509,7 @@ export default function CustomMoviePlayer({
       return;
     }
 
+
     // A number of mobile webviews expose the fullscreen button but reject the
     // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
     // so the player still expands to the viewport on those devices.
@@ -478,6 +518,7 @@ export default function CustomMoviePlayer({
       setIsFullscreen(false);
       return;
     }
+
 
     // Touch browsers can reject fullscreen on an absolutely-positioned wrapper
     // or require their prefixed request method. Keep the desktop path exactly
@@ -496,6 +537,7 @@ export default function CustomMoviePlayer({
         }
       }
 
+
       const frame = iframeRef.current;
       const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
       if (frame && requestFrameFullscreen) {
@@ -509,8 +551,10 @@ export default function CustomMoviePlayer({
       return;
     }
 
+
     await player.requestFullscreen();
   };
+
 
   const handleQualityChange = (nextQuality) => {
     setQuality(nextQuality);
@@ -519,9 +563,11 @@ export default function CustomMoviePlayer({
     setControlsVisible(true);
   };
 
+
   if (!isClient || !activeId) {
     return <div className="w-full h-96 bg-zinc-950 rounded-xl" />;
   }
+
 
   return (
     <div
