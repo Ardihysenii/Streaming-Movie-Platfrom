@@ -78,6 +78,9 @@ export default function CustomMoviePlayer({
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
   const seekFeedbackTimerRef = useRef(null);
+  const touchTapRef = useRef({ time: 0, x: 0 });
+  const touchSuppressRef = useRef(false);
+  const ignoreDoubleClickRef = useRef(false);
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
@@ -370,6 +373,7 @@ export default function CustomMoviePlayer({
   };
 
   const handleGestureClick = () => {
+    if (touchSuppressRef.current) return;
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     gestureClickTimerRef.current = window.setTimeout(() => {
       gestureClickTimerRef.current = null;
@@ -377,7 +381,41 @@ export default function CustomMoviePlayer({
     }, 240);
   };
 
+  const handleGestureTouchEnd = (event) => {
+    const touch = event.changedTouches?.[0];
+    if (!touch) return;
+    event.preventDefault();
+    event.stopPropagation();
+    touchSuppressRef.current = true;
+    window.setTimeout(() => { touchSuppressRef.current = false; }, 560);
+    const now = Date.now();
+    const previous = touchTapRef.current;
+    const isDoubleTap = previous.time > 0 && now - previous.time < 340 && Math.abs(touch.clientX - previous.x) < 88;
+    if (gestureClickTimerRef.current !== null) {
+      window.clearTimeout(gestureClickTimerRef.current);
+      gestureClickTimerRef.current = null;
+    }
+    if (isDoubleTap) {
+      touchTapRef.current = { time: 0, x: 0 };
+      ignoreDoubleClickRef.current = true;
+      window.setTimeout(() => { ignoreDoubleClickRef.current = false; }, 460);
+      const rect = event.currentTarget.getBoundingClientRect();
+      seekBy(touch.clientX - rect.left < rect.width / 2 ? -10 : 10);
+      return;
+    }
+    touchTapRef.current = { time: now, x: touch.clientX };
+    gestureClickTimerRef.current = window.setTimeout(() => {
+      gestureClickTimerRef.current = null;
+      touchTapRef.current = { time: 0, x: 0 };
+      togglePlay();
+    }, 270);
+  };
+
   const handleGestureDoubleClick = (event) => {
+    if (ignoreDoubleClickRef.current) {
+      ignoreDoubleClickRef.current = false;
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     if (gestureClickTimerRef.current !== null) {
@@ -500,7 +538,7 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
-          <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
+          <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onTouchEnd={handleGestureTouchEnd} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
             className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
             type="button"
