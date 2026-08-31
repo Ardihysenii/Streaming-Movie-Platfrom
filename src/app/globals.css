@@ -6626,3 +6626,10 @@ body > .player-subtitle-menu {
 @media (max-width: 680px) {
   .custom-movie-player .player-subtitle-menu { bottom: 60px !important; width: min(420px, calc(100vw - 16px)) !important; }
 }
+
+
+/* Keep the subtitle panel inside the player frame. */
+.custom-movie-player .player-subtitle-menu { bottom: 72px !important; left: auto !important; max-height: none !important; pointer-events: auto; position: absolute !important; right: 0 !important; top: 0 !important; width: min(420px, calc(100vw - 24px)) !important; }
+@media (max-width: 680px) {
+  .custom-movie-player .player-subtitle-menu { bottom: 60px !important; width: min(420px, calc(100vw - 16px)) !important; }
+}
