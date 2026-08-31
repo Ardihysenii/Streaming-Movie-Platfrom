@@ -132,7 +132,7 @@ export default function CustomMoviePlayer({
   const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
-  const [subtitlePosition, setSubtitlePosition] = useState("bottom");
+  const [subtitlePosition, setSubtitlePosition] = useState(8);
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
   const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
@@ -1148,7 +1148,7 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
       {activeSubtitle ? (
-        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: subtitleFontSize + "rem", bottom: subtitlePosition === "top" ? "76%" : subtitlePosition === "center" ? "46%" : "8%" }}>
+        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: subtitleFontSize + "rem", bottom: `${subtitlePosition}%` }}>
           {activeSubtitle.text}
         </div>
       ) : null}
@@ -1247,7 +1247,7 @@ export default function CustomMoviePlayer({
                     {subtitleCustomizeOpen ? (
                       <div className="player-subtitle-customize">
                         <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
-                        <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
+                        <label>Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
                         <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                       </div>
                     ) : null}
