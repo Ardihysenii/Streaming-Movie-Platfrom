@@ -6384,3 +6384,43 @@ body:has(.watch-page) .bottom-dock {
     width: min(90vw, 500px) !important;
   }
 }
+
+
+/* Portal safety: never let legacy absolute positioning pin the drawer to controls. */
+.custom-movie-player .player-subtitle-menu,
+body > .player-subtitle-menu {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  height: 100dvh !important;
+  max-height: none !important;
+  width: min(390px, 92vw) !important;
+  transform: none !important;
+  z-index: 2147483000 !important;
+}
+@media (max-width: 900px) {
+  .custom-movie-player .player-subtitle-menu,
+  body > .player-subtitle-menu {
+    top: auto !important;
+    right: 8px !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    left: 8px !important;
+    height: auto !important;
+    max-height: min(72svh, 460px) !important;
+    width: auto !important;
+    transform: none !important;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  .custom-movie-player .player-subtitle-menu,
+  body > .player-subtitle-menu {
+    right: auto !important;
+    left: 50% !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    max-height: calc(100svh - 16px) !important;
+    width: min(90vw, 500px) !important;
+    transform: translateX(-50%) !important;
+  }
+}
