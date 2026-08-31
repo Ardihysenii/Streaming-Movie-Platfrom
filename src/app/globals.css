@@ -6658,3 +6658,8 @@ body > .player-subtitle-menu {
 .custom-movie-player .player-subtitle-action { cursor: pointer; transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
 .custom-movie-player .player-subtitle-action:hover { background: #000 !important; border-color: var(--accent) !important; box-shadow: 0 0 0 1px rgba(226,29,47,.2), 0 8px 20px rgba(226,29,47,.12); transform: translateY(-1px); }
 .custom-movie-player .player-subtitle-action:active { transform: translateY(0); }
+
+
+/* Align slider values and language heading */
+.custom-movie-player .player-subtitle-customize label span { transform: translateY(-4px); }
+.custom-movie-player .player-subtitle-language > span { color: #fff; font-family: var(--font-sans); font-size: .95rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
