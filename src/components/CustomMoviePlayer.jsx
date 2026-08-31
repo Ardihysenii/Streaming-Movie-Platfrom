@@ -635,7 +635,6 @@ export default function CustomMoviePlayer({
 
 
 
-params.set("quality", quality);
 
 
 
