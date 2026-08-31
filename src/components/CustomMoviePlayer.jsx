@@ -1265,8 +1265,8 @@ export default function CustomMoviePlayer({
           </div>
         )}
         </div>
+        </div>
       ) : null}
-    </div>
     </div>
   );
 }
