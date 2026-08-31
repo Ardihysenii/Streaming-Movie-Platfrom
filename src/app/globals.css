@@ -5598,6 +5598,8 @@ body:has(.watch-page) .bottom-dock {
 .player-subtitle-menu select, .player-subtitle-menu input { width: 100%; accent-color: #e21d2f; }
 .player-subtitle-menu select { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; padding: 6px 8px; background: #191c23; color: #fff; font-size: .78rem; }
 .player-subtitle-menu select option { background: #191c23; color: #fff; }
+.player-subtitle-language select, .player-subtitle-language select option { font-family: var(--font-sans); font-size: .78rem; }
+.player-subtitle-language select option:checked { background: var(--accent); color: #fff; }
 @media (max-width: 680px) { .player-subtitle-menu { right: -8px; min-width: 170px; } }
 
 .player-subtitle-control > button, .player-subtitle-control > button:hover { background: transparent !important; border: 0; box-shadow: none; cursor: pointer; }
