@@ -6633,3 +6633,11 @@ body > .player-subtitle-menu {
 @media (max-width: 680px) {
   .custom-movie-player .player-subtitle-menu { bottom: 60px !important; width: min(420px, calc(100vw - 16px)) !important; }
 }
+
+
+/* Direct subtitle language list */
+.custom-movie-player .player-subtitle-language-select { position: static; }
+.custom-movie-player .player-subtitle-language-options { background: transparent !important; border: 0; border-radius: 0; box-shadow: none; gap: 0; padding: 8px 0 0; position: static; }
+.custom-movie-player .player-subtitle-language-options button { background: transparent !important; border: 0; border-bottom: 1px solid rgba(255,255,255,.08); border-radius: 0; color: rgba(255,255,255,.78); font-family: var(--font-sans); font-size: .82rem; font-weight: 500; min-height: 40px; padding: 10px 0; }
+.custom-movie-player .player-subtitle-language-options button:last-child { border-bottom: 0; }
+.custom-movie-player .player-subtitle-language-options button:hover, .custom-movie-player .player-subtitle-language-options button.is-selected { background: rgba(226,29,47,.14) !important; border-radius: 4px; color: #fff; font-weight: 700; padding-left: 10px; padding-right: 10px; }
