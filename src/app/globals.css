@@ -6652,3 +6652,9 @@ body > .player-subtitle-menu {
 /* Match subtitle control fills and borders */
 .custom-movie-player .player-subtitle-action, .custom-movie-player .player-subtitle-menu-header > button { background: #000 !important; border-color: var(--accent) !important; }
 .custom-movie-player .player-subtitle-action:hover, .custom-movie-player .player-subtitle-menu-header > button:hover { background: #000 !important; border-color: var(--accent) !important; }
+
+
+/* Make Customize clearly interactive */
+.custom-movie-player .player-subtitle-action { cursor: pointer; transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.custom-movie-player .player-subtitle-action:hover { background: #000 !important; border-color: var(--accent) !important; box-shadow: 0 0 0 1px rgba(226,29,47,.2), 0 8px 20px rgba(226,29,47,.12); transform: translateY(-1px); }
+.custom-movie-player .player-subtitle-action:active { transform: translateY(0); }
