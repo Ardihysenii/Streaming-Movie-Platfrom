@@ -6641,3 +6641,9 @@ body > .player-subtitle-menu {
 .custom-movie-player .player-subtitle-language-options button { background: transparent !important; border: 0; border-bottom: 1px solid rgba(255,255,255,.08); border-radius: 0; color: rgba(255,255,255,.78); font-family: var(--font-sans); font-size: .82rem; font-weight: 500; min-height: 40px; padding: 10px 0; }
 .custom-movie-player .player-subtitle-language-options button:last-child { border-bottom: 0; }
 .custom-movie-player .player-subtitle-language-options button:hover, .custom-movie-player .player-subtitle-language-options button.is-selected { background: rgba(226,29,47,.14) !important; border-radius: 4px; color: #fff; font-weight: 700; padding-left: 10px; padding-right: 10px; }
+
+
+/* Align subtitle controls */
+.custom-movie-player .player-subtitle-action { border-color: rgba(255,255,255,.18); border-radius: 7px; font-size: .82rem; font-weight: 600; min-height: 42px; padding: 10px 12px; }
+.custom-movie-player .player-subtitle-action:hover { background: rgba(226,29,47,.12); border-color: rgba(226,29,47,.65); }
+.custom-movie-player .player-subtitle-menu-header > button { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); font-family: var(--font-sans); font-size: 1rem; font-weight: 500; height: 36px; width: 36px; }
