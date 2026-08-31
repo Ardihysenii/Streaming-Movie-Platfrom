@@ -1240,25 +1240,7 @@ export default function CustomMoviePlayer({
                 <FullscreenIcon />
               </button>
             </div>
-            {subtitleNoticeVisible ? (
-              <div className="player-subtitle-notice" role="status">
-                {subtitleStatus === "loading"
-                  ? "Loading subtitles…"
-                  : subtitleStatus === "ready"
-                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
-                    : subtitleStatus === "error"
-                      ? subtitleError
-                    : "No subtitle track is available for this title."}
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-            </div>
-                {subtitleMenuOpen ? (
+            {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
                     <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
                     <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>{subtitleCustomizeOpen ? "Back to subtitles" : "Customize"}</span><span aria-hidden="true">{subtitleCustomizeOpen ? "←" : "→"}</span></button>{subtitleCustomizeOpen ? null : (<div className="player-subtitle-language"><span>Language</span><div className="player-subtitle-language-select"><button type="button" className="player-subtitle-language-trigger" onClick={() => setSubtitleLanguageMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={subtitleLanguageMenuOpen}><span>{subtitleLanguageOptions.find(([value]) => value === subtitleLanguage)?.[1] || "English"}</span><span aria-hidden="true">{subtitleLanguageMenuOpen ? "⌃" : "⌄"}</span></button>{subtitleLanguageMenuOpen ? (<div className="player-subtitle-language-options" role="listbox" aria-label="Subtitle language">{subtitleLanguageOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleLanguage} className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => { setSubtitleLanguage(value); setSubtitleLanguageMenuOpen(true); }}>{label}</button>))}</div>) : null}</div></div>)}
@@ -1269,31 +1251,6 @@ export default function CustomMoviePlayer({
                         <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                       </div>
                     ) : null}
-                    <button type="button" className="player-subtitle-toggle" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); }}>{subtitlesEnabled ? "Turn off subtitles" : "Turn on subtitles"}</button>
-                  </div>
-                ) : null}
-              </div>
-              <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
-                <FullscreenIcon />
-              </button>
-            </div>
-            {subtitleNoticeVisible ? (
-              <div className="player-subtitle-notice" role="status">
-                {subtitleStatus === "loading"
-                  ? "Loading subtitles…"
-                  : subtitleStatus === "ready"
-                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
-                    : subtitleStatus === "error"
-                      ? subtitleError
-                    : "No subtitle track is available for this title."}
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
             {subtitleNoticeVisible ? (
               <div className="player-subtitle-notice" role="status">
                 {subtitleStatus === "loading"
