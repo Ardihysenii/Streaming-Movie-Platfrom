@@ -1235,6 +1235,29 @@ export default function CustomMoviePlayer({
                 <button type="button" onClick={() => { setSubtitleMenuOpen((open) => !open); setSubtitleCustomizeOpen(false); setSubtitleLanguageMenuOpen(true); }} aria-label="Subtitle settings" title="Subtitle settings">
                   <CaptionsIcon />
                 </button>
+              </div>
+              <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
+                <FullscreenIcon />
+              </button>
+            </div>
+            {subtitleNoticeVisible ? (
+              <div className="player-subtitle-notice" role="status">
+                {subtitleStatus === "loading"
+                  ? "Loading subtitles…"
+                  : subtitleStatus === "ready"
+                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    : subtitleStatus === "error"
+                      ? subtitleError
+                    : "No subtitle track is available for this title."}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+            </div>
                 {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
                     <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
@@ -1254,6 +1277,23 @@ export default function CustomMoviePlayer({
                 <FullscreenIcon />
               </button>
             </div>
+            {subtitleNoticeVisible ? (
+              <div className="player-subtitle-notice" role="status">
+                {subtitleStatus === "loading"
+                  ? "Loading subtitles…"
+                  : subtitleStatus === "ready"
+                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    : subtitleStatus === "error"
+                      ? subtitleError
+                    : "No subtitle track is available for this title."}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
             {subtitleNoticeVisible ? (
               <div className="player-subtitle-notice" role="status">
                 {subtitleStatus === "loading"
