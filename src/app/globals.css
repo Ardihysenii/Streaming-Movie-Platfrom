@@ -6621,7 +6621,7 @@ body > .player-subtitle-menu {
 
 
 /* Keep the subtitle panel anchored to the player frame instead of the control row. */
-.custom-movie-player .player-subtitle-menu { bottom: 72px !important; left: auto !important; max-height: none !important; position: fixed !important; right: 0 !important; top: 0 !important; width: min(420px, calc(100vw - 24px)) !important; }
+
 .custom-movie-player .player-subtitle-language-options, .custom-movie-player .player-subtitle-language-options button, .custom-movie-player .player-subtitle-language-options button.is-selected { background: #000 !important; }
 @media (max-width: 680px) {
   .custom-movie-player .player-subtitle-menu { bottom: 60px !important; width: min(420px, calc(100vw - 16px)) !important; }
