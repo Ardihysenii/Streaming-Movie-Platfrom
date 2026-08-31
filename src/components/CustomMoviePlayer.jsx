@@ -15,57 +15,8 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { createPortal } from "react-dom";
 import {
   CaptionsIcon,
   FullscreenIcon,
@@ -77,54 +28,6 @@ import {
   VolumeIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -177,54 +80,6 @@ function parseSubtitleCues(value) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const total = Math.floor(seconds);
@@ -232,54 +87,6 @@ function formatTime(seconds) {
   const remaining = total % 60;
   return `${minutes}:${remaining.toString().padStart(2, "0")}`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -327,17 +134,13 @@ export default function CustomMoviePlayer({
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState("bottom");
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
-
-
-
-
+  const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
   const seekFeedbackTimerRef = useRef(null);
-  const seekFeedbackAmountRef = useRef(0);
   const touchTapRef = useRef({ time: 0, x: 0 });
   const touchSuppressRef = useRef(false);
   const ignoreDoubleClickRef = useRef(false);
@@ -361,54 +164,6 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const setMobileFullscreenState = (next) => {
     mobileFullscreenRef.current = next;
     setMobileFullscreen(next);
@@ -416,54 +171,6 @@ export default function CustomMoviePlayer({
   const [centerFeedback, setCenterFeedback] = useState(null);
   const [seekFeedback, setSeekFeedback] = useState(null);
   const searchParams = useSearchParams();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -504,105 +211,9 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -644,54 +255,6 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const embedUrl = useMemo(() => {
     if (!activeId) return "";
     const cleanId = String(activeId);
@@ -713,54 +276,6 @@ export default function CustomMoviePlayer({
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
   }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -848,107 +363,11 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     resumeAppliedRef.current = false;
     setCurrentTime(0);
     setDuration(0);
   }, [embedUrl]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -988,54 +407,6 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     showControls();
     return () => {
@@ -1058,107 +429,11 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => () => {
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
   }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1198,104 +473,8 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     if (!isCineSrc) return undefined;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1317,54 +496,6 @@ export default function CustomMoviePlayer({
       const message = event.data;
       if (!message || typeof message.type !== "string") return;
       const payload = message.data ?? message;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1444,105 +575,9 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1583,54 +618,6 @@ export default function CustomMoviePlayer({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-document.bodydocument.body
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     // CineSrc can announce readiness before the selected movie has loaded its
     // metadata. Waiting for a real duration makes the seek reliable for films
@@ -1639,54 +626,6 @@ document.bodydocument.body
     resumeAppliedRef.current = true;
     sendCommand("seek", [Math.max(0, resumeAt)]);
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1738,107 +677,11 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     const keepMobileFullscreen = () => {
       if (!mobileFullscreenRef.current) return;
       setMobileFullscreen(true);
       setIsFullscreen(true);
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1863,54 +706,6 @@ document.bodydocument.body
     player?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitbeginfullscreen", handleWebkitFullscreenChange);
     iframe?.addEventListener("webkitendfullscreen", handleWebkitFullscreenChange);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1954,54 +749,6 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const showCenterFeedback = (nextPlaying) => {
     setCenterFeedback(nextPlaying === true ? "play" : nextPlaying === false ? "pause" : nextPlaying);
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
@@ -2026,120 +773,19 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const togglePlay = () => {
     const nextPlaying = !isPlaying;
     showCenterFeedback(nextPlaying);
     sendCommand(nextPlaying ? "play" : "pause");
   };
   const showSeekFeedback = (amount) => {
-    const previous = seekFeedbackAmountRef.current;
-    const direction = amount > 0 ? 1 : -1;
-    const next = previous !== 0 && Math.sign(previous) === direction ? previous + amount : amount;
-    seekFeedbackAmountRef.current = next;
-    setSeekFeedback((next > 0 ? "+" : "−") + Math.abs(next) + "s");
+    setSeekFeedback(amount > 0 ? "+10s" : "−10s");
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
     seekFeedbackTimerRef.current = window.setTimeout(() => {
       setSeekFeedback(null);
-      seekFeedbackAmountRef.current = 0;
       seekFeedbackTimerRef.current = null;
-    }, 900);
+    }, 720);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2177,54 +823,6 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const handleGestureClick = () => {
     if (touchSuppressRef.current) return;
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
@@ -2233,54 +831,6 @@ document.bodydocument.body
       togglePlay();
     }, 240);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2326,54 +876,6 @@ document.bodydocument.body
       togglePlay();
     }, 270);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2440,108 +942,12 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Use input capability as well as width so a phone in landscape keeps the
     // mobile fallback path (landscape iPhones are wider than 767px).
     const isMobile = window.innerWidth <= 1024
       && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
         || navigator.maxTouchPoints > 0);
     const activeFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2581,54 +987,6 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // A number of mobile webviews expose the fullscreen button but reject the
     // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
     // so the player still expands to the viewport on those devices.
@@ -2637,54 +995,6 @@ document.bodydocument.body
       setIsFullscreen(false);
       return;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2733,54 +1043,6 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       const frame = iframeRef.current;
       const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
       if (frame && requestFrameFullscreen) {
@@ -2809,104 +1071,8 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     await player.requestFullscreen();
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2945,105 +1111,9 @@ document.bodydocument.body
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (!isClient || !activeId) {
     return <div className="w-full h-96 bg-zinc-950 rounded-xl" />;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3164,42 +1234,21 @@ document.bodydocument.body
                 <button type="button" onClick={() => setSubtitleMenuOpen((open) => !open)} aria-label="Subtitle settings" title="Subtitle settings">
                   <CaptionsIcon />
                 </button>
-                {subtitleMenuOpen && typeof document !== "undefined" ? createPortal((
+                {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
-                    <div className="player-subtitle-menu-header">
-                      <div>
-                        <span className="player-subtitle-kicker">SUBTITLES</span>
-                        <strong>Subtitles</strong>
-                      </div>
-                      <button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button>
-                    </div>
-                    <section className="player-subtitle-customize-section" aria-label="Customize subtitles">
-                      <div className="player-subtitle-section-title">Customize</div>
+                    <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
+                    <label className="player-subtitle-language">Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                    <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>Customize</span><span aria-hidden="true">{subtitleCustomizeOpen ? "⌃" : "⌄"}</span></button>
+                    {subtitleCustomizeOpen ? (
                       <div className="player-subtitle-customize">
                         <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
                         <label>Position<select value={subtitlePosition} onChange={(event) => setSubtitlePosition(event.target.value)}><option value="bottom">Bottom</option><option value="center">Center</option><option value="top">Top</option></select></label>
                         <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                       </div>
-                    </section>
-                    <section className="player-subtitle-language-section" aria-label="Subtitle language">
-                      <div className="player-subtitle-section-title">Language</div>
-                      <div className="player-subtitle-language-list" role="listbox" aria-label="Subtitle language">
-                        {subtitleLanguageOptions.map(([value, label]) => (
-                          <button
-                            key={value}
-                            type="button"
-                            role="option"
-                            aria-selected={value === subtitleLanguage}
-                            className={value === subtitleLanguage ? "is-selected" : ""}
-                            onClick={() => setSubtitleLanguage(value)}
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-                    </section>
+                    ) : null}
                     <button type="button" className="player-subtitle-toggle" onClick={() => { setSubtitlesEnabled((enabled) => !enabled); setSubtitleNoticeVisible(true); }}>{subtitlesEnabled ? "Turn off subtitles" : "Turn on subtitles"}</button>
-                  </div>), document.body) : null}
+                  </div>
+                ) : null}
               </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
                 <FullscreenIcon />
