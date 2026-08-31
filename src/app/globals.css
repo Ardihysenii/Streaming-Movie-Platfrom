@@ -6424,3 +6424,158 @@ body > .player-subtitle-menu {
     transform: translateX(-50%) !important;
   }
 }
+
+
+/* Portal drawer elements are mounted at document level, so keep these selectors unscoped. */
+.player-subtitle-menu {
+  align-content: flex-start !important;
+  background: #050506 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 20px 0 0 20px !important;
+  box-shadow: -24px 0 72px rgba(0,0,0,.58) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  justify-content: flex-start !important;
+  padding: 28px 24px 30px !important;
+}
+.player-subtitle-menu-header {
+  align-items: flex-start !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding-bottom: 16px !important;
+  position: static !important;
+}
+.player-subtitle-menu-header > div {
+  display: grid !important;
+  gap: 4px !important;
+}
+.player-subtitle-kicker {
+  color: var(--accent) !important;
+  font-size: .64rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+}
+.player-subtitle-menu-header strong {
+  color: #fff !important;
+  font-size: 1.3rem !important;
+  letter-spacing: -.02em !important;
+}
+.player-subtitle-menu-header > button {
+  align-items: center !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 999px !important;
+  color: #a2a5a5 !important;
+  display: inline-flex !important;
+  height: 32px !important;
+  justify-content: center !important;
+  width: 32px !important;
+}
+.player-subtitle-customize-section,
+.player-subtitle-language-section {
+  display: grid !important;
+  gap: 10px !important;
+}
+.player-subtitle-section-title {
+  color: var(--accent) !important;
+  font-size: .64rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+}
+.player-subtitle-customize {
+  border-top: 1px solid rgba(255,255,255,.1) !important;
+  display: grid !important;
+  gap: 12px !important;
+  padding-top: 12px !important;
+}
+.player-subtitle-customize label {
+  color: #aeb1b5 !important;
+  display: grid !important;
+  font-size: .68rem !important;
+  font-weight: 700 !important;
+  gap: 7px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+.player-subtitle-customize label span {
+  color: #fff !important;
+  float: right !important;
+  font-size: .76rem !important;
+  letter-spacing: 0 !important;
+  margin-bottom: -20px !important;
+  text-transform: none !important;
+}
+.player-subtitle-customize select {
+  background: #101216 !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 9px !important;
+  color: #fff !important;
+  min-height: 38px !important;
+  padding: 7px 10px !important;
+}
+.player-subtitle-language-section {
+  border-top: 1px solid rgba(255,255,255,.1) !important;
+  padding-top: 14px !important;
+}
+.player-subtitle-language-list {
+  display: grid !important;
+  gap: 7px !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+}
+.player-subtitle-language-list button {
+  background: #101216 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 9px !important;
+  color: #c5c7ca !important;
+  min-height: 38px !important;
+  padding: 8px 9px !important;
+  text-align: left !important;
+}
+.player-subtitle-language-list button.is-selected {
+  background: rgba(226,29,47,.14) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+.player-subtitle-toggle {
+  background: var(--accent) !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  margin-top: 2px !important;
+  min-height: 42px !important;
+  padding: 9px 12px !important;
+  width: 100% !important;
+}
+.player-subtitle-menu input[type="range"] {
+  accent-color: var(--accent) !important;
+  cursor: pointer !important;
+  width: 100% !important;
+}
+@media (max-width: 900px) {
+  .player-subtitle-menu,
+  body > .player-subtitle-menu {
+    border-radius: 18px !important;
+    gap: 12px !important;
+    inset: auto 8px max(8px, env(safe-area-inset-bottom)) 8px !important;
+    max-height: min(72svh, 460px) !important;
+    overflow-y: auto !important;
+    padding: 16px 14px max(16px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+  }
+  .player-subtitle-menu-header strong { font-size: 1.1rem !important; }
+  .player-subtitle-language-list button { min-height: 34px !important; }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  .player-subtitle-menu,
+  body > .player-subtitle-menu {
+    inset: auto auto max(8px, env(safe-area-inset-bottom)) 50% !important;
+    max-height: calc(100svh - 16px) !important;
+    transform: translateX(-50%) !important;
+    width: min(90vw, 500px) !important;
+  }
+}
