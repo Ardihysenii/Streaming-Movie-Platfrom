@@ -134,6 +134,7 @@ export default function CustomMoviePlayer({
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState("bottom");
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
+  const [subtitleLanguageMenuOpen, setSubtitleLanguageMenuOpen] = useState(false);
   const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
@@ -1237,8 +1238,7 @@ export default function CustomMoviePlayer({
                 {subtitleMenuOpen ? (
                   <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
                     <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
-                    <label className="player-subtitle-language">Language<select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-                    <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>Customize</span><span aria-hidden="true">{subtitleCustomizeOpen ? "⌃" : "⌄"}</span></button>
+                    <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>Customize</span><span aria-hidden="true">{subtitleCustomizeOpen ? "⌃" : "⌄"}</span></button><div className="player-subtitle-language"><span>Language</span><div className="player-subtitle-language-select"><button type="button" className="player-subtitle-language-trigger" onClick={() => setSubtitleLanguageMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={subtitleLanguageMenuOpen}><span>{subtitleLanguageOptions.find(([value]) => value === subtitleLanguage)?.[1] || "English"}</span><span aria-hidden="true">{subtitleLanguageMenuOpen ? "⌃" : "⌄"}</span></button>{subtitleLanguageMenuOpen ? (<div className="player-subtitle-language-options" role="listbox" aria-label="Subtitle language">{subtitleLanguageOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleLanguage} className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => { setSubtitleLanguage(value); setSubtitleLanguageMenuOpen(false); }}>{label}</button>))}</div>) : null}</div></div>
                     {subtitleCustomizeOpen ? (
                       <div className="player-subtitle-customize">
                         <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
