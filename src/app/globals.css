@@ -6869,3 +6869,13 @@ body > .player-subtitle-menu {
     animation: none !important;
   }
 }
+
+/* Keep motion in the popup backgrounds, not on its controls */
+.custom-movie-player .player-subtitle-menu > *,
+.custom-movie-player .player-subtitle-customize > *,
+.custom-movie-player .player-subtitle-font-options button {
+  animation: none !important;
+}
+.custom-movie-player .player-subtitle-customize {
+  animation: nova-subtitle-page-enter 180ms ease-out both !important;
+}
