@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   CaptionsIcon,
+  GlassesIcon,
   FullscreenIcon,
   MutedIcon,
   PauseIcon,
@@ -132,6 +133,7 @@ export default function CustomMoviePlayer({
   const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
+  const [subtitleLarge, setSubtitleLarge] = useState(false);
   const [subtitlePosition, setSubtitlePosition] = useState(8);
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
   const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
@@ -1148,7 +1150,7 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
       {activeSubtitle ? (
-        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: subtitleFontSize + "rem", bottom: `${subtitlePosition}%` }}>
+        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem", bottom: `${subtitlePosition}%` }}>
           {activeSubtitle.text}
         </div>
       ) : null}
@@ -1246,7 +1248,7 @@ export default function CustomMoviePlayer({
                     <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>{subtitleCustomizeOpen ? "Back to subtitles" : "Customize"}</span><span aria-hidden="true">{subtitleCustomizeOpen ? "←" : "→"}</span></button>{subtitleCustomizeOpen ? null : (<div className="player-subtitle-language"><span>Language</span><div className="player-subtitle-language-select"><div className="player-subtitle-language-options" role="listbox" aria-label="Subtitle language">{subtitleLanguageOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleLanguage} className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>))}</div></div></div>)}
                     {subtitleCustomizeOpen ? (
                       <div className="player-subtitle-customize">
-                        <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                        <div className="player-subtitle-size-control"><label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label><button className={"player-subtitle-size-toggle" + (subtitleLarge ? " is-active" : "")} type="button" aria-pressed={subtitleLarge} aria-label="Toggle larger subtitles" title="Toggle larger subtitles" onClick={() => setSubtitleLarge((large) => !large)}><GlassesIcon /></button></div>
                         <label>Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
                         <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                       </div>
