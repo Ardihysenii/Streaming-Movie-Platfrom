@@ -4283,10 +4283,12 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .player-shell video::cue {
-  background: rgba(5, 6, 8, 0.78);
+  background: transparent;
+  border: 0;
   color: #fff;
-  font-family: var(--font-body), sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.05rem;
+  font-weight: 600;
   line-height: 1.35;
   text-shadow: 0 2px 8px #000;
 }
