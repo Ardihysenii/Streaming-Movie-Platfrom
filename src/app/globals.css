@@ -6796,3 +6796,76 @@ body > .player-subtitle-menu {
     transition: none !important;
   }
 }
+
+/* Subtle motion behind subtitle panel content */
+.custom-movie-player .player-subtitle-menu,
+.custom-movie-player .player-subtitle-customize {
+  isolation: isolate;
+  overflow: hidden;
+}
+.custom-movie-player .player-subtitle-menu::before,
+.custom-movie-player .player-subtitle-menu::after,
+.custom-movie-player .player-subtitle-customize::before,
+.custom-movie-player .player-subtitle-customize::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+.custom-movie-player .player-subtitle-menu::before {
+  animation: nova-subtitle-bg-drift 22s linear infinite;
+  background-image: repeating-linear-gradient(135deg, rgba(226,29,47,.07) 0 1px, transparent 1px 38px);
+  background-size: 76px 76px;
+  inset: -76px;
+  opacity: .7;
+}
+.custom-movie-player .player-subtitle-menu::after {
+  animation: nova-subtitle-bg-drift-reverse 30s linear infinite;
+  background-image: repeating-linear-gradient(45deg, transparent 0 28px, rgba(255,255,255,.025) 28px 29px, transparent 29px 56px);
+  background-size: 112px 112px;
+  inset: -112px;
+  opacity: .65;
+}
+.custom-movie-player .player-subtitle-customize::before {
+  animation: nova-subtitle-customize-bg-drift 18s linear infinite;
+  background-image: repeating-linear-gradient(90deg, rgba(226,29,47,.06) 0 1px, transparent 1px 44px);
+  background-size: 88px 100%;
+  inset: 0 -88px;
+  opacity: .7;
+}
+.custom-movie-player .player-subtitle-customize::after {
+  animation: nova-subtitle-customize-bg-drift-reverse 24s linear infinite;
+  background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgba(255,255,255,.022) 34px 35px, transparent 35px 70px);
+  background-size: 100% 140px;
+  inset: -70px 0;
+  opacity: .6;
+}
+.custom-movie-player .player-subtitle-menu > *,
+.custom-movie-player .player-subtitle-customize > * {
+  position: relative;
+  z-index: 1;
+}
+@keyframes nova-subtitle-bg-drift {
+  from { background-position: 0 0; }
+  to { background-position: 152px 152px; }
+}
+@keyframes nova-subtitle-bg-drift-reverse {
+  from { background-position: 0 0; }
+  to { background-position: -224px 224px; }
+}
+@keyframes nova-subtitle-customize-bg-drift {
+  from { background-position: 0 0; }
+  to { background-position: 176px 0; }
+}
+@keyframes nova-subtitle-customize-bg-drift-reverse {
+  from { background-position: 0 0; }
+  to { background-position: 0 -140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .custom-movie-player .player-subtitle-menu::before,
+  .custom-movie-player .player-subtitle-menu::after,
+  .custom-movie-player .player-subtitle-customize::before,
+  .custom-movie-player .player-subtitle-customize::after {
+    animation: none !important;
+  }
+}
