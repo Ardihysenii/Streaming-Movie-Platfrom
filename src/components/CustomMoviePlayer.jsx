@@ -130,13 +130,13 @@ export default function CustomMoviePlayer({
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
   const [subtitleError, setSubtitleError] = useState("");
-  const [subtitleLanguage, setSubtitleLanguage] = useState("en");
+  const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitlePosition, setSubtitlePosition] = useState(8);
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
   const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
-  const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"]];
+  const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
@@ -306,7 +306,7 @@ export default function CustomMoviePlayer({
     const query = new URLSearchParams({
       tmdbId: String(activeId),
       type: mediaType,
-      language: settings.subtitleLanguage || "en",
+      language: subtitleLanguage || "en",
     });
     if (imdbId) query.set("imdbId", String(imdbId));
     if (mediaType === "tv") {
@@ -347,7 +347,7 @@ export default function CustomMoviePlayer({
         }
       });
     return () => controller.abort();
-  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, settings.subtitleLanguage]);
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage]);
 
 
 
@@ -1256,7 +1256,7 @@ export default function CustomMoviePlayer({
                 {subtitleStatus === "loading"
                   ? "Loading subtitles…"
                   : subtitleStatus === "ready"
-                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${settings.subtitleLanguage.toUpperCase()}`
+                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${subtitleLanguage.toUpperCase()}`
                     : subtitleStatus === "error"
                       ? subtitleError
                     : "No subtitle track is available for this title."}
