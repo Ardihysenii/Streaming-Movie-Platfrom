@@ -6897,3 +6897,77 @@ body > .player-subtitle-menu {
   background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgba(255,255,255,.05) 34px 35px, transparent 35px 70px);
   opacity: .8;
 }
+
+/* Premium subtitle slider treatment */
+.custom-movie-player .player-subtitle-customize > label {
+  gap: 10px;
+  padding-top: 4px;
+  position: relative;
+}
+.custom-movie-player .player-subtitle-customize > label span {
+  float: none !important;
+  line-height: 1;
+  margin: 0 !important;
+  position: absolute;
+  right: 0;
+  top: 4px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"] {
+  appearance: none;
+  background: transparent;
+  height: 22px;
+  margin: 0;
+  outline: none;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, var(--accent) 0 var(--range-progress), #ebe8e1 var(--range-progress) 100%);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.34), 0 0 0 1px rgba(226,29,47,.08);
+  height: 5px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  background: var(--accent);
+  border: 2px solid #f4f1eb;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(226,29,47,.38), 0 0 0 1px rgba(0,0,0,.35);
+  cursor: pointer;
+  height: 18px;
+  margin-top: -8px;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  width: 18px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]::-moz-range-track {
+  background: #ebe8e1;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.34), 0 0 0 1px rgba(226,29,47,.08);
+  height: 5px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]::-moz-range-progress {
+  background: var(--accent);
+  border-radius: 999px;
+  height: 5px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]::-moz-range-thumb {
+  background: var(--accent);
+  border: 2px solid #f4f1eb;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(226,29,47,.38), 0 0 0 1px rgba(0,0,0,.35);
+  cursor: pointer;
+  height: 14px;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  width: 14px;
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]:hover::-webkit-slider-thumb,
+.custom-movie-player .player-subtitle-customize > label input[type="range"]:focus-visible::-webkit-slider-thumb,
+.custom-movie-player .player-subtitle-customize > label input[type="range"]:hover::-moz-range-thumb,
+.custom-movie-player .player-subtitle-customize > label input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 3px 14px rgba(226,29,47,.56), 0 0 0 4px rgba(226,29,47,.16);
+  transform: scale(1.08);
+}
+.custom-movie-player .player-subtitle-customize > label input[type="range"]:focus-visible {
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px rgba(226,29,47,.18);
+}
