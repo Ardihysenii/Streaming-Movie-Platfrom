@@ -134,11 +134,13 @@ export default function CustomMoviePlayer({
   const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitleLarge, setSubtitleLarge] = useState(false);
+  const [subtitleFontFamily, setSubtitleFontFamily] = useState("var(--font-sans)");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
   const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
   const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
+  const subtitleFontFamilyOptions = [["var(--font-sans)", "System UI"], ["Arial, sans-serif", "Arial"], ["Trebuchet MS, sans-serif", "Trebuchet"], ["Georgia, serif", "Georgia"], ["Verdana, sans-serif", "Verdana"], ["Courier New, monospace", "Courier"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
@@ -1150,7 +1152,7 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
       {activeSubtitle ? (
-        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem", bottom: `${subtitlePosition}%` }}>
+        <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontFamily: subtitleFontFamily, fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem", bottom: `${subtitlePosition}%` }}>
           {activeSubtitle.text}
         </div>
       ) : null}
@@ -1248,7 +1250,7 @@ export default function CustomMoviePlayer({
                     <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>{subtitleCustomizeOpen ? "Back to subtitles" : "Customize"}</span><span aria-hidden="true">{subtitleCustomizeOpen ? "←" : "→"}</span></button>{subtitleCustomizeOpen ? null : (<div className="player-subtitle-language"><span>Language</span><div className="player-subtitle-language-select"><div className="player-subtitle-language-options" role="listbox" aria-label="Subtitle language">{subtitleLanguageOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleLanguage} className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>))}</div></div></div>)}
                     {subtitleCustomizeOpen ? (
                       <div className="player-subtitle-customize">
-                        <button className="player-subtitle-action" type="button" aria-pressed={subtitleLarge} aria-label="Toggle larger subtitles" title="Toggle larger subtitles" onClick={() => setSubtitleLarge((large) => !large)}><span>Watch Closer</span><span aria-hidden="true"><GlassesIcon /></span></button> <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                        <button className={"player-subtitle-action player-subtitle-watch-closer" + (subtitleLarge ? " is-active" : "")} type="button" aria-pressed={subtitleLarge} aria-label="Toggle larger subtitles" title="Toggle larger subtitles" onClick={() => setSubtitleLarge((large) => !large)}><span>Watch Closer</span><span aria-hidden="true"><GlassesIcon /></span></button> <div className="player-subtitle-font-family"><span className="player-subtitle-tool-label">Font Family</span><div className="player-subtitle-font-options" role="listbox" aria-label="Subtitle font family">{subtitleFontFamilyOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleFontFamily} className={value === subtitleFontFamily ? "is-selected" : ""} style={{ fontFamily: value }} onClick={() => setSubtitleFontFamily(value)}>{label}</button>))}</div></div> <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
                         <label>Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
                         <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-5" max="5" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
                       </div>
