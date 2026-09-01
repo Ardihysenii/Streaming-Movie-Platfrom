@@ -6879,3 +6879,21 @@ body > .player-subtitle-menu {
 .custom-movie-player .player-subtitle-customize {
   animation: nova-subtitle-page-enter 180ms ease-out both !important;
 }
+
+/* Increase background animation visibility */
+.custom-movie-player .player-subtitle-menu::before {
+  background-image: repeating-linear-gradient(135deg, rgba(226,29,47,.14) 0 1px, transparent 1px 38px);
+  opacity: .95;
+}
+.custom-movie-player .player-subtitle-menu::after {
+  background-image: repeating-linear-gradient(45deg, transparent 0 28px, rgba(255,255,255,.06) 28px 29px, transparent 29px 56px);
+  opacity: .85;
+}
+.custom-movie-player .player-subtitle-customize::before {
+  background-image: repeating-linear-gradient(90deg, rgba(226,29,47,.12) 0 1px, transparent 1px 44px);
+  opacity: .95;
+}
+.custom-movie-player .player-subtitle-customize::after {
+  background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgba(255,255,255,.05) 34px 35px, transparent 35px 70px);
+  opacity: .8;
+}
