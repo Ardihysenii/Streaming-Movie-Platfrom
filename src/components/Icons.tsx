@@ -210,6 +210,15 @@ export const CaptionsIcon = (props: IconProps) => (
 );
 
 
+export const GlassesIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="9" r="6.5" />
+    <circle cx="8.5" cy="9" r="2.2" />
+    <circle cx="15.5" cy="9" r="2.2" />
+    <path d="M10.7 9h2.6M6.3 8.5 4.5 7.5M17.7 8.5 19.5 7.5M9 13.5c1.7 1.2 4.3 1.2 6 0" />
+  </IconBase>
+);
+
 export const PictureInPictureIcon = (props: IconProps) => (
   <IconBase {...props}>
     <rect x="2.5" y="4" width="19" height="16" rx="2" />
