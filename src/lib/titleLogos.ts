@@ -9,6 +9,11 @@ type TitleLogoOverride = {
 // A small override table covers titles whose catalog provider has no usable
 // transparent logo. The key may be either the TMDB id or the IMDb id.
 const TITLE_LOGO_OVERRIDES: Record<string, TitleLogoOverride> = {
+  "1548004": {
+    url: "https://image.tmdb.org/t/p/original/hdai3rsQ9R13gyV62nGYOjlsGC9.png",
+    width: 1200,
+    height: 212,
+  },
   "1323244": {
     url: "/title-logos/rage-of-stars.svg",
     width: 1200,
