@@ -219,7 +219,7 @@ function MoviePageContent() {
                   </Link>
                 ) : (
                   <button className="primary-button is-coming-soon" type="button" disabled>
-                    Coming soon
+                    Coming Soon
                   </button>
                 )}
                 <WishlistButton movie={movie} className="wishlist-detail-button" />
