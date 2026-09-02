@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon, PlayIcon, StarIcon } from "./Icons";
 import { useNovaSettings } from "./Providers";
-import { genreNames, imageUrl, releaseYear } from "@/lib/tmdb";
+import { genreNames, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
 
 export function Hero({ movies }: { movies: Movie[] }) {
@@ -48,6 +48,7 @@ export function Hero({ movies }: { movies: Movie[] }) {
 
   if (!activeMovie) return null;
   const isSeries = activeMovie.media_type === "tv";
+  const isAvailable = isSeries || isReleased(activeMovie);
   const contentId = activeMovie.tmdb_id ?? activeMovie.series_id ?? activeMovie.id;
 
   return (
@@ -105,12 +106,18 @@ export function Hero({ movies }: { movies: Movie[] }) {
         </div>
         <p className="hero-overview">{activeMovie.overview}</p>
         <div className="hero-actions">
-          <Link
-            className="primary-button"
-            href={isSeries ? `/series/details/?id=${contentId}` : `/watch/?id=${contentId}`}
-          >
-            <PlayIcon /> Play
-          </Link>
+          {isAvailable ? (
+            <Link
+              className="primary-button"
+              href={isSeries ? `/series/details/?id=${contentId}` : `/watch/?id=${contentId}`}
+            >
+              <PlayIcon /> Play
+            </Link>
+          ) : (
+            <button className="primary-button is-coming-soon" type="button" disabled>
+              Coming Soon
+            </button>
+          )}
           <Link
             className="secondary-button"
             href={isSeries ? `/series/details/?id=${contentId}` : `/movie/?id=${contentId}`}
