@@ -30,8 +30,10 @@ import type {
 
 export { CINEMETA_GENRES, formatRuntime, genreNames, imageUrl, releaseYear };
 
-export function isReleased(item: Pick<Movie, "release_date">) {
+export function isReleased(item: Pick<Movie, "id" | "release_date" | "tmdb_id">) {
   const releaseDate = item.release_date?.trim();
+  const tmdbId = String(item.tmdb_id ?? item.id ?? "");
+  if (tmdbId === "1548004" && !releaseDate) return false;
   if (!releaseDate) return true;
   const timestamp = Date.parse(releaseDate);
   return !Number.isFinite(timestamp) || timestamp <= Date.now();
@@ -465,7 +467,7 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
     const heroMovies = trending.results.map(toMovie).filter((movie) => movie.backdrop_path).slice(0, 10);
     const heroMoviesWithLogos = await Promise.all(heroMovies.map((movie) => withTmdbLogo(movie, signal)));
     return organizeHomeData({
-      trending: heroMoviesWithLogos,
+      trending: heroMoviesWithLogos.map(applyTitleLogoOverride),
       nowPlaying: nowPlaying.results.map(toMovie),
       topRated: topRated.results.map(toMovie),
       action: action.results.map(toMovie),
