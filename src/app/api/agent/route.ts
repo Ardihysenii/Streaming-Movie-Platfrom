@@ -66,11 +66,14 @@ function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
   const context = followUp ? `${previous} ${normalized}` : normalized;
   const limitMatch = context.match(/\b(?:top|first)\s+(\d{1,2})\b/);
   const limit = Math.min(MAX_RESULTS, Math.max(1, Number(limitMatch?.[1] ?? 10)));
-  const scope: SearchScope = /\banime\b/.test(context)
+  const scopeSource = /\b(?:anime|tv|television|series|shows|movies?|films?)\b/.test(normalized)
+    ? normalized
+    : previous || normalized;
+  const scope: SearchScope = /\banime\b/.test(scopeSource)
     ? "anime"
-    : /\b(?:tv|television|series|shows?)\b/.test(context)
+    : /\b(?:tv|television|series|shows)\b/.test(scopeSource)
       ? "series"
-      : /\b(?:movie|movies|film|films)\b/.test(context)
+      : /\b(?:movie|movies|film|films)\b/.test(scopeSource)
         ? "movies"
         : "all";
   const sortBy = /\b(?:top(?:\s+\d+)?[- ]?rated|highest[- ]?rated|best|critically acclaimed)\b/.test(context)
