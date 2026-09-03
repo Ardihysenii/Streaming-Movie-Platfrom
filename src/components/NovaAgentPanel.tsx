@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { CloseIcon, AgentIcon } from "./Icons";
+import { type FormEvent, useState } from "react";
+import { AgentIcon, CloseIcon } from "./Icons";
 import { MovieGrid } from "./MovieCard";
 import type { Movie } from "@/lib/types";
 
@@ -16,6 +16,12 @@ type AgentResponse = {
   error?: string;
 };
 
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+  results?: Movie[];
+};
+
 const SUGGESTIONS = [
   "Top 10 rated movies",
   "Newest movies",
@@ -24,10 +30,14 @@ const SUGGESTIONS = [
   "Top rated action movies",
 ];
 
+const INITIAL_MESSAGE: ChatMessage = {
+  role: "assistant",
+  content: "Hello! I can help you find movies, TV shows, and anime. What would you like to watch?",
+};
+
 export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
   const [prompt, setPrompt] = useState("");
-  const [message, setMessage] = useState("Ask me to find movies, TV shows, or anime.");
-  const [results, setResults] = useState<Movie[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
   const [loading, setLoading] = useState(false);
 
   if (!open) return null;
@@ -35,21 +45,27 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
   async function submit(value: string) {
     const cleanValue = value.trim();
     if (!cleanValue || loading) return;
-    setPrompt(cleanValue);
+    const history = messages.map(({ role, content }) => ({ role, content }));
+    setPrompt("");
+    setMessages((current) => [...current, { role: "user", content: cleanValue }]);
     setLoading(true);
-    setResults([]);
     try {
       const response = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: cleanValue }),
+        body: JSON.stringify({ prompt: cleanValue, history }),
       });
       const data = await response.json() as AgentResponse;
       if (!response.ok) throw new Error(data.error || "The Agent could not load titles.");
-      setMessage(data.message || "Here are the titles I found.");
-      setResults(data.results || []);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: data.message || "Here are the titles I found.", results: data.results || [] },
+      ]);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "The Agent could not load titles right now.");
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: error instanceof Error ? error.message : "The Agent could not reply right now." },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -77,8 +93,20 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
           </button>
         </header>
 
-        <div className="agent-panel-body">
-          <p className="agent-message">{message}</p>
+        <div className="agent-panel-body agent-chat-body">
+          <div className="agent-chat-list" aria-live="polite">
+            {messages.map((entry, index) => (
+              <div className={`agent-chat-row agent-chat-row-${entry.role}`} key={`${entry.role}-${index}`}>
+                <p className="agent-chat-bubble">{entry.content}</p>
+                {entry.results?.length ? (
+                  <div className="agent-chat-results">
+                    <MovieGrid movies={entry.results} />
+                  </div>
+                ) : null}
+              </div>
+            ))}
+            {loading ? <p className="agent-loading" role="status">I’m searching the catalog…</p> : null}
+          </div>
           <div className="agent-suggestions" aria-label="Suggested requests">
             {SUGGESTIONS.map((suggestion) => (
               <button key={suggestion} type="button" onClick={() => void submit(suggestion)} disabled={loading}>
@@ -86,19 +114,17 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
               </button>
             ))}
           </div>
-          {loading ? <p className="agent-loading" role="status">Searching the catalog…</p> : null}
-          {results.length ? <MovieGrid movies={results} /> : null}
         </div>
 
         <form className="agent-form" onSubmit={handleSubmit}>
           <input
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
-            placeholder="Ask for movies, shows, or anime…"
-            aria-label="Ask NOVA Agent"
+            placeholder="Say hello or ask for movies, shows, or anime…"
+            aria-label="Chat with NOVA Agent"
             maxLength={240}
           />
-          <button type="submit" disabled={loading || !prompt.trim()}>Find</button>
+          <button type="submit" disabled={loading || !prompt.trim()}>Send</button>
         </form>
       </section>
     </div>
