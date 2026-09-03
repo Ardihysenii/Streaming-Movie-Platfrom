@@ -58,7 +58,8 @@ export function BottomDock() {
   ];
 
   return (
-    <nav className="bottom-dock" aria-label="Quick navigation">
+    <>
+      <nav className="bottom-dock" aria-label="Quick navigation">
       {items.map(({ href, label, Icon }) => (
         <Link className={pathname === href ? "is-active" : ""} href={href} aria-label={label} key={label}>
           <Icon />
@@ -119,7 +120,8 @@ export function BottomDock() {
           </div>
         </div>
       ) : null}
+      </nav>
       <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
-    </nav>
+    </>
   );
 }
