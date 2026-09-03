@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { AgentIcon, CloseIcon } from "./Icons";
 import { MovieGrid } from "./MovieCard";
 import type { Movie } from "@/lib/types";
@@ -39,6 +39,15 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
   const [loading, setLoading] = useState(false);
+  const chatBodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open || !chatBodyRef.current) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      chatBodyRef.current?.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: "smooth" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, messages, loading]);
 
   if (!open) return null;
 
@@ -97,7 +106,7 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
           </button>
         </header>
 
-        <div className="agent-panel-body agent-chat-body">
+        <div className="agent-panel-body agent-chat-body" ref={chatBodyRef}>
           <div className="agent-chat-list" aria-live="polite">
             {messages.map((entry, index) => (
               <div className={`agent-chat-row agent-chat-row-${entry.role}`} key={`${entry.role}-${index}`}>
