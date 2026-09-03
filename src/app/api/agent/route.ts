@@ -279,7 +279,7 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
       return null;
     }
   }));
-  return details.filter((item): item is Movie => Boolean(item)).slice(0, intent.limit);
+  return details.filter((item) => item !== null).slice(0, intent.limit) as Movie[];
 }
 
 function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
