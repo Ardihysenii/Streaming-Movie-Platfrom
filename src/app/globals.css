@@ -5868,3 +5868,109 @@ body:has(.watch-page) .bottom-dock {
     max-width: 96%;
   }
 }
+
+
+/* Agent browsing nudge */
+.bottom-dock .agent-launcher {
+  align-items: center;
+  display: flex;
+  height: 50px;
+  position: relative;
+  width: 56px;
+}
+
+.agent-nudge {
+  align-items: flex-start;
+  background: linear-gradient(145deg, rgba(30, 19, 28, 0.99), rgba(13, 16, 23, 0.99) 70%);
+  border: 1px solid rgba(226, 29, 47, 0.72);
+  border-radius: 16px;
+  bottom: calc(100% + 14px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(226, 29, 47, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  padding: 14px 34px 14px 15px;
+  position: absolute;
+  right: -112px;
+  width: 286px;
+  z-index: 70;
+}
+
+.agent-nudge::after {
+  border-bottom: 1px solid rgba(226, 29, 47, 0.72);
+  border-right: 1px solid rgba(226, 29, 47, 0.72);
+  bottom: -7px;
+  content: "";
+  height: 13px;
+  position: absolute;
+  right: 136px;
+  transform: rotate(45deg);
+  width: 13px;
+  background: rgba(18, 16, 24, 0.99);
+}
+
+.agent-nudge:hover {
+  border-color: var(--accent);
+  color: white;
+}
+
+.agent-nudge:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.bottom-dock .agent-nudge-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  display: flex;
+  font-size: 1.05rem;
+  height: 24px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: 6px;
+  top: 5px;
+  width: 24px;
+}
+
+.bottom-dock .agent-nudge-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+@media (max-width: 680px) {
+  .bottom-dock .agent-launcher {
+    height: 48px;
+    width: auto;
+  }
+
+  .agent-nudge {
+    bottom: calc(100% + 12px);
+    right: -8px;
+    width: min(300px, calc(100vw - 28px));
+  }
+}
+
+
+.bottom-dock .agent-nudge-message {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: inherit;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.bottom-dock .agent-nudge-message:hover {
+  background: transparent;
+  color: white;
+}
