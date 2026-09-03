@@ -539,13 +539,16 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: closeMatches.length
         ? `I think you mean one of these. Here are the closest matches I found:`
-        : "I could not find a close match yet. Try adding an actor, genre, year, mood, or one more detail about the story.",
+        : noResultReply(prompt),
       results: closeMatches,
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
       return NextResponse.json({ error: "The request was cancelled." }, { status: 499 });
     }
-    return NextResponse.json({ error: "The Agent could not load titles right now." }, { status: 502 });
+    return NextResponse.json({
+      message: "I’m still here. I couldn’t reach the catalog just now, but you can ask me again or describe the kind of movie, show, or anime you want.",
+      results: [],
+    });
   }
 }
