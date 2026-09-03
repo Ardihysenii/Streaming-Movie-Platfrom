@@ -39,6 +39,16 @@ type TmdbKeywordSearch = {
   results?: Array<{ id: number; name?: string }>;
 };
 
+type TmdbMultiResult = {
+  id: number;
+  title?: string;
+  name?: string;
+  media_type?: "movie" | "tv" | "person";
+  poster_path?: string | null;
+  popularity?: number;
+  adult?: boolean;
+};
+
 type TmdbCredit = {
   id: number;
   title?: string;
@@ -282,6 +292,73 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
   return details.filter((item) => item !== null).slice(0, intent.limit) as Movie[];
 }
 
+function normaliseTitle(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function titleSimilarity(left: string, right: string) {
+  const a = normaliseTitle(left);
+  const b = normaliseTitle(right);
+  if (!a || !b) return 0;
+  const previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let row = 1; row <= a.length; row += 1) {
+    let diagonal = previous[0];
+    previous[0] = row;
+    for (let column = 1; column <= b.length; column += 1) {
+      const above = previous[column];
+      previous[column] = a[row - 1] === b[column - 1]
+        ? diagonal
+        : 1 + Math.min(diagonal, previous[column], previous[column - 1]);
+      diagonal = above;
+    }
+  }
+  return 1 - previous[b.length] / Math.max(a.length, b.length);
+}
+
+async function findClosestTitles(intent: AgentIntent, prompt: string, signal: AbortSignal): Promise<Movie[]> {
+  const query = intent.query.trim();
+  if (!TMDB_API_KEY || query.length < 3 || descriptionTokens(prompt).length > 0) return [];
+
+  const requestedType = intent.scope === "movies" ? "movie" : intent.scope === "series" ? "tv" : null;
+  const multi = await agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
+    query,
+    page: 1,
+    include_adult: false,
+  }, signal);
+  const fallbackPages = await Promise.all([
+    agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/trending/all/week", {}, signal),
+    agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/movie/top_rated", { page: 1 }, signal),
+    agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/tv/top_rated", { page: 1 }, signal),
+  ]);
+  const candidates = [
+    ...(multi?.results ?? []),
+    ...fallbackPages.flatMap((page) => page?.results ?? []),
+  ]
+    .filter((item) => item.media_type !== "person" && item.id && item.poster_path)
+    .filter((item) => !requestedType || item.media_type === requestedType)
+    .map((item) => ({
+      item,
+      title: item.title || item.name || "",
+      score: titleSimilarity(query, item.title || item.name || ""),
+    }))
+    .filter((entry) => entry.title && entry.score >= 0.58)
+    .sort((a, b) => b.score - a.score || (b.item.popularity ?? 0) - (a.item.popularity ?? 0))
+    .filter((entry, index, all) => all.findIndex((candidate) => `${candidate.item.media_type}:${candidate.item.id}` === `${entry.item.media_type}:${entry.item.id}`) === index)
+    .slice(0, 3);
+
+  const details = await Promise.all(candidates.map(async ({ item }) => {
+    try {
+      return item.media_type === "tv"
+        ? await getSeries(item.id, signal)
+        : await getMovie(item.id, signal);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") throw error;
+      return null;
+    }
+  }));
+  return details.filter((item) => item !== null).slice(0, intent.limit) as Movie[];
+}
+
 function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
   const normalized = prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
   const previous = recentUserPrompt(history).toLowerCase();
@@ -416,11 +493,18 @@ export async function POST(request: Request) {
     }
 
     const results = await findMedia(intent, request.signal);
+    if (results.length) {
+      return NextResponse.json({
+        message: `${intent.page > 1 ? "Here are more" : "Here are"} ${titleFor(intent)} I found.`,
+        results,
+      });
+    }
+    const closeMatches = await findClosestTitles(intent, prompt, request.signal);
     return NextResponse.json({
-      message: results.length
-        ? `${intent.page > 1 ? "Here are more" : "Here are"} ${titleFor(intent)} I found.`
+      message: closeMatches.length
+        ? `I could not find that exact spelling, but these titles look close. Did you mean one of them?`
         : "I could not find a close match yet. Try adding an actor, genre, year, mood, or one more detail about the story.",
-      results,
+      results: closeMatches,
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
