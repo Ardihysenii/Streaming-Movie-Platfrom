@@ -186,6 +186,9 @@ function conversationalReply(prompt: string) {
   if (/\b(?:who are you|your name)\b/.test(normalized)) {
     return "I’m Jarvis—the assistant Ardi created for NOVA. Tell me what kind of movie, TV show, or anime you feel like watching, even if you only remember part of the story.";
   }
+  if (/\b(?:bored|can’t decide|can't decide|surprise me|anything good|nothing to watch)\b/.test(normalized)) {
+    return "I can choose for you. Tell me a mood, genre, actor, or one story detail—or I can surprise you with a popular pick.";
+  }
   if (/\b(?:good morning|good afternoon|good evening|good night)\b/.test(normalized)) {
     return "Hello to you as well! I’m Jarvis, and I’m ready to help you find something great to watch.";
   }
@@ -360,8 +363,10 @@ async function findClosestTitles(intent: AgentIntent, prompt: string, signal: Ab
   const query = queries[0] || "";
   if (!TMDB_API_KEY || query.length < 3 || descriptionTokens(prompt).length > 0) return [];
 
+  const tokenQueries = query.split(/\s+/).filter((token) => token.length >= 3 && !STOP_WORDS.has(token));
+  const searchQueries = [...new Set([...queries, ...tokenQueries])].slice(0, 6);
   const requestedType = intent.scope === "movies" ? "movie" : intent.scope === "series" ? "tv" : null;
-  const multiPages = await Promise.all(queries.map((candidate) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
+  const multiPages = await Promise.all(searchQueries.map((candidate) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
     query: candidate,
     page: 1,
     include_adult: false,
