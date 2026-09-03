@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BookmarkIcon, CompassIcon, GridIcon, HistoryIcon, HomeIcon, InfoIcon, SearchIcon, SettingsIcon, StarIcon } from "./Icons";
+import { AgentIcon, BookmarkIcon, CompassIcon, GridIcon, HistoryIcon, HomeIcon, InfoIcon, SearchIcon, SettingsIcon, StarIcon } from "./Icons";
+import { NovaAgentPanel } from "./NovaAgentPanel";
 import { useNovaSettings } from "./Providers";
 
 export function Header() {
@@ -41,6 +42,7 @@ export function BottomDock() {
   const pathname = usePathname() ?? "";
   const { setSettingsOpen } = useNovaSettings();
   const [browseOpen, setBrowseOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
 
   useEffect(() => {
@@ -53,7 +55,6 @@ export function BottomDock() {
   }, [pathname]);
   const items = [
     { href: "/", label: "Home", Icon: HomeIcon },
-    { href: "/movies/", label: "Discover", Icon: CompassIcon },
   ];
 
   return (
@@ -64,6 +65,17 @@ export function BottomDock() {
           <span>{label}</span>
         </Link>
       ))}
+      <button
+        className={agentOpen ? "is-active" : ""}
+        type="button"
+        onClick={() => setAgentOpen(true)}
+        aria-label="Open NOVA Agent"
+        aria-haspopup="dialog"
+        aria-expanded={agentOpen}
+      >
+        <AgentIcon />
+        <span>Agent</span>
+      </button>
       <button
         className={browseOpen ? "is-active" : ""}
         type="button"
@@ -107,6 +119,7 @@ export function BottomDock() {
           </div>
         </div>
       ) : null}
+      <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
     </nav>
   );
 }
