@@ -174,7 +174,7 @@ function descriptionTokens(prompt: string) {
 
 function isMediaRequest(prompt: string, history: AgentTurn[]) {
   const text = `${recentUserPrompt(history)} ${prompt}`.toLowerCase();
-  return /\b(?:movie|movies|film|films|show|shows|series|tv|anime|watch|watching|find|search|suggest|recommend|recommendation|actor|actress|starring|similar|genre|rated|newest|latest|release|horror|comedy|action|drama|romance|thriller|mystery|fantasy|sci-fi|science fiction)\b/.test(text)
+  return /\b(?:movie|movies|film|films|show|shows|series|tv|anime|watch|watching|find|search|suggest|recommend|recommendation|actor|actress|starring|similar|genre|rated|newest|latest|release|horror|comedy|action|drama|romance|thriller|mystery|fantasy|sci-fi|science fiction|bored|surprise|can’t decide|can\'t decide|anything good|nothing to watch)\b/.test(text)
     || descriptionTokens(prompt).length > 0;
 }
 
@@ -429,7 +429,8 @@ function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
     : /\b(?:new|newest|latest|recent|releases?)\b/.test(context)
       ? "primary_release_date.desc"
       : "popularity.desc";
-  const query = context
+  const recommendationRequest = /\b(?:bored|surprise me|can’t decide|can\'t decide|anything good|nothing to watch)\b/.test(context);
+  const query = recommendationRequest ? "" : context
     .replace(/\b(?:top|first)\s+\d{1,2}\b/g, "")
     .split(" ")
     .filter((word) => !STOP_WORDS.has(word))
