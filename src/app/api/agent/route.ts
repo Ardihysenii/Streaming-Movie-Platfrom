@@ -3,6 +3,7 @@ import {
   discoverAnime,
   discoverMovies,
   discoverSeries,
+  getMovie,
   searchCatalog,
   type SearchScope,
 } from "@/lib/tmdb";
@@ -26,6 +27,29 @@ type AgentIntent = {
   page: number;
 };
 
+type TmdbPersonSearch = {
+  results?: Array<{ id: number; name?: string }>;
+};
+
+type TmdbCredit = {
+  id: number;
+  title?: string;
+  overview?: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+  release_date?: string;
+  vote_average?: number;
+  vote_count?: number;
+  popularity?: number;
+  genre_ids?: number[];
+  adult?: boolean;
+};
+
+type TmdbMovieDetails = TmdbCredit & {
+  tagline?: string;
+  keywords?: { keywords?: Array<{ name?: string }> };
+};
+
 const MAX_RESULTS = 10;
 const MOVIE_GENRES: Record<string, number> = {
   action: 28,
@@ -39,13 +63,36 @@ const MOVIE_GENRES: Record<string, number> = {
   "science fiction": 878,
   thriller: 53,
 };
+const COMMON_ACTORS = [
+  "will smith", "tom hanks", "tom cruise", "brad pitt", "leonardo dicaprio",
+  "dwayne johnson", "keanu reeves", "robert downey jr", "chris hemsworth",
+  "chris evans", "ryan reynolds", "morgan freeman", "johnny depp", "jason statham",
+  "denzel washington", "willem dafoe", "emma stone", "scarlett johansson",
+  "angelina jolie", "matt damon", "jennifer lawrence", "sandra bullock",
+];
 const STOP_WORDS = new Set([
   "a", "an", "and", "find", "for", "me", "movie", "movies", "film", "films",
   "show", "shows", "series", "tv", "anime", "the", "top", "first", "best", "rated",
   "rating", "ratings", "popular", "new", "newest", "latest", "recent", "release",
   "releases", "please", "give", "get", "with", "of", "in", "from", "what", "about",
-  "only", "more", "like", "that", "same", "another", "ones", "one", "10",
+  "only", "more", "like", "that", "same", "another", "ones", "one", "10", "actor",
+  "actress", "starring", "played", "plays", "people", "person", "movie", "called",
+  "named", "something", "something", "whose", "where", "there", "this", "is",
 ]);
+const DESCRIPTION_WORDS = new Set([
+  "dog", "dogs", "infected", "infection", "virus", "zombie", "zombies", "disease",
+  "outbreak", "apocalypse", "survivors", "survivor", "world", "future", "space",
+  "alien", "aliens", "killer", "detective", "school", "family", "father", "mother",
+  "son", "daughter", "island", "war", "prison", "superhero", "robot", "robots",
+]);
+const SYNONYMS: Record<string, string[]> = {
+  dog: ["dog", "dogs", "canine", "animal"],
+  infected: ["infected", "infection", "virus", "disease", "outbreak", "zombie"],
+  people: ["people", "humanity", "humans", "survivors", "population"],
+  world: ["world", "earth", "humanity", "society"],
+};
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY?.trim();
 
 function isGreeting(prompt: string) {
   return /^(?:hi|hello|hey|good morning|good afternoon|good evening|how are you)\b/i.test(prompt.trim());
@@ -57,6 +104,73 @@ function recentUserPrompt(history: AgentTurn[]) {
     .map((turn) => String(turn.content).trim())
     .filter(Boolean)
     .at(-1) ?? "";
+}
+
+function extractActorName(prompt: string) {
+  const normalized = prompt.toLowerCase().replace(/[^a-z0-9.\s]/g, " ").replace(/\s+/g, " ").trim();
+  const known = COMMON_ACTORS.find((name) => normalized.includes(name));
+  if (known) return known;
+  const match = prompt.match(/\b(?:actor|actress|starring|played by|with)\b.*?\b(?:is|named|called)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2})/);
+  return match?.[1]?.trim() || null;
+}
+
+function descriptionTokens(prompt: string) {
+  const words = prompt.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  return words.filter((word) => word.length > 3 && !STOP_WORDS.has(word) && (DESCRIPTION_WORDS.has(word) || !COMMON_ACTORS.some((name) => name.includes(word))));
+}
+
+async function agentTmdbRequest<T>(path: string, params: Record<string, string | number | boolean | undefined>, signal: AbortSignal) {
+  if (!TMDB_API_KEY) return null;
+  const endpoint = new URL(`${TMDB_BASE}${path}`);
+  endpoint.searchParams.set("api_key", TMDB_API_KEY);
+  endpoint.searchParams.set("language", "en-US");
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") endpoint.searchParams.set(key, String(value));
+  });
+  const response = await fetch(endpoint, { headers: { Accept: "application/json" }, signal });
+  if (!response.ok) return null;
+  return response.json() as Promise<T>;
+}
+
+async function findDescribedMovie(prompt: string, signal: AbortSignal) {
+  const actorName = extractActorName(prompt);
+  const tokens = descriptionTokens(prompt);
+  if (!actorName || tokens.length < 1) return null;
+
+  const people = await agentTmdbRequest<TmdbPersonSearch>("/search/person", { query: actorName, page: 1, include_adult: false }, signal);
+  const person = people?.results?.[0];
+  if (!person) return null;
+  const credits = await agentTmdbRequest<{ cast?: TmdbCredit[] }>(`/person/${person.id}/movie_credits`, { include_adult: false }, signal);
+  const candidates = (credits?.cast ?? [])
+    .filter((movie) => movie.id && movie.poster_path && !movie.adult)
+    .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
+    .slice(0, 24);
+  if (!candidates.length) return null;
+
+  const details = await Promise.all(candidates.map(async (candidate) => (
+    await agentTmdbRequest<TmdbMovieDetails>(`/movie/${candidate.id}`, { append_to_response: "keywords" }, signal)
+  )));
+  const scored = details
+    .filter((movie): movie is TmdbMovieDetails => Boolean(movie))
+    .map((movie) => {
+      const searchable = [
+        movie.title,
+        movie.overview,
+        movie.tagline,
+        ...(movie.keywords?.keywords ?? []).map((keyword) => keyword.name),
+      ].join(" ").toLowerCase();
+      const score = tokens.reduce((total, token) => {
+        const terms = SYNONYMS[token] ?? [token];
+        return total + (terms.some((term) => searchable.includes(term)) ? 1 : 0);
+      }, 0);
+      return { movie, score };
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || (b.movie.popularity ?? 0) - (a.movie.popularity ?? 0));
+  const best = scored[0];
+  if (!best) return null;
+  const resolved = await getMovie(best.movie.id, signal);
+  return { actorName: person.name || actorName, movie: resolved, score: best.score };
 }
 
 function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
@@ -88,13 +202,7 @@ function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
     .join(" ")
     .trim();
 
-  return {
-    scope,
-    query,
-    sortBy,
-    limit,
-    page: followUp ? 2 : 1,
-  };
+  return { scope, query, sortBy, limit, page: followUp ? 2 : 1 };
 }
 
 function titleFor(intent: AgentIntent) {
@@ -153,8 +261,16 @@ export async function POST(request: Request) {
       : [];
     if (isGreeting(prompt)) {
       return NextResponse.json({
-        message: "Hello! I can help you find movies, TV shows, and anime. Try asking for the top-rated movies, newest shows, or popular anime.",
+        message: "Hello! I can help you find movies, TV shows, and anime. Tell me a plot, actor, genre, year, or mood.",
         results: [],
+      });
+    }
+
+    const described = await findDescribedMovie(prompt, request.signal);
+    if (described) {
+      return NextResponse.json({
+        message: `I think you may be looking for ${described.movie.title}, starring ${described.actorName}. I matched your description against the movie's plot and keywords.`,
+        results: [described.movie],
       });
     }
 
@@ -163,7 +279,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: results.length
         ? `${intent.page > 1 ? "Here are more" : "Here are"} ${titleFor(intent)} I found.`
-        : "I could not find matching titles. Try another request.",
+        : "I could not find matching titles. Try describing the plot, actor, genre, or year in another way.",
       results,
     });
   } catch (error) {
