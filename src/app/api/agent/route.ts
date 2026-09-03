@@ -525,7 +525,7 @@ export async function POST(request: Request) {
     const closeMatches = await findClosestTitles(intent, prompt, request.signal);
     return NextResponse.json({
       message: closeMatches.length
-        ? `I could not find that exact spelling, but these titles look close. Did you mean one of them?`
+        ? `I think you mean one of these. Here are the closest matches I found:`
         : "I could not find a close match yet. Try adding an actor, genre, year, mood, or one more detail about the story.",
       results: closeMatches,
     });
