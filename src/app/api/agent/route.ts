@@ -18,6 +18,18 @@ type AgentIntent = {
 };
 
 const MAX_RESULTS = 10;
+const MOVIE_GENRES: Record<string, number> = {
+  action: 28,
+  adventure: 12,
+  animation: 16,
+  comedy: 35,
+  drama: 18,
+  fantasy: 14,
+  horror: 27,
+  romance: 10749,
+  "science fiction": 878,
+  thriller: 53,
+};
 const STOP_WORDS = new Set([
   "a", "an", "and", "find", "for", "me", "movie", "movies", "film", "films",
   "show", "shows", "series", "tv", "anime", "the", "top", "best", "rated",
@@ -63,6 +75,10 @@ function titleFor(intent: AgentIntent) {
 }
 
 async function findMedia(intent: AgentIntent, signal: AbortSignal): Promise<Movie[]> {
+  const genreId = intent.scope === "movies" ? MOVIE_GENRES[intent.query] : undefined;
+  if (genreId) {
+    return (await discoverMovies(1, genreId, intent.sortBy, signal)).results.slice(0, intent.limit);
+  }
   if (intent.query) {
     return (await searchCatalog(intent.query, signal, intent.scope)).slice(0, intent.limit);
   }
