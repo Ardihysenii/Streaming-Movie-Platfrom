@@ -464,7 +464,10 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
       tmdbRequest<TmdbSeriesPage>("/tv/on_the_air", { page: 1 }, signal),
       tmdbRequest<TmdbSeriesPage>("/tv/top_rated", { page: 1 }, signal),
     ]);
-    const heroMovies = trending.results.map(toMovie).filter((movie) => movie.backdrop_path).slice(0, 10);
+    const heroMovies = trending.results
+      .map(toMovie)
+      .filter((movie) => movie.backdrop_path && movie.tmdb_id !== 1506560)
+      .slice(0, 10);
     const heroMoviesWithLogos = await Promise.all(heroMovies.map((movie) => withTmdbLogo(movie, signal)));
     return organizeHomeData({
       trending: heroMoviesWithLogos.map(applyTitleLogoOverride),
