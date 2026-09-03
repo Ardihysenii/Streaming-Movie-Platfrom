@@ -101,6 +101,10 @@ function isGreeting(prompt: string) {
   return /^(?:hi|hello|hey|good morning|good afternoon|good evening|how are you)\b/i.test(prompt.trim());
 }
 
+function isThankYou(prompt: string) {
+  return /\b(?:thank you|thanks|thx|thankyou)\b/i.test(prompt.trim()) && prompt.trim().length <= 160;
+}
+
 function recentUserPrompt(history: AgentTurn[]) {
   return history
     .filter((turn) => turn.role === "user" && typeof turn.content === "string")
@@ -271,7 +275,13 @@ export async function POST(request: Request) {
       : [];
     if (isGreeting(prompt)) {
       return NextResponse.json({
-        message: "Hello! I can help you find movies, TV shows, and anime. Tell me a plot, actor, genre, year, or mood.",
+        message: "Hello to you as well! I am Jarvis—Ardi named me. He is my master. Thank you for choosing his space to watch movies; he put a lot of effort into it. I am the platform's Assistant, and I can help you find movies, TV shows, and anime.",
+        results: [],
+      });
+    }
+    if (isThankYou(prompt)) {
+      return NextResponse.json({
+        message: "I am glad I could help! Enjoy your movie, show, or anime.",
         results: [],
       });
     }
