@@ -46,6 +46,13 @@ export const CompassIcon = (props: IconProps) => (
 );
 
 
+export const AgentIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M5 6.5A3.5 3.5 0 0 1 8.5 3h7A3.5 3.5 0 0 1 19 6.5v6a3.5 3.5 0 0 1-3.5 3.5H11l-4.5 4v-4.2A3.5 3.5 0 0 1 5 12.5v-6Z" />
+    <path d="M9 9h.01M15 9h.01M9 12.5c1.8 1.4 4.2 1.4 6 0" />
+  </IconBase>
+);
+
 export const GridIcon = (props: IconProps) => (
   <IconBase {...props}>
     <rect x="3" y="3" width="7" height="7" rx="1" />
