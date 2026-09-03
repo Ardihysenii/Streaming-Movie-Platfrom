@@ -192,6 +192,13 @@ function conversationalReply(prompt: string) {
   return "I understand you. I’m Jarvis, NOVA’s Assistant. You can ask me naturally—describe a story, name an actor, tell me a mood, ask for something similar, or just tell me what kind of watch you want.";
 }
 
+function noResultReply(prompt: string) {
+  const clues = descriptionTokens(prompt).filter((clue, index, all) => all.indexOf(clue) === index).slice(0, 3);
+  return clues.length
+    ? `I understand you’re looking for something involving ${clues.join(", ")}. I couldn’t find an exact catalog match yet, but I can keep narrowing it down—try adding an actor, year, genre, or another story detail.`
+    : "I understand what you’re asking. I couldn’t find an exact catalog match yet, but add an actor, year, genre, or story detail and I’ll keep narrowing it down for you.";
+}
+
 async function agentTmdbRequest<T>(path: string, params: Record<string, string | number | boolean | undefined>, signal: AbortSignal) {
   if (!TMDB_API_KEY) return null;
   const endpoint = new URL(`${TMDB_BASE}${path}`);
