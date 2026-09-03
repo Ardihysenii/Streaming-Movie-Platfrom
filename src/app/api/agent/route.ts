@@ -48,7 +48,7 @@ function parseIntent(prompt: string): AgentIntent {
       : /\b(?:movie|movies|film|films)\b/.test(normalized)
         ? "movies"
         : "all";
-  const sortBy = /\b(?:top[- ]?rated|highest[- ]?rated|best|critically acclaimed)\b/.test(normalized)
+  const sortBy = /\b(?:top(?:\s+\d+)?[- ]?rated|highest[- ]?rated|best|critically acclaimed)\b/.test(normalized)
     ? "vote_average.desc"
     : /\b(?:new|newest|latest|recent|releases?)\b/.test(normalized)
       ? "primary_release_date.desc"
