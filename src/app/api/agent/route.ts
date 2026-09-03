@@ -109,7 +109,7 @@ const GENRE_ALIASES: Record<string, string> = {
   love: "romance",
   emotional: "drama",
   dramatic: "drama",
-  mind-bending: "science fiction",
+  "mind-bending": "science fiction",
   futuristic: "science fiction",
   mysterious: "mystery",
 };
