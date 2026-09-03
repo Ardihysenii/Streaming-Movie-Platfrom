@@ -292,6 +292,19 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
   return details.filter((item) => item !== null).slice(0, intent.limit) as Movie[];
 }
 
+function likelyTitleQueries(prompt: string, query: string) {
+  const queries = [query.trim()];
+  const patterns = [
+    /\b(?:like|similar to|called|named|titled)\s+["“]?([^"”?.!,]+)["”]?/i,
+  ];
+  patterns.forEach((pattern) => {
+    const match = prompt.match(pattern);
+    const extracted = match?.[1]?.trim().replace(/\b(?:please|for me|right now)$/i, "").trim();
+    if (extracted && extracted.length >= 3) queries.unshift(extracted);
+  });
+  return [...new Set(queries.filter(Boolean))].slice(0, 3);
+}
+
 function normaliseTitle(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
@@ -316,15 +329,16 @@ function titleSimilarity(left: string, right: string) {
 }
 
 async function findClosestTitles(intent: AgentIntent, prompt: string, signal: AbortSignal): Promise<Movie[]> {
-  const query = intent.query.trim();
+  const queries = likelyTitleQueries(prompt, intent.query);
+  const query = queries[0] || "";
   if (!TMDB_API_KEY || query.length < 3 || descriptionTokens(prompt).length > 0) return [];
 
   const requestedType = intent.scope === "movies" ? "movie" : intent.scope === "series" ? "tv" : null;
-  const multi = await agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
-    query,
+  const multiPages = await Promise.all(queries.map((candidate) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
+    query: candidate,
     page: 1,
     include_adult: false,
-  }, signal);
+  }, signal)));
   const fallbackRequests = [
     agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/trending/all/week", {}, signal),
     ...Array.from({ length: 5 }, (_, index) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/movie/top_rated", { page: index + 1 }, signal)),
@@ -333,7 +347,7 @@ async function findClosestTitles(intent: AgentIntent, prompt: string, signal: Ab
   ];
   const fallbackPages = await Promise.all(fallbackRequests);
   const candidates = [
-    ...(multi?.results ?? []),
+    ...multiPages.flatMap((page) => page?.results ?? []),
     ...fallbackPages.flatMap((page) => page?.results ?? []),
   ]
     .filter((item) => item.media_type !== "person" && item.id && item.poster_path)
@@ -341,7 +355,7 @@ async function findClosestTitles(intent: AgentIntent, prompt: string, signal: Ab
     .map((item) => ({
       item,
       title: item.title || item.name || "",
-      score: titleSimilarity(query, item.title || item.name || ""),
+      score: Math.max(...queries.map((candidate) => titleSimilarity(candidate, item.title || item.name || ""))),
     }))
     .filter((entry) => entry.title && entry.score >= 0.58)
     .sort((a, b) => b.score - a.score || (b.item.popularity ?? 0) - (a.item.popularity ?? 0))
