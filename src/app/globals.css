@@ -5861,6 +5861,8 @@ body:has(.watch-page) .bottom-dock {
 
 .agent-chat-results .movie-grid {
   margin-top: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 @media (max-width: 680px) {
@@ -6002,5 +6004,72 @@ body:has(.watch-page) .bottom-dock {
     animation: none;
     background: rgba(226, 29, 47, 0.2);
     box-shadow: 0 0 0 5px rgba(226, 29, 47, 0.12), 0 0 18px rgba(226, 29, 47, 0.32);
+  }
+}
+
+
+/* Animated NOVA home atmosphere */
+.home-page {
+  isolation: isolate;
+  position: relative;
+}
+
+.home-page::before,
+.home-page::after {
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.home-page::before {
+  animation: novaAmbientDrift 22s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(226, 29, 47, 0.14), rgba(226, 29, 47, 0) 70%);
+  filter: blur(18px);
+  height: min(58vw, 820px);
+  left: -22%;
+  top: 24%;
+  width: min(58vw, 820px);
+}
+
+.home-page::after {
+  animation: novaAmbientDriftReverse 28s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(111, 127, 255, 0.11), rgba(111, 127, 255, 0) 70%);
+  filter: blur(24px);
+  height: min(50vw, 720px);
+  right: -18%;
+  top: 48%;
+  width: min(50vw, 720px);
+}
+
+@keyframes novaAmbientDrift {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: translate3d(0, 0, 0) scale(0.94);
+  }
+  50% {
+    opacity: 0.82;
+    transform: translate3d(9vw, -4vh, 0) scale(1.08);
+  }
+}
+
+@keyframes novaAmbientDriftReverse {
+  0%,
+  100% {
+    opacity: 0.38;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translate3d(-8vw, 5vh, 0) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page::before,
+  .home-page::after {
+    animation: none;
   }
 }
