@@ -88,7 +88,7 @@ export function BottomDock() {
       ))}
       <div className="agent-launcher">
         <button
-          className={agentOpen ? "is-active" : ""}
+          className={agentOpen ? "is-active" : agentNudgeOpen ? "is-attention" : ""}
           type="button"
           onClick={() => {
             setAgentOpen(true);
