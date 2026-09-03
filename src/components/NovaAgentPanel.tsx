@@ -17,7 +17,7 @@ type AgentResponse = {
 };
 
 const SUGGESTIONS = [
-  "Top 10 movies",
+  "Top 10 rated movies",
   "Newest movies",
   "Top 10 TV shows",
   "Popular anime",
