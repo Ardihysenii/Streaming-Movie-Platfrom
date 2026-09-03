@@ -108,6 +108,7 @@ const DESCRIPTION_WORDS = new Set([
   "son", "daughter", "island", "war", "prison", "superhero", "robot", "robots",
   "funny", "scary", "romantic", "dark", "lighthearted", "emotional", "inspiring",
   "mind-bending", "mysterious", "mystery", "violent", "feel-good", "heartwarming",
+  "action", "thriller", "horror", "comedy", "drama", "fantasy", "romance", "documentary",
 ]);
 const GENRE_ALIASES: Record<string, string> = {
   funny: "comedy",
@@ -159,8 +160,9 @@ function extractActorName(prompt: string) {
   const normalized = prompt.toLowerCase().replace(/[^a-z0-9.\s]/g, " ").replace(/\s+/g, " ").trim();
   const known = COMMON_ACTORS.find((name) => normalized.includes(name));
   if (known) return known;
-  const match = prompt.match(/\b(?:actor|actress|starring|played by|with)\b.*?\b(?:is|named|called)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2})/);
-  return match?.[1]?.trim() || null;
+  const match = prompt.match(/\b(?:actor|actress|starring|played by|with|of|featuring)\b\s+(?:the\s+)?(.+?)(?=\s+(?:in|is|are|who|that|for|please|movie|movies|film|films|show|shows|series|action|thriller|horror|comedy|drama|fantasy|romance|mystery|sci[- ]?fi|science fiction)\b|[?.!,]|$)/i);
+  const candidate = match?.[1]?.trim().replace(/^(?:an?|the)\s+(?:actor|actress)\s+/i, "");
+  return candidate && candidate.split(/\s+/).length <= 4 ? candidate : null;
 }
 
 function descriptionTokens(prompt: string) {
@@ -203,9 +205,18 @@ async function agentTmdbRequest<T>(path: string, params: Record<string, string |
   return response.json() as Promise<T>;
 }
 
+function requestedGenreId(prompt: string) {
+  const normalized = prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, " ");
+  const alias = Object.entries(GENRE_ALIASES).find(([name]) => normalized.includes(name));
+  if (alias) return MOVIE_GENRES[alias[1]];
+  const genre = Object.keys(MOVIE_GENRES).find((name) => normalized.includes(name));
+  return genre ? MOVIE_GENRES[genre] : undefined;
+}
+
 async function findDescribedMovie(prompt: string, signal: AbortSignal) {
   const actorName = extractActorName(prompt);
   const tokens = descriptionTokens(prompt);
+  const genreId = requestedGenreId(prompt);
   if (!actorName || tokens.length < 1) return null;
 
   const people = await agentTmdbRequest<TmdbPersonSearch>("/search/person", { query: actorName, page: 1, include_adult: false }, signal);
@@ -214,6 +225,7 @@ async function findDescribedMovie(prompt: string, signal: AbortSignal) {
   const credits = await agentTmdbRequest<{ cast?: TmdbCredit[] }>(`/person/${person.id}/movie_credits`, { include_adult: false }, signal);
   const candidates = (credits?.cast ?? [])
     .filter((movie) => movie.id && movie.poster_path && !movie.adult)
+    .filter((movie) => !genreId || movie.genre_ids?.includes(genreId))
     .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
     .slice(0, 24);
   if (!candidates.length) return null;
@@ -221,6 +233,7 @@ async function findDescribedMovie(prompt: string, signal: AbortSignal) {
   const details = await Promise.all(candidates.map(async (candidate) => (
     await agentTmdbRequest<TmdbMovieDetails>(`/movie/${candidate.id}`, { append_to_response: "keywords" }, signal)
   )));
+  const plotTokens = tokens.filter((token) => !Object.prototype.hasOwnProperty.call(MOVIE_GENRES, token));
   const scored = details
     .filter((movie): movie is TmdbMovieDetails => Boolean(movie))
     .map((movie) => {
@@ -230,7 +243,7 @@ async function findDescribedMovie(prompt: string, signal: AbortSignal) {
         movie.tagline,
         ...(movie.keywords?.keywords ?? []).map((keyword) => keyword.name),
       ].join(" ").toLowerCase();
-      const score = tokens.reduce((total, token) => {
+      const score = plotTokens.length === 0 ? 1 : plotTokens.reduce((total, token) => {
         const terms = SYNONYMS[token] ?? [token];
         return total + (terms.some((term) => searchable.includes(term)) ? 1 : 0);
       }, 0);
