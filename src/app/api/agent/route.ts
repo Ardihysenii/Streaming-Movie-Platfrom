@@ -295,11 +295,18 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
 function likelyTitleQueries(prompt: string, query: string) {
   const queries = [query.trim()];
   const patterns = [
+    /\b(?:something|a movie|a show)\s+like\s+["“]?([^"”?.!,]+)["”]?/i,
     /\b(?:like|similar to|called|named|titled)\s+["“]?([^"”?.!,]+)["”]?/i,
   ];
   patterns.forEach((pattern) => {
     const match = prompt.match(pattern);
-    const extracted = match?.[1]?.trim().replace(/\b(?:please|for me|right now)$/i, "").trim();
+    let extracted = match?.[1]?.trim() || "";
+    const nested = extracted.match(/^(.+?)\s+like\s+(.+)$/i);
+    if (nested) extracted = nested[2].trim();
+    extracted = extracted
+      .replace(/\s+(?:it|that|which)\s+(?:just\s+)?(?:came|comes|is|was)\b.*$/i, "")
+      .replace(/\b(?:please|for me|right now)$/i, "")
+      .trim();
     if (extracted && extracted.length >= 3) queries.unshift(extracted);
   });
   return [...new Set(queries.filter(Boolean))].slice(0, 3);
