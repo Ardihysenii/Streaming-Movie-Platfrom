@@ -5709,7 +5709,7 @@ body:has(.watch-page) .bottom-dock {
 
 .agent-panel-body .movie-grid {
   gap: 28px 12px;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 26px;
 }
 
