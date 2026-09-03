@@ -45,7 +45,11 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
   async function submit(value: string) {
     const cleanValue = value.trim();
     if (!cleanValue || loading) return;
-    const history = messages.map(({ role, content }) => ({ role, content }));
+    const history = messages.map(({ role, content, results }) => ({
+      role,
+      content,
+      results: results?.slice(0, 10).map(({ id, tmdb_id, media_type, title }) => ({ id, tmdb_id, media_type, title })),
+    }));
     setPrompt("");
     setMessages((current) => [...current, { role: "user", content: cleanValue }]);
     setLoading(true);
