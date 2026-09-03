@@ -325,11 +325,13 @@ async function findClosestTitles(intent: AgentIntent, prompt: string, signal: Ab
     page: 1,
     include_adult: false,
   }, signal);
-  const fallbackPages = await Promise.all([
+  const fallbackRequests = [
     agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/trending/all/week", {}, signal),
-    agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/movie/top_rated", { page: 1 }, signal),
-    agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/tv/top_rated", { page: 1 }, signal),
-  ]);
+    ...Array.from({ length: 5 }, (_, index) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/movie/top_rated", { page: index + 1 }, signal)),
+    ...Array.from({ length: 3 }, (_, index) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/tv/top_rated", { page: index + 1 }, signal)),
+    ...Array.from({ length: 3 }, (_, index) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/movie/popular", { page: index + 1 }, signal)),
+  ];
+  const fallbackPages = await Promise.all(fallbackRequests);
   const candidates = [
     ...(multi?.results ?? []),
     ...fallbackPages.flatMap((page) => page?.results ?? []),
