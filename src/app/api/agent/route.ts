@@ -4,6 +4,8 @@ import {
   discoverMovies,
   discoverSeries,
   getMovie,
+  getSimilarMovies,
+  getSimilarSeries,
   searchCatalog,
   type SearchScope,
 } from "@/lib/tmdb";
@@ -12,6 +14,7 @@ import type { Movie } from "@/lib/types";
 type AgentTurn = {
   role?: unknown;
   content?: unknown;
+  results?: Array<{ id?: string | number; tmdb_id?: number; media_type?: "movie" | "tv"; title?: string }>;
 };
 
 type AgentRequest = {
@@ -104,6 +107,13 @@ function recentUserPrompt(history: AgentTurn[]) {
     .map((turn) => String(turn.content).trim())
     .filter(Boolean)
     .at(-1) ?? "";
+}
+
+function previousResult(history: AgentTurn[]) {
+  return history
+    .filter((turn) => turn.role === "assistant" && Array.isArray(turn.results) && turn.results.length)
+    .flatMap((turn) => turn.results ?? [])
+    .at(-1) ?? null;
 }
 
 function extractActorName(prompt: string) {
@@ -263,6 +273,18 @@ export async function POST(request: Request) {
       return NextResponse.json({
         message: "Hello! I can help you find movies, TV shows, and anime. Tell me a plot, actor, genre, year, or mood.",
         results: [],
+      });
+    }
+
+    const prior = previousResult(history);
+    if (prior && /\b(?:similar|like that|like it|more like|show me more|another one)\b/i.test(prompt)) {
+      const id = prior.tmdb_id ?? prior.id;
+      const related = prior.media_type === "tv"
+        ? await getSimilarSeries(id ?? "", request.signal)
+        : await getSimilarMovies(id ?? "", request.signal);
+      return NextResponse.json({
+        message: related.length ? `Here are more titles similar to ${prior.title || "that one"}.` : "I could not find similar titles right now.",
+        results: related.slice(0, MAX_RESULTS),
       });
     }
 
