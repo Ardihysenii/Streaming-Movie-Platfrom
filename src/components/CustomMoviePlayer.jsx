@@ -828,7 +828,7 @@ export default function CustomMoviePlayer({
     const now = Date.now();
     const sameSequence = previous.direction === direction
       && previous.count > 0
-      && now - previous.lastGestureAt < 1800;
+      && now - previous.lastGestureAt < 3000;
     const count = sameSequence ? previous.count + 1 : 1;
     const baseTime = sameSequence
       ? previous.baseTime
@@ -843,7 +843,7 @@ export default function CustomMoviePlayer({
       lastGestureAt: now,
       timer: window.setTimeout(() => {
         seekGestureRef.current = { direction: 0, count: 0, baseTime: 0, lastTime: null, lastGestureAt: 0, timer: null };
-      }, 1800),
+      }, 3000),
     };
     setCurrentTime(nextTime);
     showSeekFeedback(direction * 10 * count);
