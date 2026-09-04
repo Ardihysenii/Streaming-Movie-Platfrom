@@ -145,7 +145,7 @@ export default function CustomMoviePlayer({
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
   const seekFeedbackTimerRef = useRef(null);
-  const seekGestureRef = useRef({ direction: 0, count: 0, baseTime: 0, lastTime: null, timer: null });
+  const seekGestureRef = useRef({ direction: 0, count: 0, baseTime: 0, lastTime: null, lastGestureAt: 0, timer: null });
   const touchTapRef = useRef({ time: 0, x: 0 });
   const touchSuppressRef = useRef(false);
   const ignoreDoubleClickRef = useRef(false);
@@ -825,7 +825,10 @@ export default function CustomMoviePlayer({
   const seekByGesture = (direction) => {
     if (direction === 0) return;
     const previous = seekGestureRef.current;
-    const sameSequence = previous.direction === direction && previous.count > 0;
+    const now = Date.now();
+    const sameSequence = previous.direction === direction
+      && previous.count > 0
+      && now - previous.lastGestureAt < 1800;
     const count = sameSequence ? previous.count + 1 : 1;
     const baseTime = sameSequence
       ? previous.baseTime
@@ -837,9 +840,10 @@ export default function CustomMoviePlayer({
       count,
       baseTime,
       lastTime: nextTime,
+      lastGestureAt: now,
       timer: window.setTimeout(() => {
-        seekGestureRef.current = { direction: 0, count: 0, baseTime: 0, lastTime: null, timer: null };
-      }, 900),
+        seekGestureRef.current = { direction: 0, count: 0, baseTime: 0, lastTime: null, lastGestureAt: 0, timer: null };
+      }, 1800),
     };
     setCurrentTime(nextTime);
     showSeekFeedback(direction * 10 * count);
@@ -1204,7 +1208,10 @@ export default function CustomMoviePlayer({
             {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
           </button>
           {seekFeedback ? (
-            <div className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">{seekFeedback}</div>
+            <div className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
+              <span className="player-seek-feedback-icon" aria-hidden="true">{seekFeedback.startsWith("+") ? "↻" : "↺"}</span>
+              <strong>{seekFeedback}</strong>
+            </div>
           ) : null}
           <div className={`nova-player-controls custom-provider-controls${controlsVisible ? "" : " controls-hidden"}`}>
             <input
