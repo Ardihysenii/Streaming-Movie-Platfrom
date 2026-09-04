@@ -145,6 +145,7 @@ export default function CustomMoviePlayer({
   const centerFeedbackTimerRef = useRef(null);
   const gestureClickTimerRef = useRef(null);
   const seekFeedbackTimerRef = useRef(null);
+  const seekGestureRef = useRef({ direction: 0, count: 0, baseTime: 0, lastTime: null, timer: null });
   const touchTapRef = useRef({ time: 0, x: 0 });
   const touchSuppressRef = useRef(false);
   const ignoreDoubleClickRef = useRef(false);
@@ -438,6 +439,7 @@ export default function CustomMoviePlayer({
     if (centerFeedbackTimerRef.current !== null) window.clearTimeout(centerFeedbackTimerRef.current);
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
+    if (seekGestureRef.current.timer !== null) window.clearTimeout(seekGestureRef.current.timer);
   }, []);
 
 
@@ -783,7 +785,8 @@ export default function CustomMoviePlayer({
     sendCommand(nextPlaying ? "play" : "pause");
   };
   const showSeekFeedback = (amount) => {
-    setSeekFeedback(amount > 0 ? "+10s" : "−10s");
+    const seconds = Math.abs(amount);
+    setSeekFeedback((amount > 0 ? "+" : "−") + seconds + "s");
     if (seekFeedbackTimerRef.current !== null) window.clearTimeout(seekFeedbackTimerRef.current);
     seekFeedbackTimerRef.current = window.setTimeout(() => {
       setSeekFeedback(null);
@@ -809,6 +812,37 @@ export default function CustomMoviePlayer({
   const seekBy = (amount) => {
     const nextTime = Math.max(0, currentTime + amount);
     showSeekFeedback(amount);
+    sendCommand("seek", [nextTime]);
+  };
+
+  const getGestureDirection = (clientX, rect) => {
+    const relativeX = clientX - rect.left;
+    const sideWidth = rect.width * 0.32;
+    if (relativeX > sideWidth && relativeX < rect.width - sideWidth) return 0;
+    return relativeX <= sideWidth ? -1 : 1;
+  };
+
+  const seekByGesture = (direction) => {
+    if (direction === 0) return;
+    const previous = seekGestureRef.current;
+    const sameSequence = previous.direction === direction && previous.count > 0;
+    const count = sameSequence ? previous.count + 1 : 1;
+    const baseTime = sameSequence
+      ? previous.baseTime
+      : (Number.isFinite(previous.lastTime) ? previous.lastTime : currentTime);
+    const nextTime = Math.max(0, baseTime + direction * 10 * count);
+    if (previous.timer !== null) window.clearTimeout(previous.timer);
+    seekGestureRef.current = {
+      direction,
+      count,
+      baseTime,
+      lastTime: nextTime,
+      timer: window.setTimeout(() => {
+        seekGestureRef.current = { direction: 0, count: 0, baseTime: 0, lastTime: null, timer: null };
+      }, 900),
+    };
+    setCurrentTime(nextTime);
+    showSeekFeedback(direction * 10 * count);
     sendCommand("seek", [nextTime]);
   };
 
@@ -870,7 +904,7 @@ export default function CustomMoviePlayer({
       ignoreDoubleClickRef.current = true;
       window.setTimeout(() => { ignoreDoubleClickRef.current = false; }, 460);
       const rect = event.currentTarget.getBoundingClientRect();
-      seekBy(touch.clientX - rect.left < rect.width / 2 ? -10 : 10);
+      seekByGesture(getGestureDirection(touch.clientX, rect));
       return;
     }
     touchTapRef.current = { time: now, x: touch.clientX };
@@ -908,7 +942,7 @@ export default function CustomMoviePlayer({
       gestureClickTimerRef.current = null;
     }
     const rect = event.currentTarget.getBoundingClientRect();
-    seekBy(event.clientX - rect.left < rect.width / 2 ? -10 : 10);
+    seekByGesture(getGestureDirection(event.clientX, rect));
   };
   const handleSeek = (event) => {
     const nextTime = Number(event.target.value);
