@@ -374,6 +374,7 @@ export default function CustomMoviePlayer({
 
   useEffect(() => {
     resumeAppliedRef.current = false;
+    setIsReady(false);
     setCurrentTime(0);
     setDuration(0);
   }, [embedUrl]);
@@ -1201,6 +1202,14 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
+        {!isReady ? (
+          <div className="nova-source-loading" role="status" aria-live="polite">
+            <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
+            <span className="nova-source-loading-brand">NOVA</span>
+            <strong>{mediaType === "tv" ? "Preparing your episode" : "Preparing your movie"}</strong>
+            <span className="nova-source-loading-detail">Connecting to your stream…</span>
+          </div>
+        ) : null}
       {activeSubtitle ? (
         <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontFamily: subtitleFontFamily, fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem", bottom: `${subtitlePosition}%` }}>
           {activeSubtitle.text}
