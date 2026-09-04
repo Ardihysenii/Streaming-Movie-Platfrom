@@ -815,7 +815,7 @@ export default function CustomMoviePlayer({
     sendCommand("seek", [nextTime]);
   };
 
-  const gestureSequenceWindow = 10000;
+  const gestureSequenceWindow = 2000;
 
   const getGestureDirection = (clientX, rect) => {
     const relativeX = clientX - rect.left;
@@ -1218,7 +1218,6 @@ export default function CustomMoviePlayer({
           </button>
           {seekFeedback ? (
             <div key={seekFeedback} className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
-              <span className="player-seek-feedback-icon" aria-hidden="true">{seekFeedback.startsWith("+") ? <ForwardIcon /> : <RewindIcon />}</span>
               <strong>{seekFeedback}</strong>
             </div>
           ) : null}
