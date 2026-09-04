@@ -1202,7 +1202,7 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
-        {!isReady ? (
+        {isCineSrc && !isReady ? (
           <div className="nova-source-loading" role="status" aria-live="polite">
             <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
             <span className="nova-source-loading-brand">NOVA</span>
