@@ -6636,7 +6636,7 @@ body:has(.watch-page) .bottom-dock {
   pointer-events: none;
   position: absolute;
   transform: rotate(-7deg) scale(1.15);
-  z-index: -2;
+  z-index: 0;
 }
 
 .watch-page::after {
@@ -6652,7 +6652,7 @@ body:has(.watch-page) .bottom-dock {
   pointer-events: none;
   position: absolute;
   transform: scale(1.08);
-  z-index: -3;
+  z-index: 0;
 }
 
 .watch-page > * {
