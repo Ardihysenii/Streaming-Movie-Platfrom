@@ -6382,6 +6382,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .player-subtitle-customize input[type="range"] {
+  grid-column: 1 / -1;
   appearance: none;
   background: linear-gradient(to right, var(--accent) 0 var(--range-progress), rgba(255, 255, 255, 0.18) var(--range-progress) 100%);
   border-radius: 999px;
