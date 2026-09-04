@@ -865,8 +865,10 @@ export default function CustomMoviePlayer({
 
 
 
-  const handleGestureClick = () => {
+  const handleGestureClick = (event) => {
     if (touchSuppressRef.current) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    if (getGestureDirection(event.clientX, rect) !== 0) return;
     if (gestureClickTimerRef.current !== null) window.clearTimeout(gestureClickTimerRef.current);
     gestureClickTimerRef.current = window.setTimeout(() => {
       gestureClickTimerRef.current = null;
@@ -903,12 +905,17 @@ export default function CustomMoviePlayer({
       window.clearTimeout(gestureClickTimerRef.current);
       gestureClickTimerRef.current = null;
     }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const direction = getGestureDirection(touch.clientX, rect);
     if (isDoubleTap) {
       touchTapRef.current = { time: 0, x: 0 };
       ignoreDoubleClickRef.current = true;
       window.setTimeout(() => { ignoreDoubleClickRef.current = false; }, 460);
-      const rect = event.currentTarget.getBoundingClientRect();
-      seekByGesture(getGestureDirection(touch.clientX, rect));
+      seekByGesture(direction);
+      return;
+    }
+    if (direction !== 0) {
+      touchTapRef.current = { time: 0, x: 0 };
       return;
     }
     touchTapRef.current = { time: now, x: touch.clientX };
@@ -1208,8 +1215,8 @@ export default function CustomMoviePlayer({
             {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
           </button>
           {seekFeedback ? (
-            <div className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
-              <span className="player-seek-feedback-icon" aria-hidden="true">{seekFeedback.startsWith("+") ? "↻" : "↺"}</span>
+            <div key={seekFeedback} className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
+              <span className="player-seek-feedback-icon" aria-hidden="true">{seekFeedback.startsWith("+") ? <ForwardIcon /> : <RewindIcon />}</span>
               <strong>{seekFeedback}</strong>
             </div>
           ) : null}
