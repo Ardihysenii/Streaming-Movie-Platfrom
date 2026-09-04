@@ -6505,7 +6505,7 @@ body:has(.watch-page) .bottom-dock {
   background:
     radial-gradient(circle at 50% 42%, rgba(226, 29, 47, 0.2), transparent 28%),
     radial-gradient(circle at 18% 82%, rgba(73, 48, 130, 0.18), transparent 34%),
-    linear-gradient(145deg, rgba(5, 8, 14, 0.995), rgba(9, 11, 18, 0.995));
+    linear-gradient(145deg, rgb(5, 8, 14), rgb(9, 11, 18));
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   display: flex;
