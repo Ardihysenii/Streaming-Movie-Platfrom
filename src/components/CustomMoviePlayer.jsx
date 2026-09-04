@@ -832,15 +832,15 @@ export default function CustomMoviePlayer({
       && previous.count > 0
       && now - previous.lastGestureAt < gestureSequenceWindow;
     const count = sameSequence ? previous.count + 1 : 1;
-    const baseTime = sameSequence
-      ? previous.baseTime
-      : (Number.isFinite(previous.lastTime) ? previous.lastTime : currentTime);
-    const nextTime = Math.max(0, baseTime + direction * 10 * count);
+    // Each gesture applies its full counted amount to the current movie position.
+    // Example: +10, then +20 means the movie moves +10 and then another +20.
+    const startTime = Number.isFinite(previous.lastTime) ? previous.lastTime : currentTime;
+    const nextTime = Math.max(0, startTime + direction * 10 * count);
     if (previous.timer !== null) window.clearTimeout(previous.timer);
     seekGestureRef.current = {
       direction,
       count,
-      baseTime,
+      baseTime: startTime,
       lastTime: nextTime,
       lastGestureAt: now,
       timer: window.setTimeout(() => {
