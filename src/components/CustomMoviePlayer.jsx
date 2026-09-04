@@ -815,7 +815,7 @@ export default function CustomMoviePlayer({
     sendCommand("seek", [nextTime]);
   };
 
-  const gestureSequenceWindow = 3000;
+  const gestureSequenceWindow = 10000;
 
   const getGestureDirection = (clientX, rect) => {
     const relativeX = clientX - rect.left;
