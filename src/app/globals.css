@@ -6148,34 +6148,59 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-player-ui .player-subtitle-menu {
-  background: linear-gradient(145deg, rgba(30, 19, 28, 0.99), rgba(9, 12, 17, 0.99) 72%);
-  border: 1px solid rgba(226, 29, 47, 0.48);
-  border-radius: 14px;
+  --subtitle-panel-border: rgba(226, 29, 47, 0.48);
+  animation: subtitle-panel-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: linear-gradient(145deg, rgba(30, 19, 28, 0.98), rgba(9, 12, 17, 0.98) 72%);
+  border: 1px solid var(--subtitle-panel-border);
+  border-radius: 18px;
   bottom: 56px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.68), 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 36px rgba(226, 29, 47, 0.1);
   color: rgba(255, 255, 255, 0.86);
-  max-height: min(68vh, 520px);
+  isolation: isolate;
+  max-height: min(70vh, 540px);
+  overflow-x: hidden;
   overflow-y: auto;
-  padding: 14px;
+  padding: 15px;
   pointer-events: auto;
   position: absolute;
   right: 0;
   scrollbar-color: rgba(226, 29, 47, 0.72) rgba(255, 255, 255, 0.06);
-  width: min(350px, calc(100vw - 32px));
+  scrollbar-width: thin;
+  width: min(360px, calc(100vw - 32px));
   z-index: 20;
+}
+
+.custom-player-ui .player-subtitle-menu::before {
+  animation: subtitle-panel-ambient 8s ease-in-out infinite alternate;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(226, 29, 47, 0.24), transparent 34%),
+    radial-gradient(circle at 92% 86%, rgba(101, 55, 144, 0.2), transparent 38%),
+    linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, 0.035) 50%, transparent 80%);
+  background-size: 150% 150%, 150% 150%, 220% 100%;
+  content: "";
+  inset: 0;
+  opacity: 0.75;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
 }
 
 .custom-player-ui .player-subtitle-menu::after {
   background: rgba(17, 13, 19, 0.99);
-  border-bottom: 1px solid rgba(226, 29, 47, 0.48);
-  border-right: 1px solid rgba(226, 29, 47, 0.48);
+  border-bottom: 1px solid var(--subtitle-panel-border);
+  border-right: 1px solid var(--subtitle-panel-border);
   bottom: -7px;
   content: "";
   height: 13px;
   position: absolute;
-  right: 20px;
+  right: 22px;
   transform: rotate(45deg);
   width: 13px;
+}
+
+.custom-player-ui .player-subtitle-menu > * {
+  position: relative;
+  z-index: 1;
 }
 
 .player-subtitle-menu-header {
@@ -6183,81 +6208,87 @@ body:has(.watch-page) .bottom-dock {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 2px 2px 12px;
+  margin-bottom: 13px;
+  padding: 1px 1px 12px;
 }
 
 .player-subtitle-menu-header strong {
   color: #fff;
   font-size: 0.82rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .player-subtitle-menu-header button {
   align-items: center;
-  background: transparent;
-  border: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.66);
   cursor: pointer;
   display: flex;
-  font-size: 1.1rem;
-  height: 28px;
+  font-size: 1rem;
+  height: 30px;
   justify-content: center;
-  width: 28px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+  width: 30px;
 }
 
 .player-subtitle-menu-header button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(226, 29, 47, 0.18);
+  border-color: rgba(226, 29, 47, 0.55);
   color: #fff;
+  transform: rotate(90deg);
 }
 
 .player-subtitle-action {
   align-items: center;
-  background: rgba(255, 255, 255, 0.055);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9px;
-  color: rgba(255, 255, 255, 0.86);
+  border-radius: 11px;
+  color: rgba(255, 255, 255, 0.88);
   cursor: pointer;
   display: flex;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
+  font-weight: 600;
   justify-content: space-between;
-  min-height: 38px;
-  padding: 0 11px;
+  min-height: 42px;
+  padding: 0 13px;
   text-align: left;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
   width: 100%;
 }
 
 .player-subtitle-action:hover,
 .player-subtitle-action.is-active {
-  background: rgba(226, 29, 47, 0.14);
-  border-color: rgba(226, 29, 47, 0.55);
+  background: rgba(226, 29, 47, 0.16);
+  border-color: rgba(226, 29, 47, 0.58);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .player-subtitle-language,
 .player-subtitle-customize {
   display: grid;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 11px;
+  margin-top: 15px;
 }
 
 .player-subtitle-language > span,
 .player-subtitle-tool-label,
 .player-subtitle-customize > label,
 .player-subtitle-font-family > span {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.56);
   font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .player-subtitle-language-options,
 .player-subtitle-font-options {
   display: grid;
-  gap: 6px;
+  gap: 7px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -6265,38 +6296,64 @@ body:has(.watch-page) .bottom-dock {
 .player-subtitle-font-options button {
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 7px;
-  color: rgba(255, 255, 255, 0.72);
+  border-radius: 9px;
+  color: rgba(255, 255, 255, 0.74);
   cursor: pointer;
-  font-size: 0.68rem;
-  min-height: 32px;
-  padding: 5px 7px;
+  font-size: 0.69rem;
+  min-height: 36px;
+  padding: 6px 9px;
   text-align: left;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .player-subtitle-language-options button:hover,
 .player-subtitle-font-options button:hover,
 .player-subtitle-language-options button.is-selected,
 .player-subtitle-font-options button.is-selected {
-  background: rgba(226, 29, 47, 0.16);
-  border-color: rgba(226, 29, 47, 0.58);
+  background: rgba(226, 29, 47, 0.17);
+  border-color: rgba(226, 29, 47, 0.6);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .player-subtitle-font-family {
   display: grid;
-  gap: 8px;
+  gap: 9px;
+}
+
+.player-subtitle-customize {
+  animation: subtitle-customize-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(226, 29, 47, 0.055));
+  border: 1px solid rgba(226, 29, 47, 0.2);
+  border-radius: 14px;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 13px;
+  position: relative;
+}
+
+.player-subtitle-customize::before {
+  animation: subtitle-customize-ambient 7s ease-in-out infinite alternate;
+  background:
+    radial-gradient(circle at 90% 4%, rgba(226, 29, 47, 0.2), transparent 38%),
+    radial-gradient(circle at 4% 96%, rgba(90, 74, 160, 0.18), transparent 42%);
+  background-size: 160% 160%, 160% 160%;
+  content: "";
+  inset: 0;
+  opacity: 0.8;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
 }
 
 .player-subtitle-customize > label {
   display: grid;
-  gap: 8px;
+  gap: 9px;
 }
 
 .player-subtitle-customize > label > span {
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.71rem;
   justify-self: end;
   letter-spacing: 0;
   text-transform: none;
@@ -6306,9 +6363,13 @@ body:has(.watch-page) .bottom-dock {
   appearance: none;
   background: linear-gradient(to right, var(--accent) 0 var(--range-progress), rgba(255, 255, 255, 0.18) var(--range-progress) 100%);
   border-radius: 999px;
-  height: 4px;
+  height: 5px;
   outline: none;
   width: 100%;
+}
+
+.player-subtitle-customize input[type="range"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(226, 29, 47, 0.24);
 }
 
 .player-subtitle-customize input[type="range"]::-webkit-slider-thumb {
@@ -6316,23 +6377,85 @@ body:has(.watch-page) .bottom-dock {
   background: #fff;
   border: 2px solid var(--accent);
   border-radius: 50%;
-  height: 14px;
-  width: 14px;
+  box-shadow: 0 0 0 3px rgba(226, 29, 47, 0.12);
+  height: 16px;
+  width: 16px;
 }
 
 .player-subtitle-customize input[type="range"]::-moz-range-thumb {
   background: #fff;
   border: 2px solid var(--accent);
   border-radius: 50%;
-  height: 11px;
-  width: 11px;
+  box-shadow: 0 0 0 3px rgba(226, 29, 47, 0.12);
+  height: 13px;
+  width: 13px;
+}
+
+@keyframes subtitle-panel-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes subtitle-panel-ambient {
+  from { background-position: 0% 0%, 100% 100%, 0% 50%; }
+  to { background-position: 100% 60%, 0% 20%, 100% 50%; }
+}
+
+@keyframes subtitle-customize-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtitle-customize-ambient {
+  from { background-position: 100% 0%, 0% 100%; }
+  to { background-position: 20% 80%, 80% 20%; }
 }
 
 @media (max-width: 680px) {
   .custom-player-ui .player-subtitle-menu {
-    bottom: 54px;
-    max-height: min(64vh, 440px);
-    right: -8px;
-    width: min(320px, calc(100vw - 24px));
+    bottom: 52px;
+    border-radius: 17px;
+    left: 10px;
+    max-height: min(72dvh, 520px);
+    padding: 12px;
+    right: 10px;
+    width: auto;
+  }
+
+  .custom-player-ui .player-subtitle-menu::after {
+    right: 26px;
+  }
+
+  .player-subtitle-menu-header {
+    margin-bottom: 11px;
+    padding-bottom: 10px;
+  }
+
+  .player-subtitle-action {
+    min-height: 44px;
+  }
+
+  .player-subtitle-language-options,
+  .player-subtitle-font-options {
+    gap: 6px;
+  }
+
+  .player-subtitle-language-options button,
+  .player-subtitle-font-options button {
+    min-height: 40px;
+    padding: 7px 8px;
+  }
+
+  .player-subtitle-customize {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-player-ui .player-subtitle-menu,
+  .player-subtitle-customize,
+  .custom-player-ui .player-subtitle-menu::before,
+  .player-subtitle-customize::before {
+    animation: none;
   }
 }
