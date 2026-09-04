@@ -6164,7 +6164,7 @@ body:has(.watch-page) .bottom-dock {
   pointer-events: auto;
   position: absolute;
   right: 0;
-  scrollbar-color: rgba(226, 29, 47, 0.72) rgba(255, 255, 255, 0.06);
+  scrollbar-color: rgba(226, 29, 47, 0.42) rgba(255, 255, 255, 0.04);
   scrollbar-width: thin;
   width: min(360px, calc(100vw - 32px));
   z-index: 20;
@@ -6187,16 +6187,24 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-player-ui .player-subtitle-menu::after {
-  background: rgba(17, 13, 19, 0.99);
-  border-bottom: 1px solid var(--subtitle-panel-border);
-  border-right: 1px solid var(--subtitle-panel-border);
-  bottom: -7px;
-  content: "";
-  height: 13px;
-  position: absolute;
-  right: 22px;
-  transform: rotate(45deg);
-  width: 13px;
+  display: none;
+}
+
+.custom-player-ui .player-subtitle-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-player-ui .player-subtitle-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-player-ui .player-subtitle-menu::-webkit-scrollbar-thumb {
+  background: rgba(226, 29, 47, 0.42);
+  border-radius: 999px;
+}
+
+.custom-player-ui .player-subtitle-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(226, 29, 47, 0.62);
 }
 
 .custom-player-ui .player-subtitle-menu > * {
@@ -6451,7 +6459,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .custom-player-ui .player-subtitle-menu::after {
-    right: 26px;
+    display: none;
   }
 
   .player-subtitle-menu-header {
