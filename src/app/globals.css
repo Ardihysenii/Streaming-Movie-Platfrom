@@ -6171,12 +6171,13 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-player-ui .player-subtitle-menu::before {
-  animation: subtitle-panel-ambient 8s ease-in-out infinite alternate;
+  animation: subtitle-panel-ambient 6.5s ease-in-out infinite alternate;
   background:
-    radial-gradient(circle at 12% 8%, rgba(226, 29, 47, 0.24), transparent 34%),
-    radial-gradient(circle at 92% 86%, rgba(101, 55, 144, 0.2), transparent 38%),
-    linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, 0.035) 50%, transparent 80%);
-  background-size: 150% 150%, 150% 150%, 220% 100%;
+    radial-gradient(circle at 12% 8%, rgba(226, 29, 47, 0.27), transparent 34%),
+    radial-gradient(circle at 92% 86%, rgba(101, 55, 144, 0.24), transparent 38%),
+    linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, 0.045) 50%, transparent 80%),
+    conic-gradient(from 210deg at 50% 50%, transparent 0deg, rgba(226, 29, 47, 0.07) 75deg, transparent 145deg, rgba(105, 75, 170, 0.06) 250deg, transparent 320deg);
+  background-size: 150% 150%, 150% 150%, 220% 100%, 180% 180%;
   content: "";
   inset: 0;
   opacity: 0.75;
@@ -6333,22 +6334,43 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .player-subtitle-customize::before {
-  animation: subtitle-customize-ambient 7s ease-in-out infinite alternate;
+  animation: subtitle-customize-ambient 5.5s ease-in-out infinite alternate;
   background:
-    radial-gradient(circle at 90% 4%, rgba(226, 29, 47, 0.2), transparent 38%),
-    radial-gradient(circle at 4% 96%, rgba(90, 74, 160, 0.18), transparent 42%);
-  background-size: 160% 160%, 160% 160%;
+    radial-gradient(circle at 90% 4%, rgba(226, 29, 47, 0.22), transparent 38%),
+    radial-gradient(circle at 4% 96%, rgba(90, 74, 160, 0.2), transparent 42%),
+    linear-gradient(120deg, transparent 28%, rgba(255, 255, 255, 0.04) 50%, transparent 72%);
+  background-size: 160% 160%, 160% 160%, 230% 100%;
   content: "";
   inset: 0;
-  opacity: 0.8;
+  opacity: 0.82;
   pointer-events: none;
   position: absolute;
   z-index: -1;
 }
 
+.player-subtitle-customize::after {
+  animation: subtitle-customize-sheen 6s ease-in-out infinite;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.11) 50%, transparent 65%);
+  content: "";
+  inset: -55% -35%;
+  opacity: 0.38;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-58%) rotate(12deg);
+  z-index: 0;
+}
+
 .player-subtitle-customize > label {
+  align-items: center;
   display: grid;
-  gap: 9px;
+  gap: 10px 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  row-gap: 10px;
+}
+
+.player-subtitle-customize > * {
+  position: relative;
+  z-index: 1;
 }
 
 .player-subtitle-customize > label > span {
@@ -6397,8 +6419,8 @@ body:has(.watch-page) .bottom-dock {
 }
 
 @keyframes subtitle-panel-ambient {
-  from { background-position: 0% 0%, 100% 100%, 0% 50%; }
-  to { background-position: 100% 60%, 0% 20%, 100% 50%; }
+  from { background-position: 0% 0%, 100% 100%, 0% 50%, 0% 0%; }
+  to { background-position: 100% 60%, 0% 20%, 100% 50%, 100% 100%; }
 }
 
 @keyframes subtitle-customize-in {
@@ -6407,8 +6429,13 @@ body:has(.watch-page) .bottom-dock {
 }
 
 @keyframes subtitle-customize-ambient {
-  from { background-position: 100% 0%, 0% 100%; }
-  to { background-position: 20% 80%, 80% 20%; }
+  from { background-position: 100% 0%, 0% 100%, 0% 50%; }
+  to { background-position: 20% 80%, 80% 20%, 100% 50%; }
+}
+
+@keyframes subtitle-customize-sheen {
+  0%, 18% { transform: translateX(-58%) rotate(12deg); }
+  55%, 100% { transform: translateX(58%) rotate(12deg); }
 }
 
 @media (max-width: 680px) {
@@ -6447,6 +6474,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .player-subtitle-customize {
+    gap: 15px;
     padding: 12px;
   }
 }
@@ -6455,7 +6483,8 @@ body:has(.watch-page) .bottom-dock {
   .custom-player-ui .player-subtitle-menu,
   .player-subtitle-customize,
   .custom-player-ui .player-subtitle-menu::before,
-  .player-subtitle-customize::before {
+  .player-subtitle-customize::before,
+  .player-subtitle-customize::after {
     animation: none;
   }
 }
