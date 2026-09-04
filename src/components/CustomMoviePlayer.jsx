@@ -299,7 +299,15 @@ export default function CustomMoviePlayer({
 
 
   useEffect(() => {
-    if (!activeId) return undefined;
+    // CineSrc already supplies subtitles from the same stream manifest as the
+    // video. Fetching a second title-based SubDL file here can be several
+    // seconds early or late when the provider uses a different release/cut.
+    if (!activeId || isCineSrc) {
+      setSubtitleCues([]);
+      setSubtitleStatus(isCineSrc ? "native" : "empty");
+      setSubtitleError("");
+      return undefined;
+    }
     const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
     if (!subtitleService) {
       setSubtitleCues([]);
@@ -352,7 +360,7 @@ export default function CustomMoviePlayer({
         }
       });
     return () => controller.abort();
-  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage]);
+  }, [activeId, episodeNumber, imdbId, isCineSrc, mediaType, seasonNumber, subtitleLanguage]);
 
 
 
