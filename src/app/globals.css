@@ -6612,46 +6612,34 @@ body:has(.watch-page) .bottom-dock {
 }
 
 
-/* Watch-page atmosphere: large background motion only, kept behind all content. */
+/* Watch-page atmosphere: lightweight cinematic motion only, kept behind all content. */
 .watch-page {
   isolation: isolate;
   position: relative;
 }
 
 .watch-page::before {
-  animation: nova-watch-lines 30s linear infinite;
+  animation: nova-watch-bands 34s ease-in-out infinite alternate;
   background:
-    repeating-linear-gradient(118deg,
-      transparent 0 128px,
-      rgba(226, 29, 47, 0.08) 130px,
-      rgba(226, 29, 47, 0.02) 142px,
-      transparent 154px 288px),
-    repeating-linear-gradient(118deg,
-      transparent 0 310px,
-      rgba(112, 82, 180, 0.07) 314px,
-      transparent 328px 520px);
+    linear-gradient(118deg, transparent 22%, rgba(226, 29, 47, 0.075) 43%, transparent 58%),
+    linear-gradient(118deg, transparent 46%, rgba(81, 65, 155, 0.06) 59%, transparent 72%),
+    linear-gradient(118deg, transparent 70%, rgba(226, 29, 47, 0.045) 81%, transparent 91%);
   content: "";
-  inset: -42% -34%;
-  opacity: 0.7;
+  inset: -70% -55%;
+  opacity: 0.62;
   pointer-events: none;
   position: absolute;
-  transform: rotate(-7deg) scale(1.15);
+  transform: translate3d(-8%, 0, 0) rotate(-8deg);
+  will-change: transform;
   z-index: 0;
 }
 
 .watch-page::after {
-  animation: nova-watch-aurora 22s ease-in-out infinite alternate;
-  background:
-    radial-gradient(ellipse at 18% 12%, rgba(226, 29, 47, 0.14), transparent 34%),
-    radial-gradient(ellipse at 86% 46%, rgba(67, 49, 133, 0.14), transparent 38%),
-    radial-gradient(ellipse at 48% 100%, rgba(226, 29, 47, 0.08), transparent 36%);
+  background: radial-gradient(ellipse at 50% 48%, rgba(16, 22, 42, 0.18), transparent 68%);
   content: "";
-  filter: blur(24px);
-  inset: -12%;
-  opacity: 0.7;
+  inset: 0;
   pointer-events: none;
   position: absolute;
-  transform: scale(1.08);
   z-index: 0;
 }
 
@@ -6660,42 +6648,23 @@ body:has(.watch-page) .bottom-dock {
   z-index: 1;
 }
 
-@keyframes nova-watch-lines {
+@keyframes nova-watch-bands {
   from {
-    background-position: 0 0, 0 0;
-    transform: translate3d(-5%, -2%, 0) rotate(-7deg) scale(1.15);
+    transform: translate3d(-8%, -1%, 0) rotate(-8deg);
   }
   to {
-    background-position: 520px 260px, -360px 180px;
-    transform: translate3d(5%, 2%, 0) rotate(-7deg) scale(1.15);
-  }
-}
-
-@keyframes nova-watch-aurora {
-  from {
-    background-position: 0% 0%, 100% 45%, 45% 100%;
-    transform: scale(1.08) translate3d(-2%, -1%, 0);
-  }
-  to {
-    background-position: 82% 28%, 10% 68%, 72% 0%;
-    transform: scale(1.18) translate3d(2%, 1%, 0);
+    transform: translate3d(8%, 1%, 0) rotate(-8deg);
   }
 }
 
 @media (max-width: 680px) {
   .watch-page::before {
-    opacity: 0.5;
-  }
-
-  .watch-page::after {
-    filter: blur(18px);
-    opacity: 0.58;
+    opacity: 0.42;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .watch-page::before,
-  .watch-page::after {
+  .watch-page::before {
     animation: none;
   }
 }
