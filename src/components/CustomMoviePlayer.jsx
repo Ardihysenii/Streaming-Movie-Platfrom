@@ -1045,7 +1045,7 @@ export default function CustomMoviePlayer({
     // A number of mobile webviews expose the fullscreen button but reject the
     // Fullscreen API for cross-origin iframes. Keep a reliable in-page fallback
     // so the player still expands to the viewport on those devices.
-    if (isMobile && mobileFullscreen) {
+    if (isMobile && mobileFullscreenRef.current) {
       setMobileFullscreenState(false);
       setIsFullscreen(false);
       return;
@@ -1070,7 +1070,7 @@ export default function CustomMoviePlayer({
     // or require their prefixed request method. Keep the desktop path exactly
     // as-is, while trying the mobile-compatible targets only on mobile.
     if (isMobile) {
-      setMobileFullscreen(true);
+      setMobileFullscreenState(true);
       setIsFullscreen(true);
       const mobileTarget = player;
       const requestFullscreen = mobileTarget.requestFullscreen || mobileTarget.webkitRequestFullscreen;
