@@ -135,7 +135,7 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
             onChange={(event) => setPrompt(event.target.value)}
             placeholder="Say hello or ask for movies, shows, or anime…"
             aria-label="Chat with NOVA Agent"
-            maxLength={240}
+            maxLength={600}
           />
           <button type="submit" disabled={loading || !prompt.trim()}>Send</button>
         </form>
