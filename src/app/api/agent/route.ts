@@ -358,7 +358,12 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
     }
     return responses[0]?.results?.[0]?.id ?? null;
   }));
-  const tokenIds = idsByToken.filter((id): id is number => typeof id === "number");
+  const priority = ["ai", "artificial", "infected", "zombie", "robot", "alien", "dog", "future", "fighting", "fight", "battle"];
+  const tokenIds = tokens
+    .map((token, index) => ({ token, id: idsByToken[index] }))
+    .filter((entry): entry is { token: string; id: number } => typeof entry.id === "number")
+    .sort((left, right) => (priority.indexOf(left.token) === -1 ? 99 : priority.indexOf(left.token)) - (priority.indexOf(right.token) === -1 ? 99 : priority.indexOf(right.token)))
+    .map((entry) => entry.id);
   if (!tokenIds.length) return [];
 
   const combinations = [tokenIds, ...tokenIds.map((id) => [id])]
