@@ -1066,65 +1066,15 @@ export default function CustomMoviePlayer({
 
 
 
-    // Touch browsers can reject fullscreen on an absolutely-positioned wrapper
-    // or require their prefixed request method. Keep the desktop path exactly
-    // as-is, while trying the mobile-compatible targets only on mobile.
+    // Keep mobile fullscreen inside NOVA instead of invoking the native
+    // fullscreen layer. iOS Safari can dismiss native iframe fullscreen on
+    // rotation or touch, which makes the player appear to leave fullscreen.
+    // The fixed NOVA layer stays active until the user taps this button again.
     if (isMobile) {
       setMobileFullscreenState(true);
       setIsFullscreen(true);
-      const mobileTarget = player;
-      const requestFullscreen = mobileTarget.requestFullscreen || mobileTarget.webkitRequestFullscreen;
-      if (requestFullscreen) {
-        try {
-          await requestFullscreen.call(mobileTarget, { navigationUI: "hide" });
-          return;
-        } catch {
-          // Some mobile browsers only allow fullscreen on the embedded frame.
-        }
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const frame = iframeRef.current;
-      const requestFrameFullscreen = frame?.requestFullscreen || frame?.webkitRequestFullscreen;
-      if (frame && requestFrameFullscreen) {
-        try {
-          await requestFrameFullscreen.call(frame, { navigationUI: "hide" });
-        } catch {
-          // The in-page mobile fallback above remains active.
-        }
-        return;
-      }
       return;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     await player.requestFullscreen();
   };
