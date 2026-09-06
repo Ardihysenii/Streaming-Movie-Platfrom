@@ -182,7 +182,7 @@ function extractActorName(prompt: string) {
 function descriptionTokens(prompt: string) {
   const words = prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").split(/\s+/).filter(Boolean);
   return words
-    .filter((word) => word.length > 3 && !STOP_WORDS.has(word) && (DESCRIPTION_WORDS.has(word) || Boolean(GENRE_ALIASES[word])))
+    .filter((word) => (word.length > 3 || word === "ai") && !STOP_WORDS.has(word) && (DESCRIPTION_WORDS.has(word) || Boolean(GENRE_ALIASES[word])))
     .map((word) => GENRE_ALIASES[word] || word);
 }
 
@@ -335,19 +335,44 @@ async function findPersonFilmography(prompt: string, signal: AbortSignal) {
   return { person: details.name, results };
 }
 
+const KEYWORD_ALIASES: Record<string, string[]> = {
+  ai: ["artificial intelligence", "ai", "robot", "android"],
+  fighting: ["fighting", "martial arts", "combat", "battle"],
+  fight: ["fighting", "martial arts", "combat", "battle"],
+  battle: ["battle", "combat", "war"],
+  infected: ["infection", "infected", "virus", "outbreak", "zombie"],
+  dog: ["dog", "dogs", "animal", "pet"],
+};
+
 async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: AbortSignal): Promise<Movie[]> {
-  const tokens = [...new Set(descriptionTokens(prompt))].slice(0, 3);
+  const tokens = [...new Set(descriptionTokens(prompt))].slice(0, 4);
   if (!TMDB_API_KEY || !tokens.length) return [];
 
-  const keywordIds = await Promise.all(tokens.map(async (token) => {
-    const response = await agentTmdbRequest<TmdbKeywordSearch>("/search/keyword", { query: token, page: 1 }, signal);
-    const exact = response?.results?.find((keyword) => keyword.name?.toLowerCase() === token);
-    return exact?.id ?? response?.results?.[0]?.id ?? null;
+  const idsByToken = await Promise.all(tokens.map(async (token) => {
+    const queries = KEYWORD_ALIASES[token] ?? [token];
+    const responses = await Promise.all(queries.map((query) => agentTmdbRequest<TmdbKeywordSearch>("/search/keyword", { query, page: 1 }, signal)));
+    for (let index = 0; index < responses.length; index += 1) {
+      const response = responses[index];
+      const exact = response?.results?.find((keyword) => keyword.name?.toLowerCase() === queries[index].toLowerCase());
+      if (exact?.id) return exact.id;
+    }
+    return responses[0]?.results?.[0]?.id ?? null;
   }));
-  const ids = keywordIds.filter((id): id is number => typeof id === "number");
-  if (!ids.length) return [];
+  const tokenIds = idsByToken.filter((id): id is number => typeof id === "number");
+  if (!tokenIds.length) return [];
 
-  const discoverParams = {
+  const combinations = [tokenIds, ...tokenIds.map((id) => [id])]
+    .map((ids) => [...new Set(ids)])
+    .filter((ids, index, all) => ids.length && all.findIndex((candidate) => candidate.join(",") === ids.join(",")) === index)
+    .slice(0, 5);
+  const paths = intent.scope === "movies"
+    ? ["/discover/movie"]
+    : intent.scope === "series"
+      ? ["/discover/tv"]
+      : ["/discover/movie", "/discover/tv"];
+  const requests = combinations.flatMap((ids) => paths.map((path) => agentTmdbRequest<{
+    results?: Array<{ id: number; poster_path?: string | null; genre_ids?: number[]; original_language?: string }>
+  }>(path, {
     with_keywords: ids.join(","),
     sort_by: intent.sortBy,
     page: 1,
@@ -357,20 +382,19 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
     "primary_release_date.lte": intent.sortBy === "primary_release_date.desc"
       ? new Date().toISOString().slice(0, 10)
       : undefined,
-  };
-  const paths = intent.scope === "movies"
-    ? ["/discover/movie"]
-    : intent.scope === "series"
-      ? ["/discover/tv"]
-      : ["/discover/movie", "/discover/tv"];
-  const pages = await Promise.all(paths.map((path) => (
-    agentTmdbRequest<{ results?: Array<{ id: number; poster_path?: string | null; genre_ids?: number[]; original_language?: string }> }>(path, discoverParams, signal)
-  )));
-  const candidates = pages.flatMap((page, index) => (page?.results ?? []).map((item) => ({
-    ...item,
-    media_type: paths[index] === "/discover/tv" ? "tv" as const : "movie" as const,
-  }))).filter((item) => item.poster_path);
-  const details = await Promise.all(candidates.slice(0, 8).map(async (candidate) => {
+  }, signal)));
+  const pages = await Promise.all(requests);
+  const candidates = pages.flatMap((page, index) => {
+    const path = paths[index % paths.length];
+    return (page?.results ?? []).map((item) => ({
+      ...item,
+      media_type: path === "/discover/tv" ? "tv" as const : "movie" as const,
+    }));
+  }).filter((item) => item.poster_path)
+    .filter((item, index, all) => all.findIndex((candidate) => `${candidate.media_type}:${candidate.id}` === `${item.media_type}:${item.id}`) === index)
+    .slice(0, 18);
+
+  const details = await Promise.all(candidates.map(async (candidate) => {
     try {
       return candidate.media_type === "tv"
         ? await getSeries(candidate.id, signal)
@@ -609,7 +633,7 @@ export async function POST(request: Request) {
     const keywordResults = await findKeywordMatches(intent, prompt, request.signal);
     if (keywordResults.length) {
       return NextResponse.json({
-        message: `I understood the clues in your description and found these ${intent.scope === "series" ? "TV shows" : intent.scope === "anime" ? "anime titles" : "titles"}.`,
+        message: `I matched the story clues against NOVA’s catalog and found these ${intent.scope === "series" ? "TV shows" : intent.scope === "anime" ? "anime titles" : "titles"}.`,
         results: keywordResults,
       });
     }
