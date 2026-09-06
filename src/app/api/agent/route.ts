@@ -4,10 +4,12 @@ import {
   discoverMovies,
   discoverSeries,
   getMovie,
+  getPerson,
   getSeries,
   getSimilarMovies,
   getSimilarSeries,
   searchCatalog,
+  searchPeople,
   type SearchScope,
 } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
@@ -100,6 +102,8 @@ const STOP_WORDS = new Set([
   "named", "something", "something", "whose", "where", "there", "this", "is",
   "i", "im", "i’m", "me", "my", "you", "your", "can", "could", "would", "should",
   "want", "wants", "looking", "look", "watch", "watching", "feel", "feeling", "find",
+  "tell", "explain", "mean", "means", "does", "do", "is", "are", "was", "were", "about",
+  "worth", "review", "reviews", "story", "plot", "synopsis", "cast", "character", "characters",
 ]);
 const DESCRIPTION_WORDS = new Set([
   "dog", "dogs", "infected", "infection", "virus", "zombie", "zombies", "disease",
@@ -109,6 +113,8 @@ const DESCRIPTION_WORDS = new Set([
   "funny", "scary", "romantic", "dark", "lighthearted", "emotional", "inspiring",
   "mind-bending", "mysterious", "mystery", "violent", "feel-good", "heartwarming",
   "action", "thriller", "horror", "comedy", "drama", "fantasy", "romance", "documentary",
+  "fighting", "fight", "battle", "combat", "artificial", "intelligence", "machine", "machines",
+  "technology", "future", "android", "cyborg", "robot", "robots", "ai",
 ]);
 const GENRE_ALIASES: Record<string, string> = {
   funny: "comedy",
@@ -125,10 +131,18 @@ const GENRE_ALIASES: Record<string, string> = {
   mysterious: "mystery",
 };
 const SYNONYMS: Record<string, string[]> = {
-  dog: ["dog", "dogs", "canine", "animal"],
-  infected: ["infected", "infection", "virus", "disease", "outbreak", "zombie"],
-  people: ["people", "humanity", "humans", "survivors", "population"],
-  world: ["world", "earth", "humanity", "society"],
+  dog: ["dog", "dogs", "canine", "animal", "pet"],
+  infected: ["infected", "infection", "virus", "disease", "outbreak", "zombie", "plague", "contagion"],
+  people: ["people", "humanity", "humans", "survivors", "population", "community"],
+  world: ["world", "earth", "humanity", "society", "civilization"],
+  fighting: ["fight", "fighting", "combat", "battle", "war", "martial"],
+  fight: ["fight", "fighting", "combat", "battle", "war", "martial"],
+  battle: ["fight", "fighting", "combat", "battle", "war"],
+  artificial: ["artificial", "intelligence", "android", "robot", "machine", "technology"],
+  intelligence: ["artificial intelligence", "ai", "android", "robot", "machine"],
+  machine: ["machine", "machines", "robot", "android", "artificial intelligence"],
+  robot: ["robot", "robots", "android", "machine", "artificial intelligence"],
+  future: ["future", "futuristic", "technology", "science fiction"],
 };
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY?.trim();
@@ -174,8 +188,10 @@ function descriptionTokens(prompt: string) {
 
 function isMediaRequest(prompt: string, history: AgentTurn[]) {
   const text = `${recentUserPrompt(history)} ${prompt}`.toLowerCase();
-  return /\b(?:movie|movies|film|films|show|shows|series|tv|anime|watch|watching|find|search|suggest|recommend|recommendation|actor|actress|starring|similar|genre|rated|newest|latest|release|horror|comedy|action|drama|romance|thriller|mystery|fantasy|sci-fi|science fiction|bored|surprise|can’t decide|can\'t decide|anything good|nothing to watch)\b/.test(text)
-    || descriptionTokens(prompt).length > 0;
+  return /\b(?:movie|movies|film|films|show|shows|series|tv|anime|watch|watching|find|search|suggest|recommend|recommendation|actor|actress|starring|similar|genre|rated|newest|latest|release|horror|comedy|action|drama|romance|thriller|mystery|fantasy|sci-fi|science fiction|plot|story|cast|trailer|worth|about)\b/.test(text)
+    || /\b(?:what(?:'s| is)|who(?:'s| is)|tell me about|explain|is there|do you know)\b/.test(text)
+    || descriptionTokens(prompt).length > 0
+    || history.some((turn) => turn.role === "assistant" && Array.isArray(turn.results) && turn.results.length > 0);
 }
 
 function conversationalReply(prompt: string) {
@@ -187,19 +203,59 @@ function conversationalReply(prompt: string) {
     return "I’m Jarvis—the assistant Ardi created for NOVA. Tell me what kind of movie, TV show, or anime you feel like watching, even if you only remember part of the story.";
   }
   if (/\b(?:bored|can’t decide|can't decide|surprise me|anything good|nothing to watch)\b/.test(normalized)) {
-    return "I can choose for you. Tell me a mood, genre, actor, or one story detail—or I can surprise you with a popular pick.";
+    return "No problem—I can choose for you. Tell me a mood, genre, actor, or one detail you remember, and I’ll narrow it down instead of making you browse everything.";
   }
   if (/\b(?:good morning|good afternoon|good evening|good night)\b/.test(normalized)) {
     return "Hello to you as well! I’m Jarvis, and I’m ready to help you find something great to watch.";
   }
-  return "I understand you. I’m Jarvis, NOVA’s Assistant. You can ask me naturally—describe a story, name an actor, tell me a mood, ask for something similar, or just tell me what kind of watch you want.";
+  return "Tell me a title, actor, genre, mood, release year, or a story detail you remember. I’ll search NOVA’s live catalog and give you a useful result.";
 }
 
 function noResultReply(prompt: string) {
   const clues = descriptionTokens(prompt).filter((clue, index, all) => all.indexOf(clue) === index).slice(0, 3);
   return clues.length
-    ? `I understand you’re looking for something involving ${clues.join(", ")}. I couldn’t find an exact catalog match yet, but I can keep narrowing it down—try adding an actor, year, genre, or another story detail.`
-    : "I understand what you’re asking. I couldn’t find an exact catalog match yet, but add an actor, year, genre, or story detail and I’ll keep narrowing it down for you.";
+    ? `I searched NOVA’s catalog for ${clues.join(", ")}, but there is no strong match yet. Add one more clue—an actor, year, language, or character—and I’ll narrow it down.`
+    : "I couldn’t find a strong catalog match for that request. Add a title fragment, actor, genre, year, or story detail and I’ll search again.";
+}
+
+function asksForTitleExplanation(prompt: string) {
+  return /\b(?:what(?:'s| is)|tell me about|explain|plot|story|synopsis|cast|characters?|worth watching|review)\b/i.test(prompt);
+}
+
+async function formatCatalogAnswer(prompt: string, results: Movie[], signal: AbortSignal) {
+  const first = results[0];
+  if (!first) return "I couldn’t find a matching title in NOVA’s catalog.";
+  if (!asksForTitleExplanation(prompt)) {
+    return `${results.length === 1 ? "I found" : "I found these"} ${results.length === 1 ? first.title : "matches"} in NOVA’s catalog.`;
+  }
+
+  const wantsCast = /\b(?:cast|characters?|who(?:'s| is) in|actors?|actresses?)\b/i.test(prompt);
+  const wantsTrailer = /\btrailer\b/i.test(prompt);
+  let details: Movie | null = null;
+  if (wantsCast || wantsTrailer) {
+    try {
+      details = first.media_type === "tv"
+        ? await getSeries(first.tmdb_id ?? first.id, signal)
+        : await getMovie(first.tmdb_id ?? first.id, signal);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") throw error;
+    }
+  }
+
+  const year = first.release_date?.slice(0, 4);
+  const rating = first.vote_average > 0 ? ` It is rated ${first.vote_average.toFixed(1)}/10.` : "";
+  if (wantsCast && details && "cast" in details) {
+    const castPeople = (details as Movie & { cast?: Array<{ name: string }> }).cast ?? [];
+    const cast = castPeople.slice(0, 6).map((person) => person.name).join(", ");
+    return cast ? `${first.title}${year ? ` (${year})` : ""} features ${cast}.${rating}` : `${first.title} is in the catalog, but cast data is unavailable right now.${rating}`;
+  }
+  if (wantsTrailer && details?.trailer_key) {
+    return `${first.title} has a trailer available on NOVA. I found the title and its official trailer.${rating}`;
+  }
+  const overview = first.overview && first.overview !== "Description unavailable."
+    ? ` ${first.overview}`
+    : " I found the title, but TMDB does not have a description available for it.";
+  return `${first.title}${year ? ` (${year})` : ""}.${rating}${overview}`;
 }
 
 async function agentTmdbRequest<T>(path: string, params: Record<string, string | number | boolean | undefined>, signal: AbortSignal) {
@@ -265,6 +321,18 @@ async function findDescribedMovie(prompt: string, signal: AbortSignal) {
   if (!best) return null;
   const resolved = await getMovie(best.movie.id, signal);
   return { actorName: person.name || actorName, movie: resolved, score: best.score };
+}
+
+async function findPersonFilmography(prompt: string, signal: AbortSignal) {
+  if (!/\b(?:movies?|films?|shows?|series|filmography|acted|starring|with)\b/i.test(prompt)) return null;
+  const actorName = extractActorName(prompt);
+  if (!actorName) return null;
+  const people = await searchPeople(actorName, signal);
+  const person = people[0];
+  if (!person) return null;
+  const details = await getPerson(person.id, signal);
+  const results = details.known_for.slice(0, MAX_RESULTS);
+  return { person: details.name, results };
 }
 
 async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: AbortSignal): Promise<Movie[]> {
@@ -363,10 +431,8 @@ async function findClosestTitles(intent: AgentIntent, prompt: string, signal: Ab
   const query = queries[0] || "";
   if (!TMDB_API_KEY || query.length < 3 || descriptionTokens(prompt).length > 0) return [];
 
-  const tokenQueries = query.split(/\s+/).filter((token) => token.length >= 3 && !STOP_WORDS.has(token));
-  const searchQueries = [...new Set([...queries, ...tokenQueries])].slice(0, 6);
   const requestedType = intent.scope === "movies" ? "movie" : intent.scope === "series" ? "tv" : null;
-  const multiPages = await Promise.all(searchQueries.map((candidate) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
+  const multiPages = await Promise.all(queries.map((candidate) => agentTmdbRequest<{ results?: TmdbMultiResult[] }>("/search/multi", {
     query: candidate,
     page: 1,
     include_adult: false,
@@ -429,8 +495,7 @@ function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
     : /\b(?:new|newest|latest|recent|releases?)\b/.test(context)
       ? "primary_release_date.desc"
       : "popularity.desc";
-  const recommendationRequest = /\b(?:bored|surprise me|can’t decide|can\'t decide|anything good|nothing to watch)\b/.test(context);
-  const query = recommendationRequest ? "" : context
+  const query = context
     .replace(/\b(?:top|first)\s+\d{1,2}\b/g, "")
     .split(" ")
     .filter((word) => !STOP_WORDS.has(word))
@@ -489,8 +554,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as AgentRequest;
     const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
-    if (!prompt || prompt.length > 240) {
-      return NextResponse.json({ error: "Please enter a short movie, TV-show, or anime request." }, { status: 400 });
+    if (!prompt || prompt.length > 600) {
+      return NextResponse.json({ error: "Please keep the request under 600 characters so I can search it accurately." }, { status: 400 });
     }
 
     const history = Array.isArray(body.history)
@@ -521,10 +586,18 @@ export async function POST(request: Request) {
       });
     }
 
+    const filmography = await findPersonFilmography(prompt, request.signal);
+    if (filmography?.results.length) {
+      return NextResponse.json({
+        message: `Here are ${filmography.person}’s strongest catalog matches in NOVA.`,
+        results: filmography.results,
+      });
+    }
+
     const described = await findDescribedMovie(prompt, request.signal);
     if (described) {
       return NextResponse.json({
-        message: `I think you may be looking for ${described.movie.title}, starring ${described.actorName}. I matched your description against the movie's plot and keywords.`,
+        message: `I found ${described.movie.title}, starring ${described.actorName}. The plot and keyword match fit your description.`,
         results: [described.movie],
       });
     }
@@ -544,7 +617,9 @@ export async function POST(request: Request) {
     const results = await findMedia(intent, request.signal);
     if (results.length) {
       return NextResponse.json({
-        message: `${intent.page > 1 ? "Here are more" : "Here are"} ${titleFor(intent)} I found.`,
+        message: intent.page > 1
+          ? `Here are more ${titleFor(intent)} from NOVA’s catalog.`
+          : await formatCatalogAnswer(prompt, results, request.signal),
         results,
       });
     }
