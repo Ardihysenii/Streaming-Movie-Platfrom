@@ -129,8 +129,27 @@ const GENRE_ALIASES: Record<string, string> = {
   "mind-bending": "science fiction",
   futuristic: "science fiction",
   mysterious: "mystery",
+  "sci fi": "science fiction",
+  "sci-fi": "science fiction",
+  scifi: "science fiction",
+  "science-fiction": "science fiction",
+  sf: "science fiction",
+  adventure: "adventure",
+  animated: "animation",
+  cartoons: "animation",
+  crime: "mystery",
+  suspense: "thriller",
 };
+
+function canonicalGenre(value: string) {
+  const normalized = value.toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+  const aliases = Object.keys(GENRE_ALIASES).sort((left, right) => right.length - left.length);
+  const alias = aliases.find((candidate) => normalized.includes(candidate));
+  if (alias) return GENRE_ALIASES[alias];
+  return Object.keys(MOVIE_GENRES).find((genre) => normalized.includes(genre));
+}
 const SYNONYMS: Record<string, string[]> = {
+  ai: ["artificial intelligence", "ai", "robot", "robots", "android", "machine", "machines", "cybernetic"],
   dog: ["dog", "dogs", "canine", "animal", "pet"],
   infected: ["infected", "infection", "virus", "disease", "outbreak", "zombie", "plague", "contagion"],
   people: ["people", "humanity", "humans", "survivors", "population", "community"],
@@ -190,6 +209,7 @@ function isMediaRequest(prompt: string, history: AgentTurn[]) {
   const text = `${recentUserPrompt(history)} ${prompt}`.toLowerCase();
   return /\b(?:movie|movies|film|films|show|shows|series|tv|anime|watch|watching|find|search|suggest|recommend|recommendation|actor|actress|starring|similar|genre|rated|newest|latest|release|horror|comedy|action|drama|romance|thriller|mystery|fantasy|sci-fi|science fiction|plot|story|cast|trailer|worth|about)\b/.test(text)
     || /\b(?:what(?:'s| is)|who(?:'s| is)|tell me about|explain|is there|do you know)\b/.test(text)
+    || Boolean(canonicalGenre(prompt))
     || descriptionTokens(prompt).length > 0
     || history.some((turn) => turn.role === "assistant" && Array.isArray(turn.results) && turn.results.length > 0);
 }
@@ -272,10 +292,7 @@ async function agentTmdbRequest<T>(path: string, params: Record<string, string |
 }
 
 function requestedGenreId(prompt: string) {
-  const normalized = prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, " ");
-  const alias = Object.entries(GENRE_ALIASES).find(([name]) => normalized.includes(name));
-  if (alias) return MOVIE_GENRES[alias[1]];
-  const genre = Object.keys(MOVIE_GENRES).find((name) => normalized.includes(name));
+  const genre = canonicalGenre(prompt);
   return genre ? MOVIE_GENRES[genre] : undefined;
 }
 
@@ -336,7 +353,7 @@ async function findPersonFilmography(prompt: string, signal: AbortSignal) {
 }
 
 const KEYWORD_ALIASES: Record<string, string[]> = {
-  ai: ["artificial intelligence", "ai", "robot", "android"],
+  ai: ["artificial intelligence", "robot", "android", "machine"],
   fighting: ["fighting", "martial arts", "combat", "battle"],
   fight: ["fighting", "martial arts", "combat", "battle"],
   battle: ["battle", "combat", "war"],
@@ -409,7 +426,38 @@ async function findKeywordMatches(intent: AgentIntent, prompt: string, signal: A
       return null;
     }
   }));
-  return details.filter((item) => item !== null).slice(0, intent.limit) as Movie[];
+  const validTokens = tokens.filter((token) => token !== "about");
+  const needsAi = validTokens.includes("ai") || validTokens.includes("artificial");
+  const needsCombat = validTokens.some((token) => ["fighting", "fight", "battle", "combat"].includes(token));
+  const requiredAnchors = Number(needsAi) + Number(needsCombat);
+  const scored = details
+    .filter((item): item is NonNullable<typeof item> => item !== null)
+    .map((item) => {
+      const candidate = item as NonNullable<typeof item> & {
+        keywords?: { keywords?: Array<{ name: string }> };
+        genres?: Array<{ name: string }>;
+        tagline?: string;
+        popularity?: number;
+      };
+      const searchable = [
+        candidate.title,
+        candidate.overview,
+        candidate.tagline,
+        ...(candidate.keywords?.keywords ?? []).map((keyword) => keyword.name),
+        ...(candidate.genres ?? []).map((genre) => genre.name),
+      ].join(" ").toLowerCase();
+      const matchedTokens = validTokens.filter((token) =>
+        (SYNONYMS[token] ?? [token]).some((term) => searchable.includes(term)),
+      );
+      const hasAiConcept = /artificial intelligence|robot|android|machine|cyber|technology|sentient|consciousness|autonomous|program/.test(searchable);
+      const hasCombatConcept = /fight|fighting|combat|battle|war|martial/.test(searchable);
+      const anchorCount = Number(!needsAi || hasAiConcept) + Number(!needsCombat || hasCombatConcept);
+      return { item, score: matchedTokens.length + anchorCount, anchorCount, popularity: candidate.popularity ?? 0 };
+    })
+    .filter((entry) => entry.anchorCount === requiredAnchors)
+    .filter((entry) => entry.score >= Math.max(1, Math.min(validTokens.length, 2)))
+    .sort((a, b) => b.score - a.score || b.popularity - a.popularity);
+  return scored.slice(0, intent.limit).map((entry) => entry.item as Movie);
 }
 
 function likelyTitleQueries(prompt: string, query: string) {
@@ -524,13 +572,15 @@ function parseIntent(prompt: string, history: AgentTurn[]): AgentIntent {
     : /\b(?:new|newest|latest|recent|releases?)\b/.test(context)
       ? "primary_release_date.desc"
       : "popularity.desc";
-  const query = context
-    .replace(/\b(?:top|first)\s+\d{1,2}\b/g, "")
-    .split(" ")
-    .filter((word) => !STOP_WORDS.has(word))
-    .map((word) => GENRE_ALIASES[word] || word)
-    .join(" ")
-    .trim();
+  const canonical = canonicalGenre(context);
+  const query = canonical
+    ?? context
+      .replace(/\b(?:top|first)\s+\d{1,2}\b/g, "")
+      .split(" ")
+      .filter((word) => !STOP_WORDS.has(word))
+      .map((word) => GENRE_ALIASES[word] || word)
+      .join(" ")
+      .trim();
 
   return { scope, query, sortBy, limit, page: followUp ? 2 : 1 };
 }
