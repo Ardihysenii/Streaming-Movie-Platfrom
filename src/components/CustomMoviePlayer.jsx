@@ -273,6 +273,12 @@ export default function CustomMoviePlayer({
       params.set("s", String(seasonNumber ?? 1));
       params.set("e", String(episodeNumber ?? 1));
       params.set("prioritize", "true");
+      const season = Number(seasonNumber ?? 1);
+      const episode = Number(episodeNumber ?? 0);
+      const isMobLandSurgeEpisode = cleanId === "247718" && season === 1 && episode >= 2 && episode <= 10;
+      if (isMobLandSurgeEpisode) {
+        params.set("lastserver", "surge");
+      }
     }
     if (isCineSrc) {
       params.set("controls", "false");
