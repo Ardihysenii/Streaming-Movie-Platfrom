@@ -272,6 +272,7 @@ export default function CustomMoviePlayer({
     if (mediaType === "tv" && isCineSrc) {
       params.set("s", String(seasonNumber ?? 1));
       params.set("e", String(episodeNumber ?? 1));
+      params.set("prioritize", "true");
     }
     if (isCineSrc) {
       params.set("controls", "false");
