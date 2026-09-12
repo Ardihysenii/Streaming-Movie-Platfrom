@@ -281,6 +281,10 @@ export default function CustomMoviePlayer({
       }
     }
     if (isCineSrc) {
+      const isBackroomsSurgeMovie = mediaType === "movie" && cleanId === "1083381";
+      if (isBackroomsSurgeMovie) {
+        params.set("lastserver", "surge");
+      }
       params.set("controls", "false");
       params.set("autoplay", "false");
       params.set("quality", quality);
