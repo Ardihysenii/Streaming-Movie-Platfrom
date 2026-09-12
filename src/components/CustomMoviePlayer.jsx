@@ -45,6 +45,9 @@ import { useNovaSettings } from "@/components/Providers";
 
 
 
+const CINESRC_SERVER_ORDER = ["nebula", "surge", "thunder", "wave", "sturm", "spark", "storm", "aurora", "rush", "blizzard", "lisbon", "mist", "paris"];
+const CINESRC_FALLBACK_DELAY_MS = 12000;
+
 function parseSubtitleCues(value) {
   return value
     .replace(/^\uFEFF?WEBVTT[^\n]*\n/i, "")
@@ -125,6 +128,7 @@ export default function CustomMoviePlayer({
   const [mobileFullscreen, setMobileFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [quality, setQuality] = useState("1080");
+  const [serverAttempt, setServerAttempt] = useState(0);
   const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
   const [subtitleCues, setSubtitleCues] = useState([]);
@@ -152,6 +156,11 @@ export default function CustomMoviePlayer({
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
+  const currentTimeRef = useRef(0);
+  const lastProgressAtRef = useRef(0);
+  const fallbackTriggeredRef = useRef(false);
+  const hasStartedRef = useRef(false);
+  const activeServerRef = useRef(CINESRC_SERVER_ORDER[0]);
   const mobileFullscreenRef = useRef(false);
 
 
@@ -272,19 +281,11 @@ export default function CustomMoviePlayer({
     if (mediaType === "tv" && isCineSrc) {
       params.set("s", String(seasonNumber ?? 1));
       params.set("e", String(episodeNumber ?? 1));
-      params.set("prioritize", "true");
-      const season = Number(seasonNumber ?? 1);
-      const episode = Number(episodeNumber ?? 0);
-      const isMobLandSurgeEpisode = cleanId === "247718" && season === 1 && episode >= 2 && episode <= 10;
-      if (isMobLandSurgeEpisode) {
-        params.set("lastserver", "surge");
-      }
     }
     if (isCineSrc) {
-      const isBackroomsSurgeMovie = mediaType === "movie" && cleanId === "1083381";
-      if (isBackroomsSurgeMovie) {
-        params.set("lastserver", "surge");
-      }
+      // Nebula is always first. Later attempts are selected only after a real
+      // CineSrc error or a sustained playback stall.
+      params.set("lastserver", CINESRC_SERVER_ORDER[serverAttempt] || CINESRC_SERVER_ORDER[0]);
       params.set("controls", "false");
       params.set("autoplay", "false");
       params.set("quality", quality);
@@ -292,22 +293,37 @@ export default function CustomMoviePlayer({
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, serverAttempt]);
 
 
+  useEffect(() => {
+    if (!isCineSrc) return;
+    activeServerRef.current = CINESRC_SERVER_ORDER[serverAttempt] || CINESRC_SERVER_ORDER[0];
+    fallbackTriggeredRef.current = false;
+    hasStartedRef.current = false;
+    lastProgressAtRef.current = 0;
+    resumeAppliedRef.current = false;
+  }, [isCineSrc, serverAttempt]);
 
+  useEffect(() => {
+    setServerAttempt(0);
+    activeServerRef.current = CINESRC_SERVER_ORDER[0];
+    fallbackTriggeredRef.current = false;
+    hasStartedRef.current = false;
+    lastProgressAtRef.current = 0;
+    currentTimeRef.current = 0;
+    resumeAppliedRef.current = false;
+  }, [activeId, episodeNumber, mediaType, seasonNumber]);
 
-
-
-
-
-
-
-
-
-
-
-
+  useEffect(() => {
+    if (!isCineSrc || !isPlaying || !hasStartedRef.current) return undefined;
+    const timer = window.setInterval(() => {
+      if (lastProgressAtRef.current > 0 && Date.now() - lastProgressAtRef.current >= CINESRC_FALLBACK_DELAY_MS) {
+        switchToNextServer();
+      }
+    }, 3000);
+    return () => window.clearInterval(timer);
+  }, [isCineSrc, isPlaying, switchToNextServer]);
 
   useEffect(() => {
     // Keep NOVA's visible subtitle layer enabled for the embedded provider.
@@ -480,6 +496,18 @@ export default function CustomMoviePlayer({
     );
   }, [isCineSrc, providerOrigin]);
 
+  const switchToNextServer = useCallback(() => {
+    if (!isCineSrc || fallbackTriggeredRef.current) return false;
+    const nextAttempt = serverAttempt + 1;
+    if (nextAttempt >= CINESRC_SERVER_ORDER.length) return false;
+    fallbackTriggeredRef.current = true;
+    setIsReady(false);
+    setIsPlaying(false);
+    lastProgressAtRef.current = 0;
+    setServerAttempt(nextAttempt);
+    return true;
+  }, [isCineSrc, serverAttempt]);
+
 
 
 
@@ -538,18 +566,35 @@ export default function CustomMoviePlayer({
         case "cinesrc:ready":
           setIsReady(true);
           break;
+        case "cinesrc:sourceused": {
+          const sourceId = message.sourceId ?? payload?.sourceId;
+          if (typeof sourceId === "string" && sourceId.trim()) activeServerRef.current = sourceId.trim().toLowerCase();
+          break;
+        }
+        case "cinesrc:error":
+          switchToNextServer();
+          break;
         case "cinesrc:play":
           setIsPlaying(true);
-          // If the source only accepts seeks after playback begins, apply the
-          // saved movie position at that point as a reliable fallback.
-          if (resumeAt > 0 && !resumeAppliedRef.current) {
-            resumeAppliedRef.current = true;
-            sendCommand("seek", [Math.max(0, resumeAt)]);
+          hasStartedRef.current = true;
+          lastProgressAtRef.current = Date.now();
+          // Restore the current position when Nebula or a fallback server is swapped in.
+          if (!resumeAppliedRef.current) {
+            const restoreAt = Math.max(currentTimeRef.current, Number(resumeAt) || 0);
+            if (restoreAt > 0) {
+              resumeAppliedRef.current = true;
+              sendCommand("seek", [restoreAt]);
+            }
           }
           break;
         case "cinesrc:pause":
+          setIsPlaying(false);
+          lastProgressAtRef.current = 0;
+          break;
         case "cinesrc:ended":
           setIsPlaying(false);
+          hasStartedRef.current = false;
+          lastProgressAtRef.current = 0;
           break;
         case "cinesrc:loadedmetadata":
           if (Number.isFinite(Number(payload?.duration))) setDuration(Number(payload.duration));
@@ -557,6 +602,8 @@ export default function CustomMoviePlayer({
         case "cinesrc:timeupdate":
           if (Number.isFinite(Number(payload?.currentTime))) {
             const nextCurrentTime = Number(payload.currentTime);
+            currentTimeRef.current = nextCurrentTime;
+            lastProgressAtRef.current = Date.now();
             setCurrentTime(nextCurrentTime);
             onProgress?.(nextCurrentTime, Number(payload?.duration));
           }
@@ -599,7 +646,7 @@ export default function CustomMoviePlayer({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
+  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand, switchToNextServer]);
 
 
 
