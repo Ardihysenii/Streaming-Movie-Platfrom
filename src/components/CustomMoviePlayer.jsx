@@ -1329,7 +1329,13 @@ export default function CustomMoviePlayer({
             tabIndex={centerFeedback ? 0 : -1}
             aria-label={centerFeedback === "play" ? "Play" : centerFeedback === "pause" ? "Pause" : "Seek"}
           >
-            {centerFeedback === "play" ? <PlayIcon /> : centerFeedback === "pause" ? <PauseIcon /> : centerFeedback === "forward" ? <ForwardIcon /> : <RewindIcon />}
+            {centerFeedback === "play" || centerFeedback === "pause" ? (
+              <span className="nova-center-glyph" aria-hidden="true" />
+            ) : centerFeedback === "forward" ? (
+              <ForwardIcon />
+            ) : centerFeedback === "back" ? (
+              <RewindIcon />
+            ) : null}
           </button>
           {seekFeedback ? (
             <div key={seekFeedback} className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
