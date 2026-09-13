@@ -7641,7 +7641,6 @@ body:has(.watch-page) .bottom-dock {
   }
 }
 
-
 /* Shared back controls: minimal purple treatment across matching pages. */
 .watch-page .watch-header .back-link,
 .history-page .back-link,
@@ -7665,10 +7664,10 @@ body:has(.watch-page) .bottom-dock {
   transition: color 180ms ease, transform 180ms ease;
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link::before,
+.history-page .back-link::before,
+.actors-page .back-link::before,
+.person-page .person-back::before,
 .detail-page .back-link::before {
   background: #b69cff;
   border-radius: 999px;
@@ -7682,10 +7681,10 @@ body:has(.watch-page) .bottom-dock {
   width: 2px;
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link::after,
+.history-page .back-link::after,
+.actors-page .back-link::after,
+.person-page .person-back::after,
 .detail-page .back-link::after {
   background: #b69cff;
   bottom: 0;
@@ -7699,54 +7698,54 @@ body:has(.watch-page) .bottom-dock {
   width: calc(100% - 17px);
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link svg,
+.history-page .back-link svg,
+.actors-page .back-link svg,
+.person-page .person-back svg,
 .detail-page .back-link svg {
   height: 16px;
   transition: transform 180ms ease;
   width: 16px;
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link:hover,
+.history-page .back-link:hover,
+.actors-page .back-link:hover,
+.person-page .person-back:hover,
 .detail-page .back-link:hover {
   color: #fff;
   transform: translateX(2px);
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link:hover::before,
+.history-page .back-link:hover::before,
+.actors-page .back-link:hover::before,
+.person-page .person-back:hover::before,
 .detail-page .back-link:hover::before {
   box-shadow: 0 0 24px rgba(182, 156, 255, 0.82);
   width: 4px;
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link:hover::after,
+.history-page .back-link:hover::after,
+.actors-page .back-link:hover::after,
+.person-page .person-back:hover::after,
 .detail-page .back-link:hover::after {
   transform: scaleX(1);
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link:hover svg,
+.history-page .back-link:hover svg,
+.actors-page .back-link:hover svg,
+.person-page .person-back:hover svg,
 .detail-page .back-link:hover svg {
   transform: translateX(-3px);
 }
 
-.watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+.watch-page .watch-header .back-link:focus-visible,
+.history-page .back-link:focus-visible,
+.actors-page .back-link:focus-visible,
+.person-page .person-back:focus-visible,
 .detail-page .back-link:focus-visible {
   outline: 1px solid #b69cff;
   outline-offset: 6px;
@@ -7764,10 +7763,10 @@ body:has(.watch-page) .bottom-dock {
     padding-left: 13px;
   }
 
-  .watch-page .watch-header .back-link,
-.history-page .back-link,
-.actors-page .back-link,
-.person-page .person-back,
+  .watch-page .watch-header .back-link::after,
+.history-page .back-link::after,
+.actors-page .back-link::after,
+.person-page .person-back::after,
 .detail-page .back-link::after {
     left: 13px;
     width: calc(100% - 13px);
