@@ -7573,9 +7573,9 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .watch-page .watch-header .back-link::before {
-  background: var(--accent);
+  background: #b69cff;
   border-radius: 999px;
-  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.55);
+  box-shadow: 0 0 16px rgba(182, 156, 255, 0.55);
   content: "";
   height: 100%;
   left: 0;
@@ -7586,7 +7586,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .watch-page .watch-header .back-link::after {
-  background: var(--accent);
+  background: #b69cff;
   bottom: 0;
   content: "";
   height: 1px;
@@ -7610,7 +7610,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .watch-page .watch-header .back-link:hover::before {
-  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.82);
+  box-shadow: 0 0 24px rgba(182, 156, 255, 0.82);
   width: 4px;
 }
 
@@ -7623,7 +7623,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .watch-page .watch-header .back-link:focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid #b69cff;
   outline-offset: 6px;
 }
 
