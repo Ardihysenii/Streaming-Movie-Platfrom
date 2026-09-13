@@ -7816,3 +7816,63 @@ body:has(.watch-page) .bottom-dock {
   box-shadow: 0 8px 22px rgba(182, 156, 255, 0.26);
   color: #0b0d10;
 }
+
+
+/* Wishlist actions: quiet text controls with player-purple hover accents. */
+.wishlist-page .history-clear,
+.wishlist-page .history-empty .primary-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.68rem;
+  font-weight: 650;
+  gap: 8px;
+  letter-spacing: 0.1em;
+  min-height: 0;
+  padding: 5px 0 6px;
+  text-transform: uppercase;
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.wishlist-page .history-clear svg {
+  height: 15px;
+  width: 15px;
+}
+
+.wishlist-page .history-clear:hover:not(:disabled),
+.wishlist-page .history-empty .primary-button:hover {
+  background: transparent;
+  border-bottom-color: #b69cff;
+  box-shadow: none;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.wishlist-page .history-clear:disabled {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.wishlist-page .wishlist-toggle:hover,
+.wishlist-page .wishlist-toggle.is-saved {
+  background: rgba(182, 156, 255, 0.14);
+  border-color: rgba(182, 156, 255, 0.62);
+  box-shadow: 0 10px 24px rgba(182, 156, 255, 0.16);
+}
+
+.wishlist-page .remove-card:hover {
+  background: #b69cff;
+  color: #0b0d10;
+}
+
+@media (max-width: 680px) {
+  .wishlist-page .history-clear,
+  .wishlist-page .history-empty .primary-button {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+  }
+}
