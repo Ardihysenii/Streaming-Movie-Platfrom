@@ -7427,3 +7427,14 @@ body:has(.watch-page) .bottom-dock {
 
 
 .custom-movie-player-cinesrc .player-control-spacer { display: block; }
+
+
+/* Functional playback fit modes for the cross-origin CineSrc frame. */
+.custom-movie-player-cinesrc .provider-player-frame { transform-origin: center center; transition: transform 220ms ease; }
+.custom-movie-player-cinesrc .provider-player-frame.player-fit-fit { object-fit: contain; transform: none; }
+.custom-movie-player-cinesrc .provider-player-frame.player-fit-fill { object-fit: cover; transform: scale(1.12); }
+.custom-movie-player-cinesrc .provider-player-frame.player-fit-stretch { object-fit: fill; transform: scaleX(1.08) scaleY(1.04); }
+.custom-movie-player-cinesrc .player-settings-control,
+.custom-movie-player-cinesrc .player-settings-panel,
+.custom-movie-player-cinesrc .player-settings-panel button,
+.custom-movie-player-cinesrc .player-settings-panel input { pointer-events: auto; }
