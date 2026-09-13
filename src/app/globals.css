@@ -7640,3 +7640,136 @@ body:has(.watch-page) .bottom-dock {
     width: calc(100% - 13px);
   }
 }
+
+
+/* Shared back controls: minimal purple treatment across matching pages. */
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.68);
+  display: inline-flex;
+  font-size: 0.67rem;
+  font-weight: 600;
+  gap: 10px;
+  letter-spacing: 0.13em;
+  padding: 7px 0 7px 17px;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link::before {
+  background: #b69cff;
+  border-radius: 999px;
+  box-shadow: 0 0 16px rgba(182, 156, 255, 0.55);
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: box-shadow 180ms ease, width 180ms ease;
+  width: 2px;
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link::after {
+  background: #b69cff;
+  bottom: 0;
+  content: "";
+  height: 1px;
+  left: 17px;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+  width: calc(100% - 17px);
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link svg {
+  height: 16px;
+  transition: transform 180ms ease;
+  width: 16px;
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link:hover {
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link:hover::before {
+  box-shadow: 0 0 24px rgba(182, 156, 255, 0.82);
+  width: 4px;
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link:hover::after {
+  transform: scaleX(1);
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link:hover svg {
+  transform: translateX(-3px);
+}
+
+.watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link:focus-visible {
+  outline: 1px solid #b69cff;
+  outline-offset: 6px;
+}
+
+@media (max-width: 680px) {
+  .watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link {
+    font-size: 0.61rem;
+    gap: 8px;
+    letter-spacing: 0.1em;
+    padding-left: 13px;
+  }
+
+  .watch-page .watch-header .back-link,
+.history-page .back-link,
+.actors-page .back-link,
+.person-page .person-back,
+.detail-page .back-link::after {
+    left: 13px;
+    width: calc(100% - 13px);
+  }
+}
