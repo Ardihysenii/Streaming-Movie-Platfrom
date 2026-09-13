@@ -7266,3 +7266,16 @@ body:has(.watch-page) .bottom-dock {
     width: 30px;
   }
 }
+
+
+.custom-movie-player-cinesrc .player-progress::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #a98bff var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
+}
+
+.custom-movie-player-cinesrc .player-progress::-moz-range-track {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-movie-player-cinesrc .player-progress::-moz-range-progress {
+  background: #a98bff !important;
+}
