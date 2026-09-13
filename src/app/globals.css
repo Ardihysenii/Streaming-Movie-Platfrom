@@ -7526,24 +7526,8 @@ body:has(.watch-page) .bottom-dock {
   background: #b69cff !important;
 }
 
-/* Final volume-only correction: match icon sizing and remove the button tile. */
-.custom-movie-player-cinesrc .player-volume-control > button,
-.custom-movie-player-cinesrc .player-volume-control > button:hover,
-.custom-movie-player-cinesrc .player-volume-control > button:active,
-.custom-movie-player-cinesrc .player-volume-control > button:focus,
-.custom-movie-player-cinesrc .player-volume-control > button:focus-visible {
-  appearance: none;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0;
-  box-shadow: none !important;
-  height: 38px;
-  min-width: 38px;
-  padding: 0;
-  transform: none;
-}
-
-.custom-movie-player-cinesrc .player-volume-control > button svg {
-  height: 27px;
-  width: 27px;
+/* Volume-only alignment: match the playback icon baseline. */
+.custom-movie-player-cinesrc .player-volume-control > button {
+  position: relative;
+  top: 2px;
 }
