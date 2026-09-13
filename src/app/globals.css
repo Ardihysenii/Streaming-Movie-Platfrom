@@ -7779,3 +7779,40 @@ body:has(.watch-page) .bottom-dock {
   align-self: flex-start;
   width: max-content;
 }
+
+
+/* Actors page: use the established player purple for atmosphere and accents. */
+.actors-page::before {
+  background: radial-gradient(circle, rgba(182, 156, 255, 0.18), rgba(182, 156, 255, 0) 68%);
+}
+
+.actors-atmosphere::before {
+  background:
+    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.045) 42.2%, transparent 42.5%),
+    linear-gradient(25deg, transparent 0 67%, rgba(182, 156, 255, 0.08) 67.2%, transparent 67.5%);
+}
+
+.actors-frame-two {
+  border-color: rgba(182, 156, 255, 0.16);
+}
+
+.actors-orbit-two {
+  border-color: rgba(182, 156, 255, 0.13);
+}
+
+.actors-header > div::before {
+  background: linear-gradient(180deg, #b69cff, rgba(182, 156, 255, 0.08));
+  box-shadow: 0 0 24px rgba(182, 156, 255, 0.32);
+}
+
+.actor-search:focus-within {
+  border-color: rgba(182, 156, 255, 0.72);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), 0 0 0 4px rgba(182, 156, 255, 0.1), 0 22px 48px rgba(0, 0, 0, 0.3);
+}
+
+.actor-search button:hover {
+  background: #b69cff;
+  border-color: #b69cff;
+  box-shadow: 0 8px 22px rgba(182, 156, 255, 0.26);
+  color: #0b0d10;
+}
