@@ -6610,3 +6610,305 @@ body:has(.watch-page) .bottom-dock {
     animation: none;
   }
 }
+
+
+/* NOVA paused-player redesign and CineSrc server control */
+.custom-movie-player-cinesrc {
+  background: #08090d;
+  overflow: hidden;
+}
+
+.custom-movie-player-cinesrc .provider-player-frame {
+  height: 100%;
+}
+
+.custom-movie-player-cinesrc .nova-source-loading {
+  bottom: 0;
+}
+
+.custom-movie-player-cinesrc .custom-player-ui {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+
+.player-paused-overlay {
+  background: linear-gradient(90deg, rgba(5, 7, 9, 0.5), rgba(5, 7, 9, 0.08) 70%, rgba(5, 7, 9, 0.3));
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.player-paused-backdrop {
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.82);
+  inset: 0;
+  opacity: 0.64;
+  position: absolute;
+}
+
+.player-paused-overlay::after {
+  background: linear-gradient(180deg, rgba(4, 6, 9, 0.72), transparent 26%, transparent 52%, rgba(4, 6, 9, 0.96) 100%);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.player-paused-topline,
+.player-paused-info {
+  position: absolute;
+  z-index: 1;
+}
+
+.player-paused-topline {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.94);
+  display: flex;
+  font-size: clamp(0.76rem, 1.6vw, 1rem);
+  font-weight: 700;
+  inset-inline: 5%;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  padding-top: clamp(14px, 3vw, 30px);
+  text-align: center;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.55);
+}
+
+.player-paused-topline-mark {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.55em;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  position: absolute;
+  right: 0;
+}
+
+.player-paused-info {
+  bottom: clamp(105px, 15%, 150px);
+  left: clamp(20px, 6vw, 76px);
+  max-width: min(520px, 62%);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.58);
+}
+
+.player-paused-eyebrow {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(0.58rem, 1.05vw, 0.72rem);
+  font-weight: 800;
+  letter-spacing: 0.19em;
+  margin: 0 0 9px;
+  text-transform: uppercase;
+}
+
+.player-paused-info h2 {
+  color: #fff;
+  font-size: clamp(1.5rem, 4vw, 3.5rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  margin: 0;
+}
+
+.player-paused-meta {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.76);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: clamp(0.68rem, 1.25vw, 0.88rem);
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.player-paused-meta span + span::before {
+  color: rgba(255, 255, 255, 0.4);
+  content: "•";
+  margin-right: 9px;
+}
+
+.player-paused-rating {
+  color: #f0d77a;
+}
+
+.player-paused-overview {
+  color: rgba(255, 255, 255, 0.7);
+  display: -webkit-box;
+  font-size: clamp(0.68rem, 1.2vw, 0.84rem);
+  line-height: 1.45;
+  margin: 13px 0 0;
+  max-width: 500px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.custom-movie-player-cinesrc .player-gesture-layer,
+.custom-movie-player-cinesrc .player-center-play,
+.custom-movie-player-cinesrc .custom-provider-controls,
+.custom-movie-player-cinesrc .player-seek-feedback,
+.custom-movie-player-cinesrc .player-subtitle-menu {
+  pointer-events: auto;
+}
+
+.custom-movie-player-cinesrc .custom-provider-controls {
+  background: linear-gradient(180deg, transparent, rgba(4, 5, 9, 0.84) 31%, rgba(4, 5, 9, 0.98));
+  bottom: 0;
+  left: 0;
+  padding: 58px clamp(14px, 3.8vw, 42px) 18px;
+  position: absolute;
+  right: 0;
+  z-index: 6;
+}
+
+.custom-movie-player-cinesrc .player-progress {
+  accent-color: var(--accent, #8d6bff);
+  background: linear-gradient(90deg, var(--accent, #8d6bff) var(--played), rgba(255, 255, 255, 0.2) var(--played));
+  border-radius: 99px;
+  height: 4px;
+  margin: 0 0 15px;
+}
+
+.custom-movie-player-cinesrc .player-control-row {
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button,
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button,
+.custom-movie-player-cinesrc .player-subtitle-control > button {
+  align-items: center;
+  background: rgba(16, 17, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.88);
+  display: inline-flex;
+  justify-content: center;
+  min-height: 34px;
+  min-width: 34px;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button:hover,
+.custom-movie-player-cinesrc .player-quality-button:hover,
+.custom-movie-player-cinesrc .player-server-button:hover,
+.custom-movie-player-cinesrc .player-subtitle-control > button:hover {
+  background: rgba(141, 107, 255, 0.3);
+  border-color: rgba(180, 160, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.custom-movie-player-cinesrc .player-setting-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  margin-right: 6px;
+  text-transform: uppercase;
+}
+
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button {
+  font-size: 0.68rem;
+  padding: 0 11px;
+}
+
+.custom-movie-player-cinesrc .player-quality-control,
+.custom-movie-player-cinesrc .player-server-control,
+.custom-movie-player-cinesrc .player-subtitle-control {
+  position: relative;
+}
+
+.custom-movie-player-cinesrc .player-server-menu,
+.custom-movie-player-cinesrc .player-quality-menu {
+  background: rgba(17, 18, 27, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  bottom: calc(100% + 10px);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+  display: grid;
+  gap: 4px;
+  min-width: 148px;
+  padding: 7px;
+  position: absolute;
+  right: 0;
+  z-index: 12;
+}
+
+.custom-movie-player-cinesrc .player-server-menu button,
+.custom-movie-player-cinesrc .player-quality-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: rgba(255, 255, 255, 0.73);
+  display: flex;
+  font-size: 0.74rem;
+  justify-content: space-between;
+  padding: 9px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.custom-movie-player-cinesrc .player-server-menu button:hover,
+.custom-movie-player-cinesrc .player-server-menu button.is-selected,
+.custom-movie-player-cinesrc .player-quality-menu button:hover,
+.custom-movie-player-cinesrc .player-quality-menu button.is-selected {
+  background: rgba(141, 107, 255, 0.24);
+  color: #fff;
+}
+
+.custom-movie-player-cinesrc .player-server-menu small {
+  color: #b5a7ff;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.player-center-play {
+  background: rgba(16, 17, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.38);
+}
+
+@media (max-width: 680px) {
+  .player-paused-topline-mark {
+    right: 3px;
+  }
+
+  .player-paused-info {
+    bottom: 98px;
+    left: 20px;
+    max-width: calc(100% - 40px);
+  }
+
+  .player-paused-overview {
+    -webkit-line-clamp: 2;
+  }
+
+  .custom-movie-player-cinesrc .custom-provider-controls {
+    padding: 46px 12px 12px;
+  }
+
+  .custom-movie-player-cinesrc .player-control-row {
+    gap: 5px;
+  }
+
+  .custom-movie-player-cinesrc .player-control-row > button,
+  .custom-movie-player-cinesrc .player-quality-button,
+  .custom-movie-player-cinesrc .player-server-button,
+  .custom-movie-player-cinesrc .player-subtitle-control > button {
+    min-height: 31px;
+    min-width: 31px;
+  }
+
+  .custom-movie-player-cinesrc .player-setting-label {
+    display: none;
+  }
+
+  .custom-movie-player-cinesrc .player-quality-button,
+  .custom-movie-player-cinesrc .player-server-button {
+    padding: 0 8px;
+  }
+}
