@@ -7334,3 +7334,38 @@ body:has(.watch-page) .bottom-dock {
     height: 30px;
   }
 }
+
+
+/* Final control grouping: playback left, utility icons right. */
+.custom-movie-player-cinesrc .player-quality-control {
+  margin-left: auto !important;
+  order: 3;
+}
+
+.custom-movie-player-cinesrc .player-server-control,
+.custom-movie-player-cinesrc .player-subtitle-control,
+.custom-movie-player-cinesrc .player-control-row > button:last-child {
+  order: 4;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button,
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button,
+.custom-movie-player-cinesrc .player-subtitle-control > button {
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms ease;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button:hover,
+.custom-movie-player-cinesrc .player-quality-button:hover,
+.custom-movie-player-cinesrc .player-server-button:hover,
+.custom-movie-player-cinesrc .player-subtitle-control > button:hover {
+  color: #fff;
+  transform: scale(1.14);
+}
+
+@media (max-width: 680px) {
+  .custom-movie-player-cinesrc .player-quality-control {
+    margin-left: auto !important;
+  }
+}
