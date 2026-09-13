@@ -6947,7 +6947,7 @@ body:has(.watch-page) .bottom-dock {
   position: absolute;
   right: 4.2%;
   top: clamp(18px, 3vw, 34px);
-  z-index: 2;
+  z-index: 6;
 }
 
 .player-paused-actions svg {
