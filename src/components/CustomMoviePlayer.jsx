@@ -27,15 +27,26 @@ import {
   RewindIcon,
   ForwardIcon,
   VolumeIcon,
+  PictureInPictureIcon,
+  SettingsIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
 
 const CINESRC_SERVER_OPTIONS = [
   { id: "nebula", label: "Nebula" },
   { id: "surge", label: "Surge" },
+  { id: "spark", label: "Spark" },
+  { id: "storm", label: "Storm" },
+  { id: "aurora", label: "Aurora" },
+  { id: "rush", label: "Rush" },
+  { id: "lisbon", label: "Lisbon" },
+  { id: "blizzard", label: "Blizzard" },
+  { id: "mist", label: "Mist" },
   { id: "thunder", label: "Thunder" },
+  { id: "flux", label: "Flux" },
   { id: "wave", label: "Wave" },
   { id: "sturm", label: "Sturm" },
+  { id: "brisa", label: "Brisa (ES/LAT)" },
 ];
 
 function getDefaultCineSrcServer(id, mediaType, seasonNumber, episodeNumber) {
@@ -1247,12 +1258,8 @@ export default function CustomMoviePlayer({
         <div className="custom-player-ui">
           {!isPlaying && isReady && duration > 0 ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
-              <div
-                className="player-paused-backdrop"
-                style={{ backgroundImage: backdropUrl || posterUrl ? "linear-gradient(90deg, rgba(5, 7, 9, 0.82), rgba(5, 7, 9, 0.28) 58%, rgba(5, 7, 9, 0.48)), url(\"" + (backdropUrl || posterUrl) + "\")" : undefined }}
-                aria-hidden="true"
-              />
               <div className="player-paused-topline"><span>{title}</span><span className="player-paused-topline-mark">NOVA</span></div>
+              <div className="player-paused-actions" aria-hidden="true"><PictureInPictureIcon /><span className="player-cast-icon" /></div>
               <div className="player-paused-info">
                 <p className="player-paused-eyebrow">You are watching</p>
                 <h2>{title}</h2>
@@ -1323,6 +1330,7 @@ export default function CustomMoviePlayer({
                   aria-expanded={qualityMenuOpen}
                   aria-label={`Quality ${quality}p`}
                 >
+                  <SettingsIcon className="player-setting-icon" />
                   <span className="player-setting-label">Quality</span>
                   <strong>{quality}p</strong>
                 </button>
@@ -1345,6 +1353,7 @@ export default function CustomMoviePlayer({
               </div>
               <div className="player-server-control">
                 <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
+                  <span className="player-server-cloud-icon" aria-hidden="true" />
                   <span className="player-setting-label">Server</span>
                   <strong>{activeServer}</strong>
                 </button>
