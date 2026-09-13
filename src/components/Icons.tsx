@@ -195,7 +195,7 @@ export const RewindIcon = (props: IconProps) => (
   <IconBase {...props}>
     <path d="M9 4.5 4 9.5l5 5" />
     <path d="M5 9.5h8a5.5 5.5 0 1 1-4.8 8" />
-    <text x="6.9" y="22" fill="currentColor" stroke="none" fontSize="5.4" fontWeight="800">−10</text>
+    <text x="5.9" y="23" fill="currentColor" stroke="none" fontSize="6.8" fontWeight="800" fontFamily="Arial, sans-serif">−10</text>
   </IconBase>
 );
 
@@ -204,7 +204,7 @@ export const ForwardIcon = (props: IconProps) => (
   <IconBase {...props}>
     <path d="m15 4.5 5 5-5 5" />
     <path d="M19 9.5h-8a5.5 5.5 0 1 0 4.8 8" />
-    <text x="1.1" y="22" fill="currentColor" stroke="none" fontSize="5.4" fontWeight="800">+10</text>
+    <text x="0.1" y="23" fill="currentColor" stroke="none" fontSize="6.8" fontWeight="800" fontFamily="Arial, sans-serif">+10</text>
   </IconBase>
 );
 
