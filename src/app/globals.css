@@ -7772,3 +7772,10 @@ body:has(.watch-page) .bottom-dock {
     width: calc(100% - 13px);
   }
 }
+
+
+/* Detail-page back control width: keep the purple accent tight to its label. */
+.detail-page .back-link {
+  align-self: flex-start;
+  width: max-content;
+}
