@@ -9,6 +9,13 @@ declare module "@/components/CustomMoviePlayer" {
     episodeNumber?: number;
     resumeAt?: number;
     onProgress?: (currentTime: number, duration: number) => void;
+    title?: string;
+    overview?: string;
+    releaseYear?: string;
+    runtimeMinutes?: number;
+    rating?: number;
+    backdropUrl?: string;
+    posterUrl?: string;
   }>;
 
   export default CustomMoviePlayer;
