@@ -1389,30 +1389,6 @@ export default function CustomMoviePlayer({
               </button>
             </div>
           </div>
-          {subtitleMenuOpen && (
-                  <div className="player-subtitle-menu" role="dialog" aria-label="Subtitle settings">
-                    <div className="player-subtitle-menu-header"><strong>Subtitles</strong><button type="button" onClick={() => setSubtitleMenuOpen(false)} aria-label="Close subtitle settings">×</button></div>
-                    <button type="button" className="player-subtitle-action" onClick={() => setSubtitleCustomizeOpen((open) => !open)}><span>{subtitleCustomizeOpen ? "Back to subtitles" : "Customize"}</span><span aria-hidden="true">{subtitleCustomizeOpen ? "←" : "→"}</span></button>{subtitleCustomizeOpen ? null : (<div className="player-subtitle-language"><span>Language</span><div className="player-subtitle-language-select"><div className="player-subtitle-language-options" role="listbox" aria-label="Subtitle language">{subtitleLanguageOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleLanguage} className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>))}</div></div></div>)}
-                    {subtitleCustomizeOpen ? (
-                      <div className="player-subtitle-customize">
-                        <button className={"player-subtitle-action player-subtitle-watch-closer" + (subtitleLarge ? " is-active" : "")} type="button" aria-pressed={subtitleLarge} aria-label="Toggle larger subtitles" title="Toggle larger subtitles" onClick={() => setSubtitleLarge((large) => !large)}><span>Watch Closer</span><span aria-hidden="true"><GlassesIcon /></span></button> <div className="player-subtitle-font-family"><span className="player-subtitle-tool-label">Font Family</span><div className="player-subtitle-font-options" role="listbox" aria-label="Subtitle font family">{subtitleFontFamilyOptions.map(([value, label]) => (<button key={value} type="button" role="option" aria-selected={value === subtitleFontFamily} className={value === subtitleFontFamily ? "is-selected" : ""} style={{ fontFamily: value }} onClick={() => setSubtitleFontFamily(value)}>{label}</button>))}</div></div> <label>Font size<input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} style={{ "--range-progress": `${((subtitleFontSize - 0.8) / 1.2) * 100}%` }} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
-                        <label>Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} style={{ "--range-progress": `${((subtitlePosition - 8) / 68) * 100}%` }} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
-                        <label>Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-25" max="25" step="0.5" value={subtitleOffset} style={{ "--range-progress": `${((subtitleOffset + 25) / 50) * 100}%` }} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
-                      </div>
-                    ) : null}
-            {subtitleNoticeVisible ? (
-              <div className="player-subtitle-notice" role="status">
-                {subtitleStatus === "loading"
-                  ? "Loading subtitles…"
-                  : subtitleStatus === "ready"
-                    ? `${subtitlesEnabled ? "Subtitles on" : "Subtitles off"} · ${subtitleLanguage.toUpperCase()}`
-                    : subtitleStatus === "error"
-                      ? subtitleError
-                    : "No subtitle track is available for this title."}
-              </div>
-            ) : null}
-          </div>
-        )}
         </div>
       ) : null}
     </div>
