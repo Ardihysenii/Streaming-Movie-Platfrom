@@ -1289,6 +1289,7 @@ export default function CustomMoviePlayer({
             </div>
           ) : null}
           <div className={`nova-player-controls custom-provider-controls${controlsVisible ? "" : " controls-hidden"}`}>
+            <div className="player-progress-row">
             <input
               className="player-progress"
               type="range"
@@ -1300,6 +1301,8 @@ export default function CustomMoviePlayer({
               onChange={handleSeek}
               aria-label="Seek"
             />
+            <span className="player-time player-time-progress">{formatTime(currentTime)} / {formatTime(duration)}</span>
+            </div>
             <div className="player-control-row">
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -1319,7 +1322,6 @@ export default function CustomMoviePlayer({
                 onChange={handleVolume}
                 aria-label="Volume"
               />
-              <span className="player-time">{formatTime(currentTime)} / {formatTime(duration)}</span>
               <span className="player-control-spacer" />
               <div className="player-quality-control">
                 <button
