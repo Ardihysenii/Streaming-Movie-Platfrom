@@ -1327,56 +1327,62 @@ export default function CustomMoviePlayer({
                 aria-label="Volume"
               />
               <span className="player-control-spacer" />
-              <div className="player-quality-control">
-                <button
-                  className="player-quality-button"
-                  type="button"
-                  onClick={() => setQualityMenuOpen((open) => !open)}
-                  aria-haspopup="listbox"
-                  aria-expanded={qualityMenuOpen}
-                  aria-label={`Quality ${quality}p`}
-                >
+              <div className="player-settings-control">
+                <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
                   <SettingsIcon className="player-setting-icon" />
-                  <span className="player-setting-label">Quality</span>
-                  <strong>{quality}p</strong>
                 </button>
-                {qualityMenuOpen ? (
-                  <div className="player-quality-menu" role="listbox" aria-label="Preferred quality">
-                    {["1080", "720", "480"].map((option) => (
-                      <button
-                        className={option === quality ? "is-selected" : ""}
-                        key={option}
-                        type="button"
-                        role="option"
-                        aria-selected={option === quality}
-                        onClick={() => handleQualityChange(option)}
-                      >
-                        {option}p
-                      </button>
-                    ))}
+                {settingsOpen ? (
+                  <div className="player-settings-panel" role="dialog" aria-label="Player settings">
+                    <div className="player-settings-header">
+                      {settingsView !== "root" ? <button type="button" onClick={() => setSettingsView("root")} aria-label="Back to settings">‹</button> : <span />}
+                      <strong>{settingsView === "root" ? "Settings" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : "Playback settings"}</strong>
+                      <button type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">×</button>
+                    </div>
+                    {settingsView === "root" ? (
+                      <div className="player-settings-body">
+                        <div className="player-settings-card">
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{quality === "1080" ? "Auto · 1080p" : quality + "p"}<b>›</b></span></button>
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? "On" : "Off"}<b>›</b></span></button>
+                          <div className="player-settings-row is-disabled"><span>Audio</span><span>Original</span></div>
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("speed")}><span>Playback speed</span><span>{playbackRate}x<b>›</b></span></button>
+                        </div>
+                        <button type="button" className="player-settings-row player-settings-card player-settings-single" onClick={() => setSettingsView("playback")}><span>Playback settings</span><b>›</b></button>
+                      </div>
+                    ) : null}
+                    {settingsView === "quality" ? (
+                      <div className="player-settings-body player-settings-list">{["1080", "720", "480"].map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{option === "1080" ? "Auto · 1080p" : option + "p"}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
+                    ) : null}
+                    {settingsView === "subtitles" ? (
+                      <div className="player-settings-body player-settings-subtitles">
+                        <button type="button" className="player-settings-toggle" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span>Subtitles</span><strong>{subtitlesEnabled ? "On" : "Off"}</strong></button>
+                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
+                        <span className="player-settings-label-block">Language</span>
+                        <div className="player-settings-language-grid">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>)}</div>
+                        <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Customize subtitles <b>›</b></button>
+                      </div>
+                    ) : null}
+                    {settingsView === "subtitle-customize" ? (
+                      <div className="player-settings-body player-settings-subtitles">
+                        <button className={"player-settings-toggle" + (subtitleLarge ? " is-selected" : "")} type="button" onClick={() => setSubtitleLarge((large) => !large)}><span>Watch Closer</span><strong>{subtitleLarge ? "On" : "Off"}</strong></button>
+                        <span className="player-settings-label-block">Font family</span>
+                        <div className="player-settings-language-grid">{subtitleFontFamilyOptions.map(([value, label]) => <button key={value} type="button" style={{ fontFamily: value }} className={value === subtitleFontFamily ? "is-selected" : ""} onClick={() => setSubtitleFontFamily(value)}>{label}</button>)}</div>
+                        <label className="player-settings-slider-row">Font size <span>{subtitleFontSize.toFixed(1)}x</span><input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                        <label className="player-settings-slider-row">Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
+                        <label className="player-settings-slider-row">Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-25" max="25" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
+                      </div>
+                    ) : null}
+                    {settingsView === "speed" ? (
+                      <div className="player-settings-body player-settings-list">{[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => <button key={rate} type="button" className={"player-settings-option" + (rate === playbackRate ? " is-selected" : "")} onClick={() => { setPlaybackRate(rate); sendCommand("setPlaybackRate", [rate]); setSettingsView("root"); }}><span>{rate}x</span>{rate === playbackRate ? <b>✓</b> : null}</button>)}</div>
+                    ) : null}
+                    {settingsView === "playback" ? (
+                      <div className="player-settings-body player-settings-playback">
+                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Volume boost</span><strong>{soundBoost}%</strong></div><input type="range" min="100" max="300" step="10" value={soundBoost} onChange={(event) => { const next = Number(event.target.value); setSoundBoost(next); sendCommand("setVolume", [Math.min(1, volume * (next / 100))]); }} /><div className="player-settings-range-labels"><span>100%</span><span>300%</span></div></div>
+                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Video fit</span><strong>{videoFit[0].toUpperCase() + videoFit.slice(1)}</strong></div><div className="player-settings-fit-grid">{["fit", "fill", "stretch"].map((fit) => <button key={fit} type="button" className={videoFit === fit ? "is-selected" : ""} onClick={() => setVideoFit(fit)}>{fit[0].toUpperCase() + fit.slice(1)}</button>)}</div></div>
+                        <label className="player-settings-slider-row">Brightness <span>{brightness}%</span><input type="range" min="40" max="160" step="1" value={brightness} onChange={(event) => setBrightness(Number(event.target.value))} /></label>
+                      </div>
+                    ) : null}
                   </div>
                 ) : null}
-              </div>
-              <div className="player-server-control">
-                <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
-                  <span className="player-server-cloud-icon" aria-hidden="true" />
-                  <span className="player-setting-label">Server</span>
-                  <strong>{activeServer}</strong>
-                </button>
-                {serverMenuOpen ? (
-                  <div className="player-server-menu" role="listbox" aria-label="CineSrc server">
-                    {CINESRC_SERVER_OPTIONS.map((option) => (
-                      <button key={option.id} type="button" role="option" aria-selected={option.id === selectedServer} className={option.id === selectedServer ? "is-selected" : ""} onClick={() => handleServerChange(option.id)}>
-                        <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-              <div className="player-subtitle-control">
-                <button type="button" onClick={() => { setSubtitleMenuOpen((open) => !open); setSubtitleCustomizeOpen(false); }} aria-label="Subtitle settings" title="Subtitle settings">
-                  <CaptionsIcon />
-                </button>
               </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
                 <FullscreenIcon />
