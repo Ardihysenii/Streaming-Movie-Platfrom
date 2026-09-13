@@ -7226,3 +7226,43 @@ body:has(.watch-page) .bottom-dock {
     font-size: 0.7rem;
   }
 }
+
+
+/* Final CineSrc control polish */
+.custom-movie-player-cinesrc .player-progress {
+  accent-color: #a98bff !important;
+  background: linear-gradient(90deg, #a98bff var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
+}
+
+.custom-movie-player-cinesrc .player-progress::-webkit-slider-thumb {
+  background: #a98bff;
+}
+
+.custom-movie-player-cinesrc .player-progress::-moz-range-thumb {
+  background: #a98bff;
+}
+
+.custom-movie-player-cinesrc .player-quality-button .player-setting-label,
+.custom-movie-player-cinesrc .player-quality-button strong,
+.custom-movie-player-cinesrc .player-server-button .player-setting-label,
+.custom-movie-player-cinesrc .player-server-button strong {
+  display: none;
+}
+
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button,
+.custom-movie-player-cinesrc .player-server-menu button {
+  cursor: pointer;
+}
+
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button {
+  width: 34px;
+}
+
+@media (max-width: 680px) {
+  .custom-movie-player-cinesrc .player-quality-button,
+  .custom-movie-player-cinesrc .player-server-button {
+    width: 30px;
+  }
+}
