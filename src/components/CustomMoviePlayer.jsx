@@ -198,6 +198,9 @@ export default function CustomMoviePlayer({
   const touchSuppressRef = useRef(false);
   const ignoreDoubleClickRef = useRef(false);
   const iframeRef = useRef(null);
+  const castBridgeRef = useRef(null);
+  const presentationConnectionRef = useRef(null);
+  const [castState, setCastState] = useState("idle");
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
   const pendingServerSeekRef = useRef(null);
@@ -345,6 +348,14 @@ export default function CustomMoviePlayer({
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
   }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer]);
+
+  const castBridgeUrl = useMemo(() => {
+    if (!isCineSrc || !embedUrl) return "";
+    const url = new URL(embedUrl);
+    url.searchParams.set("controls", "true");
+    url.searchParams.set("autoplay", "false");
+    return url.toString();
+  }, [embedUrl, isCineSrc]);
 
 
 
@@ -531,6 +542,50 @@ export default function CustomMoviePlayer({
     );
   }, [isCineSrc, providerOrigin]);
 
+  const sendCastBridgeCommand = useCallback((command, args = []) => {
+    if (!isCineSrc || !providerOrigin || !castBridgeRef.current?.contentWindow) return;
+    castBridgeRef.current.contentWindow.postMessage(
+      { type: "cinesrc:command", command, args },
+      providerOrigin,
+    );
+  }, [isCineSrc, providerOrigin]);
+
+  const handleCast = useCallback(async () => {
+    if (!isCineSrc || !castBridgeUrl || typeof window === "undefined" || typeof window.PresentationRequest !== "function") return;
+    const remoteUrl = new URL(castBridgeUrl);
+    remoteUrl.searchParams.set("controls", "true");
+    remoteUrl.searchParams.set("autoplay", "true");
+    remoteUrl.searchParams.set("start", String(Math.max(0, Math.floor(currentTimeRef.current || 0))));
+    setCastState("connecting");
+    try {
+      const request = new window.PresentationRequest([remoteUrl.toString()]);
+      const connection = await request.start();
+      presentationConnectionRef.current = connection;
+      setCastState("connected");
+      sendCommand("pause");
+      const reset = () => {
+        if (presentationConnectionRef.current === connection) presentationConnectionRef.current = null;
+        setCastState("idle");
+      };
+      connection.addEventListener("close", reset, { once: true });
+      connection.addEventListener("terminate", reset, { once: true });
+    } catch {
+      setCastState("idle");
+    }
+  }, [castBridgeUrl, isCineSrc, sendCommand]);
+
+  useEffect(() => {
+    if (!isCineSrc || !castBridgeUrl) return undefined;
+    const handleCastBridgeMessage = (event) => {
+      if (event.origin !== providerOrigin || event.source !== castBridgeRef.current?.contentWindow) return;
+      if (event.data?.type !== "cinesrc:ready") return;
+      sendCastBridgeCommand("seek", [Math.max(0, currentTimeRef.current || 0)]);
+      sendCastBridgeCommand("pause");
+    };
+    window.addEventListener("message", handleCastBridgeMessage);
+    return () => window.removeEventListener("message", handleCastBridgeMessage);
+  }, [castBridgeUrl, isCineSrc, providerOrigin, sendCastBridgeCommand]);
+
 
 
 
@@ -615,6 +670,8 @@ export default function CustomMoviePlayer({
             const nextCurrentTime = Number(payload.currentTime);
             currentTimeRef.current = nextCurrentTime;
             setCurrentTime(nextCurrentTime);
+            sendCastBridgeCommand("seek", [nextCurrentTime]);
+            sendCastBridgeCommand("pause");
             onProgress?.(nextCurrentTime, Number(payload?.duration));
           }
           if (Number.isFinite(Number(payload?.duration))) setDuration(Number(payload.duration));
@@ -1243,6 +1300,18 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
+        {isCineSrc && castBridgeUrl ? (
+          <iframe
+            ref={castBridgeRef}
+            src={castBridgeUrl}
+            className="player-cast-bridge"
+            title="NOVA Cast bridge"
+            allowFullScreen
+            allow="autoplay; fullscreen; picture-in-picture; presentation"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        ) : null}
         {isCineSrc && !isReady ? (
           <div className="nova-source-loading" role="status" aria-live="polite">
             <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
@@ -1261,7 +1330,7 @@ export default function CustomMoviePlayer({
           {!isPlaying && isReady && duration > 0 ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
               <div className="player-paused-topline"><span>{title}</span><span className="player-paused-topline-mark">NOVA</span></div>
-              <div className="player-paused-actions" aria-hidden="true"><PictureInPictureIcon /><span className="player-cast-icon" /></div>
+              <div className="player-paused-actions"><PictureInPictureIcon /><button className="player-cast-button" type="button" onClick={(event) => { event.stopPropagation(); void handleCast(); }} onPointerDown={(event) => event.stopPropagation()} aria-label="Cast to device" title={castState === "connected" ? "Casting" : "Cast to device"}><span className="player-cast-icon" aria-hidden="true" /></button></div>
               <div className="player-paused-info">
                 <p className="player-paused-eyebrow">You are watching</p>
                 <h2>{title}</h2>
