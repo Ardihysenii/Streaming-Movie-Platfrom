@@ -175,7 +175,7 @@ export default function WatchPage() {
           title={movie.title}
           overview={movie.overview}
           releaseYear={String(movie.release_date ?? movie.first_air_date ?? "").slice(0, 4)}
-          runtimeMinutes={movie.runtime ?? movie.episode_run_time?.[0] ?? 0}
+          runtimeMinutes={movie.runtime ?? 0}
           rating={movie.vote_average ?? 0}
           backdropUrl={movie.backdrop_path ? "https://image.tmdb.org/t/p/w1280" + movie.backdrop_path : ""}
           posterUrl={movie.poster_path ? "https://image.tmdb.org/t/p/w780" + movie.poster_path : ""}
