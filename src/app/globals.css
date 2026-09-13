@@ -7503,3 +7503,28 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player-cinesrc .player-settings-panel,
 .custom-movie-player-cinesrc .player-settings-panel button,
 .custom-movie-player-cinesrc .player-settings-panel input { pointer-events: auto; }
+
+
+/* Volume-only finish: clean icon and NOVA accent slider. */
+.custom-movie-player-cinesrc .player-volume-control > button {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0;
+}
+
+.custom-movie-player-cinesrc .player-volume-control > button:hover,
+.custom-movie-player-cinesrc .player-volume-control > button:focus-visible {
+  background: transparent !important;
+  color: #b9a5ff;
+  transform: scale(1.1);
+}
+
+.custom-movie-player-cinesrc .player-volume::-webkit-slider-runnable-track {
+  background: var(--accent);
+}
+
+.custom-movie-player-cinesrc .player-volume::-moz-range-track {
+  background: var(--accent);
+}
