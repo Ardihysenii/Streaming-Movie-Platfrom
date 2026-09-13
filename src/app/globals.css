@@ -6944,6 +6944,7 @@ body:has(.watch-page) .bottom-dock {
   color: rgba(255, 255, 255, 0.94);
   display: flex;
   gap: 24px;
+  pointer-events: none;
   position: absolute;
   right: 4.2%;
   top: clamp(18px, 3vw, 34px);
@@ -6965,6 +6966,9 @@ body:has(.watch-page) .bottom-dock {
   justify-content: center;
   margin: 0;
   padding: 3px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 7;
 }
 
 .player-cast-button:hover .player-cast-icon,
@@ -6978,7 +6982,12 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .player-cast-icon {
+  background: transparent;
+  border: 0;
+  display: block;
+  height: 26px;
   transition: transform 180ms ease;
+  width: 26px;
 }
 
 .player-paused-info {
