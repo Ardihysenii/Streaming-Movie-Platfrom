@@ -7100,8 +7100,29 @@ body:has(.watch-page) .bottom-dock {
   transform: none;
 }
 
+.custom-movie-player-cinesrc .player-volume-control {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
 .custom-movie-player-cinesrc .player-volume {
-  display: none;
+  display: block;
+  margin-left: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-4px);
+  transition: margin 180ms ease, opacity 180ms ease, transform 180ms ease, width 180ms ease;
+  width: 0;
+}
+
+.custom-movie-player-cinesrc .player-volume-control:hover .player-volume,
+.custom-movie-player-cinesrc .player-volume-control:focus-within .player-volume {
+  margin-left: 4px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  width: 88px;
 }
 
 .custom-movie-player-cinesrc .player-time {
