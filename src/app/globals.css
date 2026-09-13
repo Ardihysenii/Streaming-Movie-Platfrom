@@ -7181,3 +7181,48 @@ body:has(.watch-page) .bottom-dock {
     margin-left: auto;
   }
 }
+
+
+.custom-movie-player-cinesrc .player-progress-row {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  width: 100%;
+}
+
+.custom-movie-player-cinesrc .player-progress-row .player-progress {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+}
+
+.custom-movie-player-cinesrc .player-time-progress {
+  color: rgba(255, 255, 255, 0.94);
+  flex: 0 0 auto;
+  font-size: clamp(0.74rem, 1.25vw, 0.98rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .custom-movie-player-cinesrc .player-quality-control,
+  .custom-movie-player-cinesrc .player-server-control {
+    display: block;
+  }
+
+  .custom-movie-player-cinesrc .player-quality-button,
+  .custom-movie-player-cinesrc .player-server-button {
+    min-width: 30px;
+    width: 30px;
+  }
+
+  .custom-movie-player-cinesrc .player-quality-button .player-setting-label,
+  .custom-movie-player-cinesrc .player-quality-button strong,
+  .custom-movie-player-cinesrc .player-server-button .player-setting-label,
+  .custom-movie-player-cinesrc .player-server-button strong {
+    display: none;
+  }
+
+  .custom-movie-player-cinesrc .player-time-progress {
+    font-size: 0.7rem;
+  }
+}
