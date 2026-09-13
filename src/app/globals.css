@@ -7279,3 +7279,58 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player-cinesrc .player-progress::-moz-range-progress {
   background: #a98bff !important;
 }
+
+
+/* Keep the reference control row level and prevent icon glyphs from colliding. */
+.custom-movie-player-cinesrc .player-control-row {
+  align-items: center;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button,
+.custom-movie-player-cinesrc .player-quality-control,
+.custom-movie-player-cinesrc .player-server-control,
+.custom-movie-player-cinesrc .player-subtitle-control {
+  align-items: center;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+  vertical-align: middle;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button svg,
+.custom-movie-player-cinesrc .player-quality-button svg,
+.custom-movie-player-cinesrc .player-server-button svg,
+.custom-movie-player-cinesrc .player-subtitle-control > button svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.custom-movie-player-cinesrc .player-quality-button,
+.custom-movie-player-cinesrc .player-server-button,
+.custom-movie-player-cinesrc .player-subtitle-control > button {
+  align-items: center;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-movie-player-cinesrc .player-server-cloud-icon {
+  margin: 0;
+}
+
+@media (max-width: 680px) {
+  .custom-movie-player-cinesrc .player-control-row > button,
+  .custom-movie-player-cinesrc .player-quality-control,
+  .custom-movie-player-cinesrc .player-server-control,
+  .custom-movie-player-cinesrc .player-subtitle-control,
+  .custom-movie-player-cinesrc .player-quality-button,
+  .custom-movie-player-cinesrc .player-server-button,
+  .custom-movie-player-cinesrc .player-subtitle-control > button {
+    height: 30px;
+  }
+}
