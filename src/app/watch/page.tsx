@@ -174,7 +174,7 @@ export default function WatchPage() {
           onProgress={handleProgress}
           title={movie.title}
           overview={movie.overview}
-          releaseYear={String(movie.release_date ?? movie.first_air_date ?? "").slice(0, 4)}
+          releaseYear={String(movie.release_date ?? "").slice(0, 4)}
           runtimeMinutes={movie.runtime ?? 0}
           rating={movie.vote_average ?? 0}
           backdropUrl={movie.backdrop_path ? "https://image.tmdb.org/t/p/w1280" + movie.backdrop_path : ""}
