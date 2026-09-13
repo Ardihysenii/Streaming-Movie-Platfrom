@@ -22,8 +22,8 @@
 }
 
 :root[data-accent="cobalt"] {
-  --accent: #4e72ff;
-  --accent-rgb: 78, 114, 255;
+  --accent: #b69cff;
+  --accent-rgb: 182, 156, 255;
 }
 
 :root[data-accent="sage"] {
