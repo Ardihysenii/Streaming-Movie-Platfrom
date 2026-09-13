@@ -6,7 +6,7 @@ import type { AccentName, DensityName } from "@/lib/types";
 
 const accentOptions: { value: AccentName; label: string; color: string }[] = [
   { value: "signal", label: "Signal red", color: "#e21d2f" },
-  { value: "cobalt", label: "Cobalt", color: "#4e72ff" },
+  { value: "cobalt", label: "Purple", color: "#b69cff" },
   { value: "sage", label: "Sage", color: "#91ad9a" },
 ];
 
