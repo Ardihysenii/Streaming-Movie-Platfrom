@@ -1333,7 +1333,7 @@ export default function CustomMoviePlayer({
                   <div className="player-settings-panel" role="dialog" aria-label="Player settings">
                     <div className="player-settings-header">
                       {settingsView !== "root" ? <button type="button" onClick={() => setSettingsView("root")} aria-label="Back to settings">‹</button> : <span />}
-                      <strong>{settingsView === "root" ? "Settings" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : "Playback settings"}</strong>
+                      <strong>{settingsView === "root" ? "Settings" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : settingsView === "subtitle-customize" ? "Customize subtitles" : "Playback settings"}</strong>
                       <button type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">×</button>
                     </div>
                     {settingsView === "root" ? (
@@ -1374,7 +1374,7 @@ export default function CustomMoviePlayer({
                     ) : null}
                     {settingsView === "playback" ? (
                       <div className="player-settings-body player-settings-playback">
-                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Volume boost</span><strong>{soundBoost}%</strong></div><input type="range" min="100" max="300" step="10" value={soundBoost} onChange={(event) => { const next = Number(event.target.value); setSoundBoost(next); sendCommand("setVolume", [Math.min(1, volume * (next / 100))]); }} /><div className="player-settings-range-labels"><span>100%</span><span>300%</span></div></div>
+                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Sound Booster</span><strong>{soundBoost}%</strong></div><input type="range" min="100" max="300" step="10" value={soundBoost} onChange={(event) => { const next = Number(event.target.value); setSoundBoost(next); sendCommand("setVolume", [Math.min(1, volume * (next / 100))]); }} /><div className="player-settings-range-labels"><span>100%</span><span>300%</span></div></div>
                         <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Video fit</span><strong>{videoFit[0].toUpperCase() + videoFit.slice(1)}</strong></div><div className="player-settings-fit-grid">{["fit", "fill", "stretch"].map((fit) => <button key={fit} type="button" className={videoFit === fit ? "is-selected" : ""} onClick={() => setVideoFit(fit)}>{fit[0].toUpperCase() + fit.slice(1)}</button>)}</div></div>
                         <label className="player-settings-slider-row">Brightness <span>{brightness}%</span><input type="range" min="40" max="160" step="1" value={brightness} onChange={(event) => setBrightness(Number(event.target.value))} /></label>
                       </div>
