@@ -1382,6 +1382,22 @@ export default function CustomMoviePlayer({
                   </div>
                 ) : null}
               </div>
+              <div className="player-server-control">
+                <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
+                  <span className="player-server-cloud-icon" aria-hidden="true" />
+                  <span className="player-setting-label">Server</span>
+                  <strong>{activeServer}</strong>
+                </button>
+                {serverMenuOpen ? (
+                  <div className="player-server-menu" role="listbox" aria-label="CineSrc server">
+                    {CINESRC_SERVER_OPTIONS.map((option) => (
+                      <button key={option.id} type="button" role="option" aria-selected={option.id === selectedServer} className={option.id === selectedServer ? "is-selected" : ""} onClick={() => handleServerChange(option.id)}>
+                        <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
                 <FullscreenIcon />
               </button>
