@@ -426,7 +426,6 @@ export default function CustomMoviePlayer({
   useEffect(() => {
     resumeAppliedRef.current = false;
     setIsReady(false);
-    setCurrentTime(0);
     setDuration(0);
   }, [embedUrl]);
 
@@ -580,9 +579,14 @@ export default function CustomMoviePlayer({
           break;
         case "cinesrc:play":
           setIsPlaying(true);
-          // If the source only accepts seeks after playback begins, apply the
-          // saved movie position at that point as a reliable fallback.
-          if (resumeAt > 0 && !resumeAppliedRef.current) {
+          if (pendingServerSeekRef.current !== null) {
+            const pendingTarget = Math.max(0, Number(pendingServerSeekRef.current) || 0);
+            pendingServerSeekRef.current = null;
+            resumeAppliedRef.current = true;
+            sendCommand("seek", [pendingTarget]);
+            if (!pendingServerPlayRef.current) sendCommand("pause");
+            pendingServerPlayRef.current = false;
+          } else if (resumeAt > 0 && !resumeAppliedRef.current) {
             resumeAppliedRef.current = true;
             sendCommand("seek", [Math.max(0, resumeAt)]);
           }
@@ -1156,6 +1160,20 @@ export default function CustomMoviePlayer({
     setControlsVisible(true);
   };
 
+  const handleServerChange = (nextServer) => {
+    if (!isCineSrc || !nextServer || nextServer === selectedServer) {
+      setServerMenuOpen(false);
+      return;
+    }
+    pendingServerSeekRef.current = currentTimeRef.current || currentTime;
+    pendingServerPlayRef.current = isPlaying;
+    setSelectedServer(nextServer);
+    setActiveServer(nextServer);
+    setServerMenuOpen(false);
+    setIsReady(false);
+    setControlsVisible(true);
+  };
+
 
 
 
@@ -1295,6 +1313,21 @@ export default function CustomMoviePlayer({
                         onClick={() => handleQualityChange(option)}
                       >
                         {option}p
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+              <div className="player-server-control">
+                <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
+                  <span className="player-setting-label">Server</span>
+                  <strong>{activeServer}</strong>
+                </button>
+                {serverMenuOpen ? (
+                  <div className="player-server-menu" role="listbox" aria-label="CineSrc server">
+                    {CINESRC_SERVER_OPTIONS.map((option) => (
+                      <button key={option.id} type="button" role="option" aria-selected={option.id === selectedServer} className={option.id === selectedServer ? "is-selected" : ""} onClick={() => handleServerChange(option.id)}>
+                        <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
                       </button>
                     ))}
                   </div>
