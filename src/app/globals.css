@@ -5450,8 +5450,8 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .player-center-play {
-    height: 54px;
-    width: 54px;
+    height: 68px;
+    width: 68px;
   }
 
   .player-center-play svg {
@@ -6756,13 +6756,6 @@ body:has(.watch-page) .bottom-dock {
   font-size: 0.58rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.player-center-play {
-  background: rgba(16, 17, 24, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.38);
 }
 
 @media (max-width: 680px) {
