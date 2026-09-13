@@ -1294,6 +1294,18 @@ export default function CustomMoviePlayer({
           {!isPlaying && isReady && duration > 0 ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
               <div className="player-paused-topline"><span>{title}</span><span className="player-paused-topline-mark">NOVA</span></div>
+              <div className="player-paused-info">
+                <p className="player-paused-eyebrow">You are watching</p>
+                <h2>{title}</h2>
+                <div className="player-paused-meta">
+                  {releaseYear ? <span>{releaseYear}</span> : null}
+                  {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
+                  {Number(rating) > 0 ? <span className="player-paused-rating">★ {Number(rating).toFixed(1)}</span> : null}
+                </div>
+                {overview ? <p className="player-paused-overview">{overview}</p> : null}
+              </div>
+            </div>
+          ) : null}
               <div className="player-paused-actions">
                 <PictureInPictureIcon />
                 <button
@@ -1308,18 +1320,6 @@ export default function CustomMoviePlayer({
                   <CastIcon className="player-cast-icon" />
                 </button>
               </div>
-              <div className="player-paused-info">
-                <p className="player-paused-eyebrow">You are watching</p>
-                <h2>{title}</h2>
-                <div className="player-paused-meta">
-                  {releaseYear ? <span>{releaseYear}</span> : null}
-                  {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
-                  {Number(rating) > 0 ? <span className="player-paused-rating">★ {Number(rating).toFixed(1)}</span> : null}
-                </div>
-                {overview ? <p className="player-paused-overview">{overview}</p> : null}
-              </div>
-            </div>
-          ) : null}
           <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onTouchEnd={handleGestureTouchEnd} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
             className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
