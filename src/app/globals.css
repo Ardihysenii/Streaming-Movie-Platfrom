@@ -7424,3 +7424,4 @@ body:has(.watch-page) .bottom-dock {
 /* Keep playback controls left and settings/server/fullscreen controls right. */
 .custom-movie-player-cinesrc .player-control-row { width: 100%; }
 .custom-movie-player-cinesrc .player-control-spacer { flex: 1 1 auto; min-width: 0; }
+\n\n.custom-movie-player-cinesrc .player-control-spacer { display: block; }\n
