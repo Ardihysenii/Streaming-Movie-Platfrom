@@ -7419,3 +7419,8 @@ body:has(.watch-page) .bottom-dock {
 @media (max-width: 680px) {
   .player-settings-panel { right: -6px; bottom: 42px; width: min(370px, calc(100vw - 16px)); }
 }
+
+
+/* Keep playback controls left and settings/server/fullscreen controls right. */
+.custom-movie-player-cinesrc .player-control-row { width: 100%; }
+.custom-movie-player-cinesrc .player-control-spacer { flex: 1 1 auto; min-width: 0; }
