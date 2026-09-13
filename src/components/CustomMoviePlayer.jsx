@@ -172,8 +172,12 @@ export default function CustomMoviePlayer({
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
-  const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
-  const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsView, setSettingsView] = useState("root");
+  const [soundBoost, setSoundBoost] = useState(100);
+  const [videoFit, setVideoFit] = useState("fit");
+  const [brightness, setBrightness] = useState(100);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [subtitleCues, setSubtitleCues] = useState([]);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
@@ -183,8 +187,7 @@ export default function CustomMoviePlayer({
   const [subtitleLarge, setSubtitleLarge] = useState(false);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("var(--font-sans)");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
-  const [subtitleMenuOpen, setSubtitleMenuOpen] = useState(false);
-  const [subtitleCustomizeOpen, setSubtitleCustomizeOpen] = useState(false);
+
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
   const subtitleFontFamilyOptions = [["var(--font-sans)", "System UI"], ["Arial, sans-serif", "Arial"], ["Trebuchet MS, sans-serif", "Trebuchet"], ["Georgia, serif", "Georgia"], ["Verdana, sans-serif", "Verdana"], ["Courier New, monospace", "Courier"]];
@@ -1045,7 +1048,7 @@ export default function CustomMoviePlayer({
     const nextVolume = Number(event.target.value);
     setVolume(nextVolume);
     setMuted(nextVolume === 0);
-    sendCommand("setVolume", [nextVolume]);
+    sendCommand("setVolume", [Math.min(1, nextVolume * (soundBoost / 100))]);
     if (nextVolume > 0 && muted) sendCommand("setMuted", [false]);
   };
   const toggleMute = () => {
@@ -1171,7 +1174,7 @@ export default function CustomMoviePlayer({
 
   const handleQualityChange = (nextQuality) => {
     setQuality(nextQuality);
-    setQualityMenuOpen(false);
+    setSettingsView("root");
     setIsReady(false);
     setControlsVisible(true);
   };
@@ -1236,7 +1239,8 @@ export default function CustomMoviePlayer({
         <iframe
         ref={iframeRef}
         src={embedUrl}
-        className="provider-player-frame"
+        className={"provider-player-frame player-fit-" + videoFit}
+        style={{ filter: "brightness(" + (brightness / 100) + ")" }}
         title="NOVA video player"
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
