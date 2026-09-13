@@ -193,18 +193,18 @@ export const MutedIcon = (props: IconProps) => (
 
 export const RewindIcon = (props: IconProps) => (
   <IconBase {...props}>
-    <path d="M9 7 4 12l5 5" />
-    <path d="M5 12h8a6 6 0 1 1-5.2 9" />
-    <text x="6.9" y="18" fill="currentColor" stroke="none" fontSize="5.6" fontWeight="800">−10</text>
+    <path d="M9 4.5 4 9.5l5 5" />
+    <path d="M5 9.5h8a5.5 5.5 0 1 1-4.8 8" />
+    <text x="6.9" y="22" fill="currentColor" stroke="none" fontSize="5.4" fontWeight="800">−10</text>
   </IconBase>
 );
 
 
 export const ForwardIcon = (props: IconProps) => (
   <IconBase {...props}>
-    <path d="m15 7 5 5-5 5" />
-    <path d="M19 12h-8a6 6 0 1 0 5.2 9" />
-    <text x="1.1" y="18" fill="currentColor" stroke="none" fontSize="5.6" fontWeight="800">+10</text>
+    <path d="m15 4.5 5 5-5 5" />
+    <path d="M19 9.5h-8a5.5 5.5 0 1 0 4.8 8" />
+    <text x="1.1" y="22" fill="currentColor" stroke="none" fontSize="5.4" fontWeight="800">+10</text>
   </IconBase>
 );
 
