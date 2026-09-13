@@ -7553,72 +7553,90 @@ body:has(.watch-page) .bottom-dock {
   width: 27px !important;
 }
 
-/* Watch-page details return control: refined, cinematic, and scoped only to this page. */
+/* Watch-page details return control: minimal purple editorial treatment. */
 .watch-page .watch-header .back-link {
   align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.09), 0 10px 26px rgba(0, 0, 0, 0.2);
-  color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.68);
   display: inline-flex;
-  font-size: 0.7rem;
+  font-size: 0.67rem;
   font-weight: 600;
-  gap: 9px;
-  letter-spacing: 0.035em;
-  padding: 6px 14px 6px 7px;
-  text-transform: none;
-  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, color 220ms ease, transform 220ms ease;
+  gap: 10px;
+  letter-spacing: 0.13em;
+  padding: 7px 0 7px 17px;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 180ms ease, transform 180ms ease;
 }
 
 .watch-page .watch-header .back-link::before {
   background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.62);
+  border-radius: 999px;
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.55);
   content: "";
-  flex: 0 0 5px;
-  height: 5px;
-  width: 5px;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: box-shadow 180ms ease, width 180ms ease;
+  width: 2px;
+}
+
+.watch-page .watch-header .back-link::after {
+  background: var(--accent);
+  bottom: 0;
+  content: "";
+  height: 1px;
+  left: 17px;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+  width: calc(100% - 17px);
 }
 
 .watch-page .watch-header .back-link svg {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 50%;
-  height: 27px;
-  padding: 6px;
-  transition: background 220ms ease, border-color 220ms ease, transform 220ms ease;
-  width: 27px;
+  height: 16px;
+  transition: transform 180ms ease;
+  width: 16px;
 }
 
 .watch-page .watch-header .back-link:hover {
-  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(255, 255, 255, 0.055));
-  border-color: rgba(var(--accent-rgb), 0.7);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 12px 32px rgba(0, 0, 0, 0.28), 0 0 0 4px rgba(var(--accent-rgb), 0.08);
   color: #fff;
-  transform: translateY(-2px);
+  transform: translateX(2px);
+}
+
+.watch-page .watch-header .back-link:hover::before {
+  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.82);
+  width: 4px;
+}
+
+.watch-page .watch-header .back-link:hover::after {
+  transform: scaleX(1);
 }
 
 .watch-page .watch-header .back-link:hover svg {
-  background: rgba(var(--accent-rgb), 0.22);
-  border-color: rgba(var(--accent-rgb), 0.58);
-  transform: translateX(-2px);
+  transform: translateX(-3px);
 }
 
 .watch-page .watch-header .back-link:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.92);
-  outline-offset: 4px;
+  outline: 1px solid var(--accent);
+  outline-offset: 6px;
 }
 
 @media (max-width: 680px) {
   .watch-page .watch-header .back-link {
-    font-size: 0.66rem;
-    gap: 7px;
-    padding-right: 11px;
+    font-size: 0.61rem;
+    gap: 8px;
+    letter-spacing: 0.1em;
+    padding-left: 13px;
   }
 
-  .watch-page .watch-header .back-link svg {
-    height: 25px;
-    width: 25px;
+  .watch-page .watch-header .back-link::after {
+    left: 13px;
+    width: calc(100% - 13px);
   }
 }
