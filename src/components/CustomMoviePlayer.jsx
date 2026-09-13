@@ -1363,19 +1363,21 @@ export default function CustomMoviePlayer({
               </button>
               <button type="button" onClick={() => seekBy(-10)} aria-label="Rewind 10 seconds"><RewindIcon /></button>
               <button type="button" onClick={() => seekBy(10)} aria-label="Forward 10 seconds"><ForwardIcon /></button>
-              <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>
-                {muted ? <MutedIcon /> : <VolumeIcon />}
-              </button>
-              <input
-                className="player-volume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={muted ? 0 : volume}
-                onChange={handleVolume}
-                aria-label="Volume"
-              />
+              <div className="player-volume-control">
+                <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>
+                  {muted ? <MutedIcon /> : <VolumeIcon />}
+                </button>
+                <input
+                  className="player-volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={muted ? 0 : volume}
+                  onChange={handleVolume}
+                  aria-label="Volume"
+                />
+              </div>
               <span className="player-control-spacer" />
               <div className="player-settings-control">
                 <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
