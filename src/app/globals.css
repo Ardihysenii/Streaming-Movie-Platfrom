@@ -7531,3 +7531,24 @@ body:has(.watch-page) .bottom-dock {
   position: relative;
   top: 2px;
 }
+
+/* Volume-only final override: transparent icon button in every state. */
+.custom-movie-player-cinesrc .player-volume-control > button,
+.custom-movie-player-cinesrc .player-volume-control > button:hover,
+.custom-movie-player-cinesrc .player-volume-control > button:active,
+.custom-movie-player-cinesrc .player-volume-control > button:focus,
+.custom-movie-player-cinesrc .player-volume-control > button:focus-visible {
+  background-color: transparent !important;
+  background-image: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  transform: none !important;
+}
+
+.custom-movie-player-cinesrc .player-volume-control > button svg {
+  color: #fff !important;
+  height: 27px !important;
+  width: 27px !important;
+}
