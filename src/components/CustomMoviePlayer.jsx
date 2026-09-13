@@ -30,6 +30,31 @@ import {
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
 
+const CINESRC_SERVER_OPTIONS = [
+  { id: "nebula", label: "Nebula" },
+  { id: "surge", label: "Surge" },
+  { id: "thunder", label: "Thunder" },
+  { id: "wave", label: "Wave" },
+  { id: "sturm", label: "Sturm" },
+];
+
+function getDefaultCineSrcServer(id, mediaType, seasonNumber, episodeNumber) {
+  const cleanId = String(id || "");
+  const season = Number(seasonNumber ?? 1);
+  const episode = Number(episodeNumber ?? 0);
+  if (mediaType === "movie" && cleanId === "1083381") return "surge";
+  if (mediaType === "tv" && cleanId === "247718" && season === 1 && episode >= 2 && episode <= 10) return "surge";
+  return "nebula";
+}
+
+function formatRuntimeLabel(minutes) {
+  if (!Number.isFinite(Number(minutes)) || Number(minutes) <= 0) return "";
+  const total = Math.round(Number(minutes));
+  const hours = Math.floor(total / 60);
+  const remaining = total % 60;
+  return hours ? hours + "h " + remaining + "m" : remaining + "m";
+}
+
 
 
 
@@ -112,6 +137,13 @@ export default function CustomMoviePlayer({
   episodeNumber,
   resumeAt = 0,
   onProgress,
+  title = "Now playing",
+  overview = "",
+  releaseYear = "",
+  runtimeMinutes = 0,
+  rating = 0,
+  backdropUrl = "",
+  posterUrl = "",
 }) {
   const { settings } = useNovaSettings();
   const [isClient, setIsClient] = useState(false);
@@ -125,6 +157,10 @@ export default function CustomMoviePlayer({
   const [mobileFullscreen, setMobileFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [quality, setQuality] = useState("1080");
+  const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
+  const [selectedServer, setSelectedServer] = useState(initialServer);
+  const [activeServer, setActiveServer] = useState(initialServer);
+  const [serverMenuOpen, setServerMenuOpen] = useState(false);
   const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const [subtitleNoticeVisible, setSubtitleNoticeVisible] = useState(false);
   const [subtitleCues, setSubtitleCues] = useState([]);
@@ -152,6 +188,9 @@ export default function CustomMoviePlayer({
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const resumeAppliedRef = useRef(false);
+  const pendingServerSeekRef = useRef(null);
+  const pendingServerPlayRef = useRef(false);
+  const currentTimeRef = useRef(0);
   const mobileFullscreenRef = useRef(false);
 
 
@@ -285,6 +324,7 @@ export default function CustomMoviePlayer({
       if (isBackroomsSurgeMovie) {
         params.set("lastserver", "surge");
       }
+      params.set("lastserver", selectedServer);
       params.set("controls", "false");
       params.set("autoplay", "false");
       params.set("quality", quality);
@@ -292,7 +332,7 @@ export default function CustomMoviePlayer({
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber]);
+  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer]);
 
 
 
@@ -557,6 +597,7 @@ export default function CustomMoviePlayer({
         case "cinesrc:timeupdate":
           if (Number.isFinite(Number(payload?.currentTime))) {
             const nextCurrentTime = Number(payload.currentTime);
+            currentTimeRef.current = nextCurrentTime;
             setCurrentTime(nextCurrentTime);
             onProgress?.(nextCurrentTime, Number(payload?.duration));
           }
@@ -571,7 +612,10 @@ export default function CustomMoviePlayer({
           const command = message.command ?? payload?.command;
           const result = message.result ?? payload?.result;
           if (command === "getDuration" && Number.isFinite(Number(result))) setDuration(Number(result));
-          if (command === "getCurrentTime" && Number.isFinite(Number(result))) setCurrentTime(Number(result));
+          if (command === "getCurrentTime" && Number.isFinite(Number(result))) {
+            currentTimeRef.current = Number(result);
+            setCurrentTime(Number(result));
+          }
           if (command === "getPaused" && typeof result === "boolean") setIsPlaying(!result);
           if (command === "getVolume" && Number.isFinite(Number(result))) setVolume(Number(result));
           if (command === "getMuted" && typeof result === "boolean") setMuted(result);
