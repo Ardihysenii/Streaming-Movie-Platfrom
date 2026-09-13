@@ -1322,7 +1322,7 @@ export default function CustomMoviePlayer({
               </div>
           <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onTouchEnd={handleGestureTouchEnd} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
-            className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
+            className={`player-center-play${centerFeedback ? " is-visible" : ""}${centerFeedback === "play" ? " is-play" : centerFeedback === "pause" ? " is-pause" : " is-seek"}`}
             type="button"
             onClick={togglePlay}
             aria-hidden={!centerFeedback}
