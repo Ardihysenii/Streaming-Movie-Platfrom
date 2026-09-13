@@ -697,6 +697,11 @@ export default function CustomMoviePlayer({
     sendCommand("seek", [Math.max(0, resumeAt)]);
   }, [duration, isCineSrc, isReady, resumeAt, sendCommand]);
 
+  useEffect(() => {
+    if (!isCineSrc || !isReady || duration <= 0 || pendingServerSeekRef.current === null) return;
+    sendCommand("play");
+  }, [duration, isCineSrc, isReady, sendCommand]);
+
 
 
 
@@ -1240,6 +1245,26 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc ? (
         <div className="custom-player-ui">
+          {!isPlaying && isReady && duration > 0 ? (
+            <div className="player-paused-overlay" aria-label="Paused movie information">
+              <div
+                className="player-paused-backdrop"
+                style={{ backgroundImage: backdropUrl || posterUrl ? "linear-gradient(90deg, rgba(5, 7, 9, 0.82), rgba(5, 7, 9, 0.28) 58%, rgba(5, 7, 9, 0.48)), url(\"" + (backdropUrl || posterUrl) + "\")" : undefined }}
+                aria-hidden="true"
+              />
+              <div className="player-paused-topline"><span>{title}</span><span className="player-paused-topline-mark">NOVA</span></div>
+              <div className="player-paused-info">
+                <p className="player-paused-eyebrow">You are watching</p>
+                <h2>{title}</h2>
+                <div className="player-paused-meta">
+                  {releaseYear ? <span>{releaseYear}</span> : null}
+                  {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
+                  {Number(rating) > 0 ? <span className="player-paused-rating">★ {Number(rating).toFixed(1)}</span> : null}
+                </div>
+                {overview ? <p className="player-paused-overview">{overview}</p> : null}
+              </div>
+            </div>
+          ) : null}
           <button className="player-gesture-layer" type="button" onClick={handleGestureClick} onTouchEnd={handleGestureTouchEnd} onDoubleClick={handleGestureDoubleClick} aria-label={isPlaying ? "Pause movie" : "Play movie"} />
           <button
             className={`player-center-play${centerFeedback ? " is-visible" : ""}`}
