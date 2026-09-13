@@ -716,7 +716,7 @@ export default function CustomMoviePlayer({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
+  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCastBridgeCommand, sendCommand]);
 
 
 
