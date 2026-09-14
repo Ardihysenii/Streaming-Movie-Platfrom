@@ -23,8 +23,8 @@ export function Header() {
 
   return (
     <header className="site-header">
-      <Link className="wordmark" href="/" aria-label="NOVA home">
-        NOVA
+      <Link className="wordmark" href="/" aria-label="MONTANA home">
+        MONTANA
       </Link>
       <div className="header-actions">
         <Link className="icon-button" href={searchHref} aria-label="Search movies and series">
@@ -94,7 +94,7 @@ export function BottomDock() {
             setAgentOpen(true);
             setAgentNudgeOpen(false);
           }}
-          aria-label="Open NOVA Agent"
+          aria-label="Open MONTANA Agent"
           aria-haspopup="dialog"
           aria-expanded={agentOpen}
         >
@@ -106,7 +106,7 @@ export function BottomDock() {
             <button
               className="agent-nudge-message"
               type="button"
-              aria-label="Open NOVA Agent message"
+              aria-label="Open MONTANA Agent message"
               onClick={() => {
                 setAgentOpen(true);
                 setAgentNudgeOpen(false);
@@ -144,7 +144,7 @@ export function BottomDock() {
         <span>Settings</span>
       </button>
       {browseOpen ? (
-        <div className="browse-popover" role="dialog" aria-label="Browse NOVA">
+        <div className="browse-popover" role="dialog" aria-label="Browse MONTANA">
           <div className="browse-popover-heading">
             <p className="eyebrow">Quick access</p>
             <h2>Browse</h2>
