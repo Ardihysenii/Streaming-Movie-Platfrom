@@ -8,7 +8,6 @@ type IntroStage = "brand" | "invite" | "name" | "greeting" | "returning";
 const INTRO_KEY = "montana:intro-completed";
 const NAME_KEY = "montana:user-name";
 const AUDIO_SRC = "/audio/montana-intro.mpga";
-const FILM_FRAMES = ["MONTANA", "NOW PLAYING", "FEATURED", "REEL 01", "CINEMA", "THE NIGHT SHOW"];
 
 export function SplashScreen() {
   const [visible, setVisible] = useState(true);
@@ -89,37 +88,34 @@ export function SplashScreen() {
   if (!visible) return null;
 
   return (
-    <div className={`splash-screen montana-intro montana-intro-${stage}${leaving ? " is-leaving" : ""}`} aria-label="MONTANA introduction">
+    <div className={"splash-screen montana-intro montana-intro-" + stage + (leaving ? " is-leaving" : "")} aria-label="MONTANA introduction">
       <div className="montana-intro-backdrop" aria-hidden="true">
-        <div className="intro-film-strip intro-film-strip-top">
-          {[...FILM_FRAMES, ...FILM_FRAMES].map((frame, index) => (
-            <span className="intro-film-frame" key={`top-${frame}-${index}`}>{frame}</span>
-          ))}
-        </div>
-        <div className="intro-film-strip intro-film-strip-bottom">
-          {[...FILM_FRAMES, ...FILM_FRAMES].reverse().map((frame, index) => (
-            <span className="intro-film-frame" key={`bottom-${frame}-${index}`}>{frame}</span>
-          ))}
-        </div>
+        <div className="intro-grid" />
+        <div className="intro-aperture"><span /></div>
+        <div className="intro-frame-lines" />
         <div className="intro-light-sweep" />
+        <p className="intro-timecode intro-timecode-left">MNT / 001</p>
+        <p className="intro-timecode intro-timecode-right">24 FPS / 16:09</p>
       </div>
       <div className="montana-intro-scrim" aria-hidden="true" />
 
       {stage === "brand" || stage === "invite" ? (
         <div className="montana-branding">
+          <div className="montana-index">01 <span>/</span> 04</div>
           <p className="montana-intro-kicker">A new world of cinema</p>
           <div className="splash-mark montana-logo" aria-label="MONTANA">
             {[..."MONTANA"].map((letter, index) => (
-              <span key={`${letter}-${index}`} style={{ animationDelay: `${index * 120}ms` }}>{letter}</span>
+              <span key={letter + index} style={{ animationDelay: index * 110 + "ms" }}>{letter}</span>
             ))}
           </div>
-          <div className="splash-line" />
+          <div className="montana-logo-rule"><span>EST. 2026</span><i /></div>
           {stage === "invite" ? (
             <div className="montana-invite">
-              <p>Stories begin when you step inside.</p>
+              <p>Stories begin when the house lights go down.</p>
               <button className="cinema-button" type="button" onClick={enterCinema}>
-                <span>Enter the Cinema</span>
-                <span className="cinema-button-arrow" aria-hidden="true">→</span>
+                <span className="cinema-button-index">01</span>
+                <span>Begin screening</span>
+                <span className="cinema-button-arrow" aria-hidden="true">↗</span>
               </button>
             </div>
           ) : null}
@@ -128,14 +124,18 @@ export function SplashScreen() {
 
       {stage === "name" ? (
         <form className="montana-name-card" onSubmit={submitName}>
-          <p className="montana-intro-kicker">Before the opening scene</p>
-          <h1>What should we call you?</h1>
-          <p className="montana-name-copy">Your cinema is ready. Tell us your name and make this world yours.</p>
-          <label htmlFor="montana-name">Your name</label>
-          <input autoFocus id="montana-name" name="name" onChange={(event) => setName(event.target.value)} placeholder="Enter your name" value={name} />
+          <div className="montana-index">02 <span>/</span> 04</div>
+          <p className="montana-intro-kicker">Audience registry</p>
+          <h1>First name, please.</h1>
+          <p className="montana-name-copy">Every great screening begins with an introduction.</p>
+          <div className="montana-name-field">
+            <label htmlFor="montana-name">Identification</label>
+            <input autoFocus id="montana-name" name="name" onChange={(event) => setName(event.target.value)} placeholder="Type your name" value={name} />
+          </div>
           <button className="cinema-button cinema-button-submit" type="submit">
-            <span>Continue</span>
-            <span className="cinema-button-arrow" aria-hidden="true">→</span>
+            <span className="cinema-button-index">02</span>
+            <span>Confirm identity</span>
+            <span className="cinema-button-arrow" aria-hidden="true">↗</span>
           </button>
           {audioError ? <p className="montana-audio-note">The music could not start yet, but you can continue.</p> : null}
         </form>
@@ -143,17 +143,19 @@ export function SplashScreen() {
 
       {stage === "greeting" ? (
         <div className="montana-greeting">
-          <p className="montana-intro-kicker">Welcome to MONTANA</p>
-          <h1>{savedName}, your story starts now.</h1>
-          <div className="greeting-rule" />
+          <div className="montana-index">03 <span>/</span> 04</div>
+          <p className="montana-intro-kicker">Now showing</p>
+          <h1><span>{savedName}</span><small>The house lights are down.</small></h1>
+          <div className="greeting-rule"><span>ROLL CREDITS</span><i /></div>
         </div>
       ) : null}
 
       {stage === "returning" ? (
         <div className="montana-greeting montana-returning-greeting">
-          <p className="montana-intro-kicker">Welcome back to MONTANA</p>
-          <h1>{savedName}</h1>
-          <div className="greeting-rule" />
+          <div className="montana-index">04 <span>/</span> 04</div>
+          <p className="montana-intro-kicker">The screening continues</p>
+          <h1><span>{savedName}</span><small>Welcome back to MONTANA.</small></h1>
+          <div className="greeting-rule"><span>ROLL CREDITS</span><i /></div>
         </div>
       ) : null}
     </div>
