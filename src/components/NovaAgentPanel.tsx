@@ -90,14 +90,14 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
   }
 
   return (
-    <div className="agent-layer" role="dialog" aria-modal="true" aria-label="NOVA Agent">
+    <div className="agent-layer" role="dialog" aria-modal="true" aria-label="MONTANA Agent">
       <button className="agent-backdrop" type="button" aria-label="Close Agent" onClick={onClose} />
       <section className="agent-panel">
         <header className="agent-panel-header">
           <div className="agent-panel-title">
             <span className="agent-panel-icon"><AgentIcon /></span>
             <div>
-              <p className="eyebrow">NOVA Agent</p>
+              <p className="eyebrow">MONTANA Agent</p>
               <h2>Find your next watch</h2>
             </div>
           </div>
@@ -134,7 +134,7 @@ export function NovaAgentPanel({ open, onClose }: NovaAgentPanelProps) {
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
             placeholder="Say hello or ask for movies, shows, or anime…"
-            aria-label="Chat with NOVA Agent"
+            aria-label="Chat with MONTANA Agent"
             maxLength={600}
           />
           <button type="submit" disabled={loading || !prompt.trim()}>Send</button>
