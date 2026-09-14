@@ -1,9 +1,4 @@
-      <div className="splash-mark">
-        <span>N</span>
-        <span>O</span>
-        <span>V</span>
-        <span>A</span>
-      </div>"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -32,11 +27,12 @@ export function SplashScreen() {
 
   return (
     <div className={`splash-screen${leaving ? " is-leaving" : ""}`} aria-label="MONTANA is loading">
-      <div className="splash-mark">
-        <span>N</span>
-        <span>O</span>
-        <span>V</span>
-        <span>A</span>
+      <div className="splash-mark" aria-label="MONTANA">
+        {[..."MONTANA"].map((letter, index) => (
+          <span key={`${letter}-${index}`} style={{ animationDelay: `${index * 75}ms` }}>
+            {letter}
+          </span>
+        ))}
       </div>
       <div className="splash-line" />
     </div>
