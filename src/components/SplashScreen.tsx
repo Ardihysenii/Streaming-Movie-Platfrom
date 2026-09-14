@@ -1,4 +1,9 @@
-"use client";
+      <div className="splash-mark">
+        <span>N</span>
+        <span>O</span>
+        <span>V</span>
+        <span>A</span>
+      </div>"use client";
 
 import { useEffect, useState } from "react";
 
@@ -26,7 +31,7 @@ export function SplashScreen() {
   if (!visible) return null;
 
   return (
-    <div className={`splash-screen${leaving ? " is-leaving" : ""}`} aria-label="NOVA is loading">
+    <div className={`splash-screen${leaving ? " is-leaving" : ""}`} aria-label="MONTANA is loading">
       <div className="splash-mark">
         <span>N</span>
         <span>O</span>
