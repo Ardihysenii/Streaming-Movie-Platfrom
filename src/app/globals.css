@@ -2775,27 +2775,7 @@ img {
   z-index: 2;
 }
 
-.wishlist-detail-button {
-  border-radius: 10px;
-  gap: 9px;
-  height: 48px;
-  min-height: 48px;
-  padding: 0 18px;
-  width: auto;
-}
-
-.wishlist-detail-button::after {
-  content: "Wishlist";
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.wishlist-detail-button:hover,
-.wishlist-detail-button.is-saved {
-  transform: translateY(-2px);
-}
+.wishlist-detail-button {  background: rgba(16, 12, 28, 0.48);
 
 .detail-hero.is-cinematic-idle .detail-shade {
   opacity: 0.68;
