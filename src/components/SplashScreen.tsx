@@ -91,7 +91,24 @@ export function SplashScreen() {
     <div className={"splash-screen montana-intro montana-intro-" + stage + (leaving ? " is-leaving" : "")} aria-label="MONTANA introduction">
       <div className="montana-intro-backdrop" aria-hidden="true">
         <div className="intro-grid" />
-        <div className="intro-aperture"><span /></div>
+        <div className="intro-projector-beams">
+          <span className="projector-beam projector-beam-left" />
+          <span className="projector-beam projector-beam-right" />
+          <span className="projector-beam projector-beam-center" />
+        </div>
+        <div className="intro-aperture">
+          <span className="aperture-line" />
+          <span className="aperture-blade aperture-blade-one" />
+          <span className="aperture-blade aperture-blade-two" />
+          <span className="aperture-blade aperture-blade-three" />
+        </div>
+        <div className="intro-shadow-pass" />
+        <div className="intro-film-fragments" aria-hidden="true">
+          <span className="film-fragment film-fragment-one">MNT / 24</span>
+          <span className="film-fragment film-fragment-two">FRAME 018</span>
+          <span className="film-fragment film-fragment-three">REEL / A</span>
+          <span className="film-fragment film-fragment-four">SILENCE / ACTION</span>
+        </div>
         <div className="intro-frame-lines" />
         <div className="intro-light-sweep" />
         <p className="intro-timecode intro-timecode-left">MNT / 001</p>
