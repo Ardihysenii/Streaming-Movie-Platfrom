@@ -120,12 +120,38 @@ img {
 }
 
 .wordmark {
+  align-items: center;
   color: var(--text);
-  font-size: 1.18rem;
-  font-weight: 700;
-  letter-spacing: 0.55em;
+  display: inline-flex;
+  font-size: clamp(1.08rem, 1.5vw, 1.38rem);
+  font-weight: 850;
+  letter-spacing: 0.24em;
   line-height: 1;
-  padding-left: 0.55em;
+  padding: 0 0 9px 0.24em;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.wordmark::after {
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.18));
+  bottom: 0;
+  content: "";
+  height: 3px;
+  left: 0.24em;
+  position: absolute;
+  transform-origin: left center;
+  transition: transform 180ms ease, width 180ms ease;
+  width: 31px;
+}
+
+.wordmark:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.wordmark:hover::after {
+  transform: scaleX(1.5);
 }
 
 .wordmark-small {
@@ -1378,7 +1404,7 @@ img {
 
 .splash-screen {
   align-items: center;
-  background: #050607;
+  background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.1), transparent 34%), #050607;
   display: flex;
   flex-direction: column;
   inset: 0;
@@ -1395,28 +1421,27 @@ img {
 
 .splash-mark {
   display: flex;
-  font-size: clamp(2rem, 5vw, 5rem);
-  font-weight: 700;
-  gap: 0.44em;
-  letter-spacing: 0.12em;
-  padding-left: 0.12em;
+  font-size: clamp(2.35rem, 6vw, 6.4rem);
+  font-weight: 850;
+  gap: 0.18em;
+  letter-spacing: 0.14em;
+  padding-left: 0.14em;
+  text-shadow: 0 0 32px rgba(var(--accent-rgb), 0.18);
 }
 
 .splash-mark span {
-  animation: splashLetter 700ms both;
+  animation: splashLetter 720ms both;
+  display: inline-block;
 }
 
-.splash-mark span:nth-child(2) { animation-delay: 80ms; }
-.splash-mark span:nth-child(3) { animation-delay: 160ms; }
-.splash-mark span:nth-child(4) { animation-delay: 240ms; }
-
 .splash-line {
-  animation: splashLine 850ms 360ms both;
-  background: var(--accent);
-  height: 2px;
-  margin-top: 24px;
+  animation: splashLine 850ms 540ms both;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.3);
+  height: 3px;
+  margin-top: 30px;
   transform-origin: center;
-  width: clamp(90px, 12vw, 180px);
+  width: clamp(150px, 21vw, 290px);
 }
 
 .settings-layer {
