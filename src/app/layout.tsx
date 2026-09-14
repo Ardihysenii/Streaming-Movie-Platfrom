@@ -8,9 +8,9 @@ import { SplashScreen } from "@/components/SplashScreen";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NOVA — Your cinema, uninterrupted",
+  title: "MONTANA — Your cinema, uninterrupted",
   description: "A personal, cinematic movie discovery and viewing interface.",
-  applicationName: "NOVA",
+  applicationName: "MONTANA",
 };
 
 export const viewport: Viewport = {
