@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="site-footer">
-      <span className="wordmark wordmark-small">NOVA</span>
+      <span className="wordmark wordmark-small">MONTANA</span>
       <p>
         This product uses the TMDB API but is not endorsed or certified by TMDB.
         Cinemeta remains available as a catalog fallback.
