@@ -1444,6 +1444,351 @@ img {
   width: clamp(150px, 21vw, 290px);
 }
 
+
+.montana-intro {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.montana-intro-backdrop,
+.montana-intro-scrim {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.montana-intro-backdrop {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(var(--accent-rgb), 0.18), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.055), transparent 38%),
+    #050607;
+  overflow: hidden;
+  z-index: -3;
+}
+
+.montana-intro-backdrop::before {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 100% 5px;
+  content: "";
+  inset: 0;
+  opacity: 0.2;
+  position: absolute;
+}
+
+.montana-intro-scrim {
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0.22), rgba(5, 6, 7, 0.62) 72%, #050607);
+  z-index: -2;
+}
+
+.intro-film-strip {
+  display: flex;
+  gap: clamp(14px, 2vw, 28px);
+  left: -12%;
+  position: absolute;
+  white-space: nowrap;
+  width: max-content;
+}
+
+.intro-film-strip-top {
+  animation: filmStripTop 24s linear infinite;
+  top: 18%;
+  transform: rotate(-8deg);
+}
+
+.intro-film-strip-bottom {
+  animation: filmStripBottom 30s linear infinite;
+  bottom: 14%;
+  transform: rotate(8deg);
+}
+
+.intro-film-frame {
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  font-size: clamp(0.58rem, 0.72vw, 0.78rem);
+  font-weight: 700;
+  height: clamp(54px, 6vw, 88px);
+  justify-content: center;
+  letter-spacing: 0.24em;
+  min-width: clamp(150px, 17vw, 250px);
+  padding-left: 0.24em;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.intro-film-frame::before,
+.intro-film-frame::after {
+  border-left: 1px solid rgba(var(--accent-rgb), 0.42);
+  border-right: 1px solid rgba(var(--accent-rgb), 0.42);
+  content: "";
+  inset: 9px;
+  position: absolute;
+}
+
+.intro-light-sweep {
+  animation: introLightSweep 7s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+  filter: blur(20px);
+  height: 140%;
+  left: -35%;
+  position: absolute;
+  top: -20%;
+  transform: rotate(18deg);
+  width: 18%;
+}
+
+.montana-branding,
+.montana-name-card,
+.montana-greeting {
+  position: relative;
+  z-index: 2;
+}
+
+.montana-branding {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: -2vh;
+  text-align: center;
+}
+
+.montana-intro-kicker {
+  animation: introContentIn 900ms 650ms both;
+  color: var(--accent);
+  font-size: clamp(0.58rem, 0.78vw, 0.76rem);
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  margin: 0 0 22px;
+  padding-left: 0.34em;
+  text-transform: uppercase;
+}
+
+.montana-logo {
+  font-size: clamp(2.65rem, 8.4vw, 8.3rem);
+  gap: clamp(0.12em, 0.22vw, 0.2em);
+  letter-spacing: 0.16em;
+  padding-left: 0.16em;
+  text-shadow: 0 0 46px rgba(var(--accent-rgb), 0.26);
+}
+
+.montana-logo span {
+  animation: montanaLetter 1150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.montana-branding .splash-line {
+  animation-delay: 1050ms;
+  margin-top: clamp(22px, 3vw, 34px);
+}
+
+.montana-invite {
+  animation: introContentIn 950ms 1150ms both;
+  margin-top: clamp(26px, 3.2vw, 42px);
+}
+
+.montana-invite p {
+  color: rgba(242, 240, 235, 0.72);
+  font-size: clamp(0.82rem, 1.1vw, 1rem);
+  letter-spacing: 0.08em;
+  margin: 0 0 20px;
+}
+
+.cinema-button {
+  align-items: center;
+  background: var(--accent);
+  box-shadow: 0 12px 40px rgba(var(--accent-rgb), 0.22);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.7rem;
+  font-weight: 800;
+  gap: 22px;
+  justify-content: space-between;
+  letter-spacing: 0.2em;
+  min-width: 230px;
+  padding: 16px 18px 16px 22px;
+  text-transform: uppercase;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.cinema-button:hover,
+.cinema-button:focus-visible {
+  background: #f53245;
+  box-shadow: 0 16px 48px rgba(var(--accent-rgb), 0.38);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.cinema-button-arrow {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 0.7;
+  transition: transform 180ms ease;
+}
+
+.cinema-button:hover .cinema-button-arrow,
+.cinema-button:focus-visible .cinema-button-arrow {
+  transform: translateX(5px);
+}
+
+.montana-name-card {
+  animation: nameCardIn 950ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: rgba(13, 16, 18, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.48), 0 0 80px rgba(var(--accent-rgb), 0.1);
+  display: flex;
+  flex-direction: column;
+  max-width: min(560px, calc(100vw - 40px));
+  padding: clamp(28px, 5vw, 58px);
+  width: 100%;
+}
+
+.montana-name-card .montana-intro-kicker {
+  animation-delay: 250ms;
+  margin-bottom: 18px;
+}
+
+.montana-name-card h1,
+.montana-greeting h1 {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  margin: 0;
+}
+
+.montana-name-copy {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 18px 0 28px;
+  max-width: 38ch;
+}
+
+.montana-name-card label {
+  color: var(--quiet);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.montana-name-card input {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  color: var(--text);
+  font-size: 1.08rem;
+  outline: none;
+  padding: 15px 16px;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.montana-name-card input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.16);
+}
+
+.cinema-button-submit {
+  align-self: flex-start;
+  margin-top: 22px;
+}
+
+.montana-audio-note {
+  color: var(--quiet);
+  font-size: 0.76rem;
+  margin: 14px 0 0;
+}
+
+.montana-greeting {
+  animation: greetingIn 1200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-width: min(900px, calc(100vw - 40px));
+  text-align: center;
+}
+
+.montana-greeting .montana-intro-kicker {
+  animation-delay: 100ms;
+}
+
+.montana-greeting h1 {
+  font-size: clamp(2.5rem, 7vw, 7rem);
+  max-width: 11ch;
+}
+
+.greeting-rule {
+  animation: greetingRule 900ms 500ms both;
+  background: var(--accent);
+  height: 3px;
+  margin: 32px auto 0;
+  width: 86px;
+}
+
+.montana-intro-name .intro-film-strip-top {
+  animation-duration: 11s;
+}
+
+.montana-intro-name .intro-film-strip-bottom {
+  animation-duration: 14s;
+}
+
+.montana-intro-greeting .intro-film-strip-top,
+.montana-intro-returning .intro-film-strip-top {
+  animation-duration: 7s;
+}
+
+.montana-intro-greeting .intro-film-strip-bottom,
+.montana-intro-returning .intro-film-strip-bottom {
+  animation-duration: 9s;
+}
+
+.montana-intro-returning .montana-greeting h1 {
+  max-width: none;
+}
+
+@keyframes montanaLetter {
+  from { filter: blur(12px); opacity: 0; transform: translateY(44px) scale(0.88); }
+  to { filter: blur(0); opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes introContentIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nameCardIn {
+  from { opacity: 0; transform: translateY(34px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes greetingIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes greetingRule {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes filmStripTop {
+  from { transform: translateX(0) rotate(-8deg); }
+  to { transform: translateX(-25%) rotate(-8deg); }
+}
+
+@keyframes filmStripBottom {
+  from { transform: translateX(-18%) rotate(8deg); }
+  to { transform: translateX(8%) rotate(8deg); }
+}
+
+@keyframes introLightSweep {
+  0%, 100% { opacity: 0; transform: translateX(0) rotate(18deg); }
+  30% { opacity: 0.7; }
+  62% { opacity: 0.18; transform: translateX(720%) rotate(18deg); }
+}
+
+
 .settings-layer {
   inset: 0;
   pointer-events: none;
