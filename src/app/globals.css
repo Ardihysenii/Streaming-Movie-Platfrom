@@ -1488,6 +1488,40 @@ img {
 @media (max-width:680px) { .intro-frame-lines{inset:18px}.intro-timecode{top:19px}.intro-timecode-left{left:20px}.intro-timecode-right{right:20px}.intro-aperture{height:92vw;width:92vw}.montana-branding{margin-top:-6vh}.montana-logo{font-size:clamp(2.3rem,13vw,5rem)}.montana-name-card{padding:20px 24px 26px}.montana-name-card .montana-index,.montana-greeting .montana-index{margin-bottom:38px}.montana-name-card h1,.montana-greeting h1{font-size:clamp(2.35rem,12vw,4rem)} }
 @media (prefers-reduced-motion:reduce) { .montana-intro *,.montana-intro::before,.montana-intro::after { animation-duration:1ms!important; animation-iteration-count:1!important; transition-duration:1ms!important; } }
 
+
+/* Projection-room motion: physical light, moving shadows, aperture mechanics, and film debris. */
+.intro-projector-beams { inset:0; overflow:hidden; position:absolute; }
+.projector-beam { background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.02) 34%,rgba(255,255,255,.2) 49%,rgba(var(--accent-rgb),.12) 53%,transparent 74%); filter:blur(4px); height:140%; opacity:0; position:absolute; top:-14%; transform-origin:50% 100%; width:42%; }
+.projector-beam-left { animation:projectorBeamLeft 8s ease-in-out infinite; left:-13%; transform:rotate(18deg); }
+.projector-beam-right { animation:projectorBeamRight 11s 1.2s ease-in-out infinite; right:-14%; transform:rotate(-20deg); }
+.projector-beam-center { animation:projectorBeamCenter 13s 2.2s ease-in-out infinite; left:29%; width:42%; }
+.intro-aperture { overflow:hidden; }
+.intro-aperture .aperture-line { background:linear-gradient(90deg,transparent,rgba(255,255,255,.66),transparent); display:block; height:1px; inset:50% 16% auto; position:absolute; width:auto; }
+.intro-aperture .aperture-blade { background:linear-gradient(145deg,transparent 43%,rgba(255,255,255,.14) 47%,rgba(var(--accent-rgb),.25) 50%,transparent 55%); display:block; height:100%; inset:0; position:absolute; transform-origin:50% 50%; width:100%; }
+.aperture-blade-one { animation:apertureBladeOne 16s linear infinite; }
+.aperture-blade-two { animation:apertureBladeTwo 21s linear infinite reverse; opacity:.75; }
+.aperture-blade-three { animation:apertureBladeThree 27s linear infinite; opacity:.5; }
+.intro-shadow-pass { animation:shadowPass 14s ease-in-out infinite; background:linear-gradient(105deg,transparent 30%,rgba(0,0,0,.5) 47%,rgba(0,0,0,.12) 59%,transparent 72%); filter:blur(11px); inset:-30%; pointer-events:none; position:absolute; transform:rotate(-12deg); }
+.intro-film-fragments { inset:0; overflow:hidden; pointer-events:none; position:absolute; }
+.film-fragment { border-left:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.42); display:block; font-family:"SFMono-Regular",Consolas,monospace; font-size:.52rem; letter-spacing:.18em; padding:7px 0 7px 10px; position:absolute; text-transform:uppercase; transform-origin:center; }
+.film-fragment::before { background:var(--accent); content:""; height:3px; left:-2px; position:absolute; top:0; width:3px; }
+.film-fragment-one { animation:filmFragmentOne 17s linear infinite; left:7%; top:18%; }
+.film-fragment-two { animation:filmFragmentTwo 23s linear infinite; right:9%; top:30%; }
+.film-fragment-three { animation:filmFragmentThree 19s 3s linear infinite; bottom:25%; left:12%; }
+.film-fragment-four { animation:filmFragmentFour 26s 1s linear infinite; bottom:17%; right:6%; }
+@keyframes projectorBeamLeft { 0%,100% { opacity:0; transform:rotate(12deg) translateX(-10%); } 22% { opacity:.42; } 52% { opacity:.14; transform:rotate(30deg) translateX(18%); } 78% { opacity:.34; } }
+@keyframes projectorBeamRight { 0%,100% { opacity:0; transform:rotate(-12deg) translateX(10%); } 28% { opacity:.28; } 62% { opacity:.48; transform:rotate(-30deg) translateX(-19%); } }
+@keyframes projectorBeamCenter { 0%,100% { opacity:0; transform:scaleX(.65) rotate(0deg); } 35% { opacity:.22; } 64% { opacity:.42; transform:scaleX(1.2) rotate(5deg); } }
+@keyframes apertureBladeOne { from { transform:rotate(0deg) scale(1.05); } to { transform:rotate(360deg) scale(1.05); } }
+@keyframes apertureBladeTwo { from { transform:rotate(120deg) scale(1.1); } to { transform:rotate(-240deg) scale(1.1); } }
+@keyframes apertureBladeThree { from { transform:rotate(240deg) scale(1.16); } to { transform:rotate(600deg) scale(1.16); } }
+@keyframes shadowPass { 0%,100% { opacity:0; transform:translateX(-30%) rotate(-12deg); } 32% { opacity:.6; } 62% { opacity:.15; transform:translateX(24%) rotate(-12deg); } }
+@keyframes filmFragmentOne { 0%,100% { opacity:0; transform:translate3d(-16px,24px,0) rotate(-10deg); } 20%,70% { opacity:.7; } 55% { transform:translate3d(44px,-28px,0) rotate(-3deg); } }
+@keyframes filmFragmentTwo { 0%,100% { opacity:0; transform:translate3d(28px,-18px,0) rotate(8deg); } 25%,75% { opacity:.55; } 60% { transform:translate3d(-48px,28px,0) rotate(2deg); } }
+@keyframes filmFragmentThree { 0%,100% { opacity:0; transform:translate3d(-12px,18px,0) rotate(4deg); } 30%,70% { opacity:.42; } 55% { transform:translate3d(38px,-20px,0) rotate(11deg); } }
+@keyframes filmFragmentFour { 0%,100% { opacity:0; transform:translate3d(24px,18px,0) rotate(-5deg); } 22%,74% { opacity:.5; } 58% { transform:translate3d(-42px,-26px,0) rotate(-1deg); } }
+@media (max-width:680px) { .projector-beam { width:68%; }.film-fragment { font-size:.46rem; }.film-fragment-two,.film-fragment-four { display:none; } }
+
 .settings-layer {
   inset: 0;
   pointer-events: none;
