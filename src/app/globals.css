@@ -3792,30 +3792,54 @@ img {
 
 .search-field {
   align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.25), inset 0 1px rgba(255, 255, 255, 0.05);
+  background: rgba(8, 10, 12, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
   display: grid;
-  gap: 18px;
-  grid-template-columns: 42px 1fr 40px;
+  gap: 16px;
+  grid-template-columns: 34px 1fr 60px;
   margin: 0 auto;
-  max-width: 620px;
+  max-width: 640px;
+  min-height: 74px;
   overflow: hidden;
-  padding: 8px 10px 8px 8px;
+  padding: 0 18px 0 16px;
   position: relative;
   text-align: left;
   transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 
 .search-field::before {
-  animation: searchSheen 6s ease-in-out infinite;
-  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.13) 47%, transparent 70%);
+  animation: searchFrameScan 4.8s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.18), var(--accent), rgba(var(--accent-rgb), 0.18), transparent);
   content: "";
-  inset: 0;
+  height: 1px;
+  left: 8%;
   pointer-events: none;
   position: absolute;
-  transform: translateX(-120%);
+  top: -1px;
+  transform: translateX(-140%);
+  width: 32%;
+  z-index: 0;
+}
+
+.search-field::after {
+  background:
+    linear-gradient(var(--accent), var(--accent)) left top / 34px 1px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) left top / 1px 22px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) right top / 34px 1px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) right top / 1px 22px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) left bottom / 34px 1px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) left bottom / 1px 22px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) right bottom / 34px 1px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) right bottom / 1px 22px no-repeat;
+  content: "";
+  inset: 0;
+  opacity: 0.62;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 220ms ease;
+  z-index: 0;
 }
 
 .search-field > * {
@@ -3823,26 +3847,38 @@ img {
   z-index: 1;
 }
 
+.search-field:hover,
 .search-field:focus-within {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035));
-  border-color: rgba(var(--accent-rgb), 0.72);
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.32), 0 0 0 4px rgba(var(--accent-rgb), 0.1), inset 0 1px rgba(255, 255, 255, 0.06);
+  background: rgba(8, 10, 12, 0.68);
+  border-color: rgba(var(--accent-rgb), 0.58);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(var(--accent-rgb), 0.08);
   transform: translateY(-2px);
 }
 
+.search-field:focus-within::after {
+  opacity: 1;
+}
+
 .search-field > svg {
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.84);
-  height: 42px;
-  padding: 10px;
-  width: 42px;
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  height: 24px;
+  padding: 0;
+  width: 24px;
+  transition: color 220ms ease, filter 220ms ease, transform 220ms ease;
+}
+
+.search-field:hover > svg,
+.search-field:focus-within > svg {
+  filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.62));
+  transform: rotate(-8deg) scale(1.08);
 }
 
 .search-field input {
   background: transparent;
   border: 0;
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: clamp(1rem, 1.5vw, 1.18rem);
   font-weight: 560;
@@ -3854,23 +3890,30 @@ img {
 }
 
 .search-field input::placeholder {
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--muted);
+  opacity: 0.58;
 }
 
 .search-count {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.68);
-  display: inline-flex;
-  font-size: 0.74rem;
+  align-items: end;
+  color: var(--accent);
+  display: grid;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
-  height: 32px;
-  justify-content: center;
-  min-width: 32px;
+  gap: 2px;
+  justify-items: end;
+  letter-spacing: 0.08em;
+  min-width: 52px;
+  text-transform: uppercase;
 }
 
+.search-count::before {
+  color: var(--quiet);
+  content: "FRM";
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+}
 .recent-searches {
   margin: 22px auto 0;
   max-width: 620px;
@@ -3883,108 +3926,14 @@ img {
   display: flex;
   font-size: 0.62rem;
   justify-content: space-between;
-  letter-spacing: 0.16em;
-  margin-bottom: 10px;
-  text-transform: uppercase;
+/* Search input: minimal film-frame cursor treatment. */
+@keyframes searchFrameScan {
+  0%, 18% { opacity: 0; transform: translateX(-140%); }
+  28%, 72% { opacity: 0.9; }
+  82%, 100% { opacity: 0; transform: translateX(360%); }
 }
 
-.recent-searches-heading button {
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  padding: 2px 0;
-  text-transform: uppercase;
-  transition: color 180ms ease;
-}
-
-.recent-searches-heading button:hover {
-  color: var(--accent);
-}
-
-.recent-searches-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.recent-search-chip {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.74);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 0.72rem;
-  gap: 7px;
-  padding: 8px 12px;
-  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
-}
-
-.recent-search-chip svg {
-  color: var(--quiet);
-  height: 13px;
-  width: 13px;
-}
-
-.recent-search-chip:hover {
-  background: rgba(var(--accent-rgb), 0.12);
-  border-color: rgba(var(--accent-rgb), 0.5);
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-
-/* Search input: cinematic purple lens treatment. */
-.search-field {
-  background: linear-gradient(135deg, rgba(29, 23, 46, 0.94), rgba(9, 11, 17, 0.92));
-  border-color: rgba(var(--accent-rgb), 0.34);
-  border-radius: 18px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(var(--accent-rgb), 0.06), inset 0 1px rgba(255, 255, 255, 0.09);
-  grid-template-columns: 48px 1fr 44px;
-  padding: 10px 12px 10px 10px;
-  transition: background 260ms ease, border-color 260ms ease, box-shadow 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
-}
-
-.search-field::before {
-  background: linear-gradient(105deg, transparent 18%, rgba(var(--accent-rgb), 0.04) 34%, rgba(var(--accent-rgb), 0.34) 48%, rgba(255, 255, 255, 0.12) 52%, transparent 72%);
-  mix-blend-mode: screen;
-}
-
-.search-field::after {
-  animation: searchInputAura 7s ease-in-out infinite;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.18), transparent 64%);
-  content: "";
-  height: 180px;
-  pointer-events: none;
-  position: absolute;
-  right: 8%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 180px;
-}
-
-.search-field:hover {
-  border-color: rgba(var(--accent-rgb), 0.64);
-  box-shadow: 0 28px 66px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(var(--accent-rgb), 0.08), 0 0 34px rgba(var(--accent-rgb), 0.12), inset 0 1px rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
-}
-
-.search-field:focus-within {
-  background: linear-gradient(135deg, rgba(39, 29, 62, 0.98), rgba(10, 12, 19, 0.96));
-  border-color: var(--accent);
-  box-shadow: 0 30px 74px rgba(0, 0, 0, 0.46), 0 0 0 4px rgba(var(--accent-rgb), 0.13), 0 0 44px rgba(var(--accent-rgb), 0.2), inset 0 1px rgba(255, 255, 255, 0.14);
-  transform: translateY(-3px) scale(1.006);
-}
-
-.search-field > svg {
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.24), rgba(var(--accent-rgb), 0.18) 28%, rgba(13, 12, 23, 0.82) 72%);
-  border-color: rgba(var(--accent-rgb), 0.48);
-  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.05), 0 0 22px rgba(var(--accent-rgb), 0.24), inset 0 1px rgba(255, 255, 255, 0.18);
-  color: var(--accent);
-  transition: border-color 260ms ease, box-shadow 260ms ease, color 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
+ 260ms ease, box-shadow 260ms ease, color 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
 }
 
 .search-field:hover > svg,
@@ -5690,17 +5639,15 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .search-field {
-    border-radius: 999px;
-    grid-template-columns: 42px 1fr 30px;
+    grid-template-columns: 30px 1fr 48px;
     max-width: 390px;
-    min-height: 56px;
-    padding: 6px 8px 6px 6px;
+    min-height: 64px;
+    padding: 0 14px 0 12px;
   }
 
   .search-field > svg {
-    height: 42px;
-    padding: 10px;
-    width: 42px;
+    height: 22px;
+    width: 22px;
   }
 
   .search-field input {
