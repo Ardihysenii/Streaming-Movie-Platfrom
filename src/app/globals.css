@@ -3862,17 +3862,18 @@ img {
 .search-field input {
   background: transparent;
   border: 0;
-  caret-color: var(--accent);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: clamp(1.65rem, 4vw, 3.9rem);
-  font-weight: 720;
-  letter-spacing: -0.055em;
-  line-height: 1;
+  caret-color: #b69cff;
+  color: #b69cff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.75rem, 4.2vw, 4.1rem);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
   min-width: 0;
   outline: 0;
   padding: 0;
-  text-shadow: 0 0 28px rgba(var(--accent-rgb), 0.08);
+  text-shadow: 0 0 22px rgba(182, 156, 255, 0.2), 0 0 52px rgba(182, 156, 255, 0.1);
   width: 100%;
 }
 
@@ -3882,7 +3883,7 @@ img {
 }
 
 .search-field input:focus {
-  text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.26);
+  text-shadow: 0 0 26px rgba(182, 156, 255, 0.42), 0 0 64px rgba(182, 156, 255, 0.18);
 }
 
 .search-count {
