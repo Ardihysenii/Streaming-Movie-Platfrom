@@ -3546,7 +3546,7 @@ img {
 }
 
 .search-page::before {
-  background: radial-gradient(circle, rgba(226, 29, 47, 0.14), transparent 68%);
+  background: radial-gradient(circle, rgba(182, 156, 255, 0.14), transparent 68%);
   height: min(58vw, 760px);
   left: -18%;
   top: 2%;
@@ -3576,7 +3576,7 @@ img {
 .search-atmosphere::before {
   background:
     linear-gradient(120deg, transparent 0 34%, rgba(255, 255, 255, 0.045) 34.2%, transparent 34.5%),
-    linear-gradient(28deg, transparent 0 72%, rgba(226, 29, 47, 0.08) 72.2%, transparent 72.5%);
+    linear-gradient(28deg, transparent 0 72%, rgba(182, 156, 255, 0.08) 72.2%, transparent 72.5%);
   content: "";
   inset: 0;
   opacity: 0.72;
@@ -3603,7 +3603,7 @@ img {
 }
 
 .search-frame-two {
-  border-color: rgba(226, 29, 47, 0.15);
+  border-color: rgba(182, 156, 255, 0.15);
   height: 128%;
   left: auto;
   right: -12%;
@@ -3624,7 +3624,7 @@ img {
 }
 
 .search-orbit-two {
-  border-color: rgba(226, 29, 47, 0.13);
+  border-color: rgba(182, 156, 255, 0.13);
   height: min(54vh, 500px);
   left: 18%;
   right: auto;
