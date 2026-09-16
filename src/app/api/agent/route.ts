@@ -166,6 +166,51 @@ const SYNONYMS: Record<string, string[]> = {
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY?.trim();
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
+
+type GeminiIntent = {
+  mode: "chat" | "catalog";
+  reply: string;
+  scope: SearchScope;
+  query: string;
+  sortBy: "popularity.desc" | "vote_average.desc" | "primary_release_date.desc";
+  limit: number;
+};
+
+async function askGemini(prompt: string, history: AgentTurn[], signal: AbortSignal): Promise<GeminiIntent | null> {
+  if (!GEMINI_API_KEY) return null;
+  const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(GEMINI_API_KEY);
+  const conversation = history.filter((turn) => turn.role === "user" || turn.role === "assistant").slice(-10).map((turn) => ({ role: turn.role === "assistant" ? "model" : "user", parts: [{ text: String(turn.content ?? "") }] }));
+  const contents = conversation.length && conversation[0].role === "model" ? conversation.slice(1) : conversation;
+  contents.push({ role: "user", parts: [{ text: prompt }] });
+  const system = [
+    "You are Jarvis, the intelligent conversational assistant inside the MONTANA movie platform.",
+    "Do not force every question into a movie recommendation.",
+    "Answer normal questions naturally when they are not about finding catalog titles.",
+    "For movie, series, anime, actor, genre, mood, plot, or recommendation requests, choose catalog mode.",
+    "Use history to understand follow-ups such as more, similar, why, and explain that.",
+    "Do not invent catalog facts; TMDB will provide those after classification.",
+    "Return only JSON with exactly: mode, reply, scope, query, sortBy, limit.",
+    "mode is chat or catalog; scope is all, movies, series, or anime; sortBy is popularity.desc, vote_average.desc, or primary_release_date.desc; limit is 1 to 10.",
+  ].join(" ");
+  try {
+    const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { temperature: 0.35, responseMimeType: "application/json" } }), signal });
+    if (!response.ok) return null;
+    const payload = await response.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+    const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? "").join("").trim();
+    if (!text) return null;
+    const firstBrace = text.indexOf("{");
+    const lastBrace = text.lastIndexOf("}");
+    const parsed = JSON.parse(firstBrace >= 0 && lastBrace > firstBrace ? text.slice(firstBrace, lastBrace + 1) : text) as Partial<GeminiIntent>;
+    const scopes: SearchScope[] = ["all", "movies", "series", "anime"];
+    const sorts: GeminiIntent["sortBy"][] = ["popularity.desc", "vote_average.desc", "primary_release_date.desc"];
+    return { mode: parsed.mode === "chat" ? "chat" : "catalog", reply: typeof parsed.reply === "string" ? parsed.reply.trim() : "", scope: scopes.includes(parsed.scope as SearchScope) ? parsed.scope as SearchScope : "all", query: typeof parsed.query === "string" ? parsed.query.trim().slice(0, 160) : "", sortBy: sorts.includes(parsed.sortBy as GeminiIntent["sortBy"]) ? parsed.sortBy as GeminiIntent["sortBy"] : "popularity.desc", limit: Math.min(10, Math.max(1, Number(parsed.limit) || 6)) };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    return null;
+  }
+}
+
 function isGreeting(prompt: string) {
   return /^(?:hi|hello|hey|good morning|good afternoon|good evening|how are you)\b/i.test(prompt.trim());
 }
@@ -642,7 +687,7 @@ export async function POST(request: Request) {
       : [];
     if (isGreeting(prompt)) {
       return NextResponse.json({
-        message: "Hello to you as well! I am Jarvis—Ardi named me. He is my master. Thank you for choosing his space to watch movies; he put a lot of effort into it. I am the platform's Assistant, and I can help you find movies, TV shows, and anime.",
+        message: "Hello! I’m Jarvis, MONTANA’s movie assistant. Ask me anything, or tell me what you feel like watching.",
         results: [],
       });
     }
@@ -663,6 +708,18 @@ export async function POST(request: Request) {
         message: related.length ? `Here are more titles similar to ${prior.title || "that one"}.` : "I could not find similar titles right now.",
         results: related.slice(0, MAX_RESULTS),
       });
+    }
+
+    const geminiIntent = await askGemini(prompt, history, request.signal);
+    if (geminiIntent?.mode === "chat") return NextResponse.json({ message: geminiIntent.reply || conversationalReply(prompt), results: [] });
+    if (geminiIntent?.mode === "catalog") {
+      const aiIntent: AgentIntent = { scope: geminiIntent.scope, query: geminiIntent.query, sortBy: geminiIntent.sortBy, limit: geminiIntent.limit, page: 1 };
+      const keywordResults = await findKeywordMatches(aiIntent, prompt, request.signal);
+      if (keywordResults.length) return NextResponse.json({ message: geminiIntent.reply || "I matched your request against MONTANA’s catalog.", results: keywordResults });
+      const intelligentResults = await findMedia(aiIntent, request.signal);
+      if (intelligentResults.length) return NextResponse.json({ message: await formatCatalogAnswer(prompt, intelligentResults, request.signal), results: intelligentResults });
+      const closeMatches = await findClosestTitles(aiIntent, prompt, request.signal);
+      return NextResponse.json({ message: closeMatches.length ? "I found the closest matches I could for that request." : noResultReply(prompt), results: closeMatches });
     }
 
     const filmography = await findPersonFilmography(prompt, request.signal);
