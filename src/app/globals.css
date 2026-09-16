@@ -3936,6 +3936,88 @@ img {
   transform: translateY(-1px);
 }
 
+
+/* Search input: cinematic purple lens treatment. */
+.search-field {
+  background: linear-gradient(135deg, rgba(29, 23, 46, 0.94), rgba(9, 11, 17, 0.92));
+  border-color: rgba(182, 156, 255, 0.34);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(182, 156, 255, 0.06), inset 0 1px rgba(255, 255, 255, 0.09);
+  grid-template-columns: 48px 1fr 44px;
+  padding: 10px 12px 10px 10px;
+  transition: background 260ms ease, border-color 260ms ease, box-shadow 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
+}
+
+.search-field::before {
+  background: linear-gradient(105deg, transparent 18%, rgba(182, 156, 255, 0.04) 34%, rgba(182, 156, 255, 0.34) 48%, rgba(255, 255, 255, 0.12) 52%, transparent 72%);
+  mix-blend-mode: screen;
+}
+
+.search-field::after {
+  animation: searchInputAura 7s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(182, 156, 255, 0.18), transparent 64%);
+  content: "";
+  height: 180px;
+  pointer-events: none;
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 180px;
+}
+
+.search-field:hover {
+  border-color: rgba(182, 156, 255, 0.64);
+  box-shadow: 0 28px 66px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(182, 156, 255, 0.08), 0 0 34px rgba(182, 156, 255, 0.12), inset 0 1px rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.search-field:focus-within {
+  background: linear-gradient(135deg, rgba(39, 29, 62, 0.98), rgba(10, 12, 19, 0.96));
+  border-color: #b69cff;
+  box-shadow: 0 30px 74px rgba(0, 0, 0, 0.46), 0 0 0 4px rgba(182, 156, 255, 0.13), 0 0 44px rgba(182, 156, 255, 0.2), inset 0 1px rgba(255, 255, 255, 0.14);
+  transform: translateY(-3px) scale(1.006);
+}
+
+.search-field > svg {
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.24), rgba(182, 156, 255, 0.18) 28%, rgba(13, 12, 23, 0.82) 72%);
+  border-color: rgba(182, 156, 255, 0.48);
+  box-shadow: 0 0 0 4px rgba(182, 156, 255, 0.05), 0 0 22px rgba(182, 156, 255, 0.24), inset 0 1px rgba(255, 255, 255, 0.18);
+  color: #b69cff;
+  transition: border-color 260ms ease, box-shadow 260ms ease, color 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
+}
+
+.search-field:hover > svg,
+.search-field:focus-within > svg {
+  border-color: #b69cff;
+  box-shadow: 0 0 0 5px rgba(182, 156, 255, 0.08), 0 0 28px rgba(182, 156, 255, 0.42), inset 0 1px rgba(255, 255, 255, 0.24);
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.search-field input { color: rgba(255, 255, 255, 0.94); }
+.search-field input::placeholder { color: rgba(225, 216, 255, 0.42); }
+
+.search-count {
+  background: rgba(182, 156, 255, 0.12);
+  border-color: rgba(182, 156, 255, 0.38);
+  box-shadow: 0 0 16px rgba(182, 156, 255, 0.14), inset 0 1px rgba(255, 255, 255, 0.12);
+  color: #cfc1ff;
+  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, color 220ms ease;
+}
+
+.search-field:hover .search-count,
+.search-field:focus-within .search-count {
+  background: rgba(182, 156, 255, 0.2);
+  border-color: rgba(182, 156, 255, 0.7);
+  box-shadow: 0 0 22px rgba(182, 156, 255, 0.28), inset 0 1px rgba(255, 255, 255, 0.16);
+  color: white;
+}
+
+@keyframes searchInputAura {
+  0%, 100% { opacity: 0.34; transform: translateY(-50%) scale(0.82); }
+  50% { opacity: 0.76; transform: translateY(-50%) scale(1.12); }
+}
+
 .search-results h1 {
   background: linear-gradient(135deg, #fff 12%, #e4e7eb 58%, #aab2bd 100%);
   background-clip: text;
