@@ -3878,8 +3878,8 @@ img {
 }
 
 .search-field input::placeholder {
-  color: var(--text);
-  opacity: 0.3;
+  color: #b69cff;
+  opacity: 0.52;
 }
 
 .search-field input:focus {
