@@ -256,7 +256,9 @@ img {
 }
 
 .hero {
-  min-height: max(720px, 88svh);
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -5056,7 +5058,9 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .hero {
-    min-height: 760px;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   }
 
   .hero-backdrop {
@@ -5187,7 +5191,9 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .hero {
-    min-height: 720px;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   }
 
   .hero-backdrop {
