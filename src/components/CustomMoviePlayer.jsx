@@ -161,6 +161,7 @@ export default function CustomMoviePlayer({
   const { settings } = useNovaSettings();
   const [isClient, setIsClient] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [connectionSlow, setConnectionSlow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -445,7 +446,10 @@ export default function CustomMoviePlayer({
   useEffect(() => {
     resumeAppliedRef.current = false;
     setIsReady(false);
+    setConnectionSlow(false);
     setDuration(0);
+    const timer = window.setTimeout(() => setConnectionSlow(true), 5000);
+    return () => window.clearTimeout(timer);
   }, [embedUrl]);
 
 
@@ -1285,7 +1289,7 @@ export default function CustomMoviePlayer({
             <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
             <span className="nova-source-loading-brand">NOVA</span>
             <strong>{mediaType === "tv" ? "Preparing your episode" : "Preparing your movie"}</strong>
-            <span className="nova-source-loading-detail">Connecting to your stream…</span>
+            <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${activeServer}…` : "Connecting to your stream…"}</span>
           </div>
         ) : null}
       {activeSubtitle ? (
