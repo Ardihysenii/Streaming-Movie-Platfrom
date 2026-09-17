@@ -179,6 +179,9 @@ export default function WatchPage() {
           rating={movie.vote_average ?? 0}
           backdropUrl={movie.backdrop_path ? "https://image.tmdb.org/t/p/w1280" + movie.backdrop_path : ""}
           posterUrl={movie.poster_path ? "https://image.tmdb.org/t/p/w780" + movie.poster_path : ""}
+          logoUrl={movie.logo_url ?? ""}
+          logoWidth={movie.logo_width}
+          logoHeight={movie.logo_height}
         />
       </section>
 
