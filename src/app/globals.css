@@ -3864,8 +3864,8 @@ img {
 .search-field input {
   background: transparent;
   border: 0;
-  caret-color: #b69cff;
-  color: #b69cff;
+  caret-color: var(--accent);
+  color: var(--accent);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.15rem, 2.15vw, 2.35rem);
   font-style: italic;
@@ -3875,17 +3875,17 @@ img {
   min-width: 0;
   outline: 0;
   padding: 0;
-  text-shadow: 0 0 22px rgba(182, 156, 255, 0.2), 0 0 52px rgba(182, 156, 255, 0.1);
+  text-shadow: 0 0 22px rgba(var(--accent-rgb), 0.2), 0 0 52px rgba(var(--accent-rgb), 0.1);
   width: 100%;
 }
 
 .search-field input::placeholder {
-  color: #b69cff;
+  color: var(--accent);
   opacity: 0.52;
 }
 
 .search-field input:focus {
-  text-shadow: 0 0 26px rgba(182, 156, 255, 0.42), 0 0 64px rgba(182, 156, 255, 0.18);
+  text-shadow: 0 0 26px rgba(var(--accent-rgb), 0.42), 0 0 64px rgba(var(--accent-rgb), 0.18);
 }
 
 .search-count {
