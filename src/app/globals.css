@@ -6821,6 +6821,26 @@ body:has(.watch-page) .bottom-dock {
   text-shadow: 0 2px 15px rgba(0, 0, 0, 0.55);
 }
 
+.player-paused-topline-logo {
+  display: block;
+  filter: drop-shadow(0 5px 18px rgba(0, 0, 0, 0.52));
+  height: clamp(24px, 4vw, 54px);
+  max-width: min(42vw, 320px);
+  object-fit: contain;
+  width: auto;
+}
+
+.player-paused-title-logo {
+  display: block;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.56));
+  height: auto;
+  max-height: clamp(70px, 12vw, 170px);
+  max-width: min(520px, 100%);
+  object-fit: contain;
+  object-position: left center;
+  width: auto;
+}
+
 .player-paused-topline-mark {
   color: rgba(255, 255, 255, 0.45);
   font-size: 0.55em;
@@ -7311,6 +7331,14 @@ body:has(.watch-page) .bottom-dock {
 
   .player-paused-topline-mark {
     display: none;
+  }
+
+  .player-paused-topline-logo {
+    max-width: 58vw;
+  }
+
+  .player-paused-title-logo {
+    max-height: 108px;
   }
 
   .player-paused-actions {
