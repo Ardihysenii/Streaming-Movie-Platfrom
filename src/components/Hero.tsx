@@ -54,6 +54,7 @@ export function Hero({ movies }: { movies: Movie[] }) {
   return (
     <section
       className="hero"
+      style={{ minHeight: "100dvh" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
