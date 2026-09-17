@@ -55,9 +55,9 @@ export default function WatchPage() {
     setSeasonNumber(type === "tv" ? season : undefined);
     setEpisodeNumber(type === "tv" ? episode : undefined);
 
-    Promise.all([detailsRequest, similarRequest])
-      .then(([details, related]) => {
-        const progressId = type === "tv" ? `${id}:s${season}e${episode}` : id;
+    detailsRequest
+      .then((details) => {
+        const progressId = type === "tv" ? String(id) + ":s" + season + "e" + episode : id;
         // TMDB detail records use the IMDb ID as `id`, while cards and watch
         // URLs commonly use the numeric TMDB ID. Check both aliases so a
         // movie always resumes the exact position that was saved for it.
@@ -73,7 +73,6 @@ export default function WatchPage() {
           0,
         );
         setMovie(details);
-        setSimilar(related);
         const continueItem: Movie = type === "tv"
           ? {
               ...details,
@@ -81,12 +80,17 @@ export default function WatchPage() {
               series_id: details.id,
               season_number: season,
               episode_number: episode,
-              title: `${details.title} · S${season.toString().padStart(2, "0")} E${episode.toString().padStart(2, "0")}`,
+              title: details.title + " · S" + season.toString().padStart(2, "0") + " E" + episode.toString().padStart(2, "0"),
             }
           : details;
         setResumeAt(progress);
         setContinueItem(continueItem);
       })
+      .catch(() => undefined);
+
+    // Recommendations are below the player and must not delay playback startup.
+    similarRequest
+      .then((related) => setSimilar(related))
       .catch(() => undefined);
 
     return () => controller.abort();
