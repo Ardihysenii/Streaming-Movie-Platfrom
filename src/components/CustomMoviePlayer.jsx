@@ -154,6 +154,9 @@ export default function CustomMoviePlayer({
   rating = 0,
   backdropUrl = "",
   posterUrl = "",
+  logoUrl = "",
+  logoWidth = 800,
+  logoHeight = 310,
 }) {
   const { settings } = useNovaSettings();
   const [isClient, setIsClient] = useState(false);
@@ -341,13 +344,13 @@ export default function CustomMoviePlayer({
       }
       params.set("lastserver", selectedServer);
       params.set("controls", "false");
-      params.set("autoplay", "false");
+      params.set("autoplay", settings.autoplayPlayer ? "true" : "false");
       params.set("quality", quality);
       params.set("color", "#e21d2f");
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer]);
+  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer]);
 
 
 
@@ -621,6 +624,7 @@ export default function CustomMoviePlayer({
       switch (message.type) {
         case "cinesrc:ready":
           setIsReady(true);
+          if (settings.autoplayPlayer) sendCommand("play");
           break;
         case "cinesrc:play":
           setIsPlaying(true);
@@ -692,7 +696,7 @@ export default function CustomMoviePlayer({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand]);
+  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand, settings.autoplayPlayer]);
 
 
 
@@ -1293,10 +1297,29 @@ export default function CustomMoviePlayer({
         <div className="custom-player-ui">
           {!isPlaying && isReady && duration > 0 ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
-              <div className="player-paused-topline"><span>{title}</span><span className="player-paused-topline-mark">NOVA</span></div>
+              <div className="player-paused-topline">
+                {logoUrl ? (
+                  <img
+                    className="player-paused-topline-logo"
+                    src={logoUrl}
+                    alt={title}
+                    width={logoWidth}
+                    height={logoHeight}
+                  />
+                ) : <span>{title}</span>}
+                <span className="player-paused-topline-mark">NOVA</span>
+              </div>
               <div className="player-paused-info">
                 <p className="player-paused-eyebrow">You are watching</p>
-                <h2>{title}</h2>
+                {logoUrl ? (
+                  <img
+                    className="player-paused-title-logo"
+                    src={logoUrl}
+                    alt={title}
+                    width={logoWidth}
+                    height={logoHeight}
+                  />
+                ) : <h2>{title}</h2>}
                 <div className="player-paused-meta">
                   {releaseYear ? <span>{releaseYear}</span> : null}
                   {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
