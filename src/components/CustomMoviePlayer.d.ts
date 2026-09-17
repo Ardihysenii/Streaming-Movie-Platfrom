@@ -16,6 +16,9 @@ declare module "@/components/CustomMoviePlayer" {
     rating?: number;
     backdropUrl?: string;
     posterUrl?: string;
+    logoUrl?: string;
+    logoWidth?: number;
+    logoHeight?: number;
   }>;
 
   export default CustomMoviePlayer;
