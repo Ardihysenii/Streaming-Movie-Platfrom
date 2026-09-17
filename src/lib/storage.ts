@@ -1,6 +1,7 @@
 import type { ContinueWatchingItem, Movie, NovaSettings, WishlistItem } from "./types";
 
 const SETTINGS_KEY = "nova:settings:v1";
+const AUTOPLAY_DEFAULT_MIGRATION_KEY = "nova:autoplay-player-default:v1";
 const CONTINUE_KEY = "nova:continue-watching:v1";
 const WISHLIST_KEY = "nova:wishlist:v1";
 
@@ -9,7 +10,7 @@ export const DEFAULT_SETTINGS: NovaSettings = {
   density: "cinematic",
   heroInterval: 8,
   autoplayHero: true,
-  autoplayPlayer: false,
+  autoplayPlayer: true,
   subtitleLanguage: "en",
   reduceMotion: false,
   showFilmGrain: true,
@@ -23,7 +24,13 @@ export function readSettings(): NovaSettings {
   if (!canUseStorage()) return DEFAULT_SETTINGS;
   try {
     const saved = window.localStorage.getItem(SETTINGS_KEY);
-    return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    if (!saved) return DEFAULT_SETTINGS;
+    const parsed = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    if (!window.localStorage.getItem(AUTOPLAY_DEFAULT_MIGRATION_KEY)) {
+      parsed.autoplayPlayer = true;
+      window.localStorage.setItem(AUTOPLAY_DEFAULT_MIGRATION_KEY, "true");
+    }
+    return parsed;
   } catch {
     return DEFAULT_SETTINGS;
   }
