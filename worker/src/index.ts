@@ -264,7 +264,7 @@ async function readPodnapisiSubtitle(request: Request) {
   const title = requestUrl.searchParams.get("title")?.trim();
   if (!title) return null;
   const language = (requestUrl.searchParams.get("language") || "en").trim().toLowerCase().split(/[-_]/)[0];
-  const endpoint = new URL("https://www.podnapisi.net/subtitles/search/old");
+  const endpoint = new URL("https://podnapisi.net/subtitles/search/old");
   endpoint.searchParams.set("sXML", "1");
   endpoint.searchParams.set("sK", title);
   endpoint.searchParams.set("sL", String(PODNAPISI_LANGUAGE_IDS[language] || PODNAPISI_LANGUAGE_IDS.en));
@@ -283,7 +283,7 @@ async function readPodnapisiSubtitle(request: Request) {
     if (!searchResponse.ok) return null;
     const results = parsePodnapisiResults(await searchResponse.text(), language).slice(0, 5);
     for (const result of results) {
-      const response = await fetch("https://www.podnapisi.net/subtitles/" + encodeURIComponent(result.pid) + "/download");
+      const response = await fetch("https://podnapisi.net/subtitles/" + encodeURIComponent(result.pid) + "/download");
       if (!response.ok) continue;
       const bytes = new Uint8Array(await response.arrayBuffer());
       if (bytes.length > 15_000_000) continue;
