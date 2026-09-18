@@ -211,7 +211,7 @@ const PODNAPISI_LANGUAGE_IDS: Record<string, number> = {
 
 function decodeXml(value: string) {
   return value
-    .replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1")
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
     .replace(/<[^>]+>/g, "")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
@@ -223,14 +223,14 @@ function decodeXml(value: string) {
 
 
 function podnapisiField(block: string, name: string) {
-  const match = block.match(new RegExp("<" + name + "\\\\b[^>]*>([\\s\\S]*?)</" + name + ">", "i"));
+  const match = block.match(new RegExp("<" + name + "\\b[^>]*>([\\s\\S]*?)</" + name + ">", "i"));
   return match ? decodeXml(match[1]) : "";
 }
 
 
 function parsePodnapisiResults(xml: string, language: string) {
   const languageId = String(PODNAPISI_LANGUAGE_IDS[language] || "");
-  const blocks = xml.match(/<subtitle\\b[\\s\\S]*?<\\/subtitle>/gi) || [];
+  const blocks = xml.match(/<subtitle\b[\s\S]*?<\/subtitle>/gi) || [];
   return blocks.flatMap((block) => {
     const pid = podnapisiField(block, "pid") || podnapisiField(block, "id");
     const rawLanguage = podnapisiField(block, "language").toLowerCase();
@@ -245,10 +245,10 @@ function subtitleTextFromBytes(bytes: Uint8Array) {
   try {
     const files = unzipSync(bytes);
     const entries = Object.entries(files)
-      .filter(([name, content]) => /\\.(srt|vtt)$/i.test(name) && content.length > 0)
+      .filter(([name, content]) => /\.(srt|vtt)$/i.test(name) && content.length > 0)
       .sort(([a], [b]) => {
-        const aSrt = /\\.srt$/i.test(a) ? 0 : 1;
-        const bSrt = /\\.srt$/i.test(b) ? 0 : 1;
+        const aSrt = /\.srt$/i.test(a) ? 0 : 1;
+        const bSrt = /\.srt$/i.test(b) ? 0 : 1;
         return aSrt - bSrt || a.length - b.length;
       });
     if (entries.length) return new TextDecoder().decode(entries[0][1]);
@@ -258,7 +258,6 @@ function subtitleTextFromBytes(bytes: Uint8Array) {
   const raw = new TextDecoder().decode(bytes);
   return raw.includes("-->") ? raw : null;
 }
-
 
 async function readPodnapisiSubtitle(request: Request) {
   const requestUrl = new URL(request.url);
