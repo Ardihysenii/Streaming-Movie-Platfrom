@@ -37,6 +37,7 @@ interface Env {
   SOURCE_API_BASE_URL?: string;
   SOURCE_API_TOKEN?: string;
   SUBDL_API_KEY?: string;
+  SUBDL_API_KEY_2?: string;
   ALLOWED_ORIGINS?: string;
 }
 
@@ -177,8 +178,10 @@ function subtitleDownloadUrl(value: unknown) {
 
 
 async function readSubtitle(request: Request, env: Env) {
-  const apiKey = env.SUBDL_API_KEY?.trim();
-  if (!apiKey) return new Response("Subtitle service is not configured.", { status: 503 });
+  const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+  if (!apiKeys.length) return new Response("Subtitle service is not configured.", { status: 503 });
   const requestUrl = new URL(request.url);
   const tmdbId = requestUrl.searchParams.get("tmdbId")?.trim();
   const imdbId = requestUrl.searchParams.get("imdbId")?.trim();
@@ -186,9 +189,7 @@ async function readSubtitle(request: Request, env: Env) {
   const language = (requestUrl.searchParams.get("language") || "en").trim().toUpperCase();
   if (!tmdbId && !imdbId) return new Response("A title identifier is required.", { status: 400 });
 
-
   const endpoint = new URL("https://api.subdl.com/api/v1/subtitles");
-  endpoint.searchParams.set("api_key", apiKey);
   if (tmdbId) endpoint.searchParams.set("tmdb_id", tmdbId);
   if (imdbId) endpoint.searchParams.set("imdb_id", imdbId);
   endpoint.searchParams.set("type", type);
@@ -201,40 +202,56 @@ async function readSubtitle(request: Request, env: Env) {
     endpoint.searchParams.set("episode_number", requestUrl.searchParams.get("episode") || "1");
   }
 
-
-  const searchResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
-  if (!searchResponse.ok) return new Response("Subtitle search failed.", { status: 502 });
-  const payload = await searchResponse.json() as { subtitles?: Array<Record<string, unknown>> };
   const season = Number(requestUrl.searchParams.get("season") || 1);
   const episode = Number(requestUrl.searchParams.get("episode") || 1);
-  const candidates = (payload.subtitles || []).flatMap((subtitle) => {
-    const unpacked = Array.isArray(subtitle.unpack_files) ? subtitle.unpack_files : [];
-    return (unpacked.length ? unpacked : [subtitle]).map((file) => ({ ...subtitle, ...(file as Record<string, unknown>) }));
-  });
-  const selected = candidates.find((candidate) => {
-    const candidateLanguage = String(candidate.language || "").toUpperCase();
-    const candidateSeason = Number(candidate.season || 0);
-    const candidateEpisode = Number(candidate.episode || 0);
-    return candidateLanguage === language
-      && (type === "movie" || ((!candidateSeason || candidateSeason === season) && (!candidateEpisode || candidateEpisode === episode)));
-  });
-  const downloadUrl = subtitleDownloadUrl(selected?.url);
-  if (!downloadUrl) return new Response("No subtitle track is available.", { status: 404 });
-  let subtitleResponse = await fetch(downloadUrl);
-  if (!subtitleResponse.ok) {
-    subtitleResponse = await fetch(downloadUrl, { headers: { "x-api-key": apiKey } });
+  const quotaStatuses = new Set([401, 402, 403, 429]);
+  for (const apiKey of apiKeys) {
+    endpoint.searchParams.set("api_key", apiKey);
+    const searchResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
+    if (!searchResponse.ok) {
+      if (quotaStatuses.has(searchResponse.status)) continue;
+      return new Response("Subtitle search failed.", { status: 502 });
+    }
+    const payload = await searchResponse.json() as {
+      subtitles?: Array<Record<string, unknown>>;
+      status?: boolean;
+      message?: string;
+    };
+    const providerMessage = String(payload.message || "").toLowerCase();
+    if (payload.status === false && /(limit|quota|credit|rate)/i.test(providerMessage)) continue;
+    const candidates = (payload.subtitles || []).flatMap((subtitle) => {
+      const unpacked = Array.isArray(subtitle.unpack_files) ? subtitle.unpack_files : [];
+      return (unpacked.length ? unpacked : [subtitle]).map((file) => ({ ...subtitle, ...(file as Record<string, unknown>) }));
+    });
+    const selected = candidates.find((candidate) => {
+      const candidateLanguage = String(candidate.language || "").toUpperCase();
+      const candidateSeason = Number(candidate.season || 0);
+      const candidateEpisode = Number(candidate.episode || 0);
+      return candidateLanguage === language
+        && (type === "movie" || ((!candidateSeason || candidateSeason === season) && (!candidateEpisode || candidateEpisode === episode)));
+    });
+    const downloadUrl = subtitleDownloadUrl(selected?.url);
+    if (!downloadUrl) return new Response("No subtitle track is available.", { status: 404 });
+    let subtitleResponse = await fetch(downloadUrl);
+    if (!subtitleResponse.ok) {
+      subtitleResponse = await fetch(downloadUrl, { headers: { "x-api-key": apiKey } });
+    }
+    if (!subtitleResponse.ok) {
+      if (quotaStatuses.has(subtitleResponse.status)) continue;
+      return new Response("Subtitle download failed.", { status: 502 });
+    }
+    const text = await subtitleResponse.text();
+    if (/\.ass\b|\[Script Info\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
+      return new Response("This subtitle format is not supported.", { status: 415 });
+    }
+    return new Response(toWebVtt(text), {
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        "Content-Type": "text/vtt; charset=utf-8",
+      },
+    });
   }
-  if (!subtitleResponse.ok) return new Response("Subtitle download failed.", { status: 502 });
-  const text = await subtitleResponse.text();
-  if (/\.ass\b|\[Script Info\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
-    return new Response("This subtitle format is not supported.", { status: 415 });
-  }
-  return new Response(toWebVtt(text), {
-    headers: {
-      "Cache-Control": "public, max-age=300",
-      "Content-Type": "text/vtt; charset=utf-8",
-    },
-  });
+  return new Response("All configured subtitle API keys are exhausted.", { status: 503 });
 }
 
 
@@ -248,7 +265,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === "/health") {
-      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY) }, 200, origin);
+      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2) }, 200, origin);
     }
 
 
