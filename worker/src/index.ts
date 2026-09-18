@@ -259,33 +259,89 @@ function subtitleTextFromBytes(bytes: Uint8Array) {
   return raw.includes("-->") ? raw : null;
 }
 
+function podnapisiHtmlDecode(value: string) {
+  return value
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#(\\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/\\s+/g, " ")
+    .trim();
+}
+
+
+function podnapisiInfoLinks(html: string) {
+  const links: string[] = [];
+  const pattern = /href=["']([^"']*\\/info\\/p\\/[^"']+)["']/gi;
+  for (const match of html.matchAll(pattern)) {
+    try {
+      const url = new URL(match[1], "https://en.slo-podnapisi.net");
+      if (url.hostname === "en.slo-podnapisi.net" && /^\\/info\\/p\\//i.test(url.pathname)) {
+        const value = url.toString();
+        if (!links.includes(value)) links.push(value);
+      }
+    } catch {
+      // Ignore malformed links from the provider page.
+    }
+  }
+  return links;
+}
+
+
+function podnapisiArchiveLink(html: string) {
+  const pattern = /href=["']([^"']*\\/prenesi-podnapis\\/prenos\\/[^"']+\\.zip\\/?)["']/i;
+  const match = html.match(pattern);
+  if (!match) return null;
+  try {
+    const url = new URL(match[1], "https://en.slo-podnapisi.net");
+    return url.hostname === "en.slo-podnapisi.net" && /^\\/prenesi-podnapis\\/prenos\\//i.test(url.pathname)
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+
 async function readPodnapisiSubtitle(request: Request) {
   const requestUrl = new URL(request.url);
   const title = requestUrl.searchParams.get("title")?.trim();
   if (!title) return null;
-  const language = (requestUrl.searchParams.get("language") || "en").trim().toLowerCase().split(/[-_]/)[0];
-  const endpoint = new URL("https://podnapisi.net/subtitles/search/old");
-  endpoint.searchParams.set("sXML", "1");
-  endpoint.searchParams.set("sK", title);
-  endpoint.searchParams.set("sL", String(PODNAPISI_LANGUAGE_IDS[language] || PODNAPISI_LANGUAGE_IDS.en));
   const type = requestUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
-  if (type === "tv") {
-    endpoint.searchParams.set("sTS", requestUrl.searchParams.get("season") || "1");
-    endpoint.searchParams.set("sTE", requestUrl.searchParams.get("episode") || "1");
-  }
+  const endpoint = new URL("https://en.slo-podnapisi.net/podnapisi/");
+  endpoint.searchParams.set("isci", title);
+  endpoint.searchParams.set("j", "3");
   const year = requestUrl.searchParams.get("year")?.trim();
-  if (year) endpoint.searchParams.set("sY", year);
+  if (year) endpoint.searchParams.set("l", year);
+  if (type === "tv") {
+    endpoint.searchParams.set("se", requestUrl.searchParams.get("season") || "1");
+    endpoint.searchParams.set("ep", requestUrl.searchParams.get("episode") || "1");
+  }
 
   try {
-    const searchResponse = await fetch(endpoint, {
-      headers: { Accept: "application/xml, text/xml, */*" },
-    });
+    const searchResponse = await fetch(endpoint, { headers: { Accept: "text/html" } });
     if (!searchResponse.ok) return null;
-    const results = parsePodnapisiResults(await searchResponse.text(), language).slice(0, 5);
-    for (const result of results) {
-      const response = await fetch("https://podnapisi.net/subtitles/" + encodeURIComponent(result.pid) + "/download");
-      if (!response.ok) continue;
-      const bytes = new Uint8Array(await response.arrayBuffer());
+    const searchHtml = await searchResponse.text();
+    const links = podnapisiInfoLinks(searchHtml).slice(0, 10);
+    const season = requestUrl.searchParams.get("season") || "1";
+    const episode = requestUrl.searchParams.get("episode") || "1";
+    for (const pageUrl of links) {
+      const pageResponse = await fetch(pageUrl, { headers: { Accept: "text/html" } });
+      if (!pageResponse.ok) continue;
+      const pageHtml = await pageResponse.text();
+      const pageText = podnapisiHtmlDecode(pageHtml);
+      if (!/Language:\\s*English/i.test(pageText)) continue;
+      if (type === "tv" && (!new RegExp("Season:\\s*" + season + "\\\\b", "i").test(pageText)
+        || !new RegExp("Episode:\\s*" + episode + "\\\\b", "i").test(pageText))) continue;
+      const archiveUrl = podnapisiArchiveLink(pageHtml);
+      if (!archiveUrl) continue;
+      const archiveResponse = await fetch(archiveUrl, { headers: { Accept: "application/zip" } });
+      if (!archiveResponse.ok) continue;
+      const bytes = new Uint8Array(await archiveResponse.arrayBuffer());
       if (bytes.length > 15_000_000) continue;
       const text = subtitleTextFromBytes(bytes);
       if (text) return text;
@@ -295,7 +351,6 @@ async function readPodnapisiSubtitle(request: Request) {
   }
   return null;
 }
-
 
 async function readSubdlSubtitle(request: Request, env: Env) {
   const apiKey = env.SUBDL_API_KEY?.trim();
