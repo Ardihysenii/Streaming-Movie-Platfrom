@@ -185,10 +185,10 @@ export default function CustomMoviePlayer({
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
   const [subtitleError, setSubtitleError] = useState("");
-  const [subtitleLanguage, setSubtitleLanguage] = useState(settings.subtitleLanguage || "en");
+  const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
-  const [subtitleLarge, setSubtitleLarge] = useState(false);
-  const [subtitleFontFamily, setSubtitleFontFamily] = useState("var(--font-sans)");
+  const [subtitleLarge, setSubtitleLarge] = useState(true);
+  const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
 
   const [subtitleOffset, setSubtitleOffset] = useState(0);
@@ -377,7 +377,7 @@ export default function CustomMoviePlayer({
     const subtitleService = process.env.NEXT_PUBLIC_NOVA_STREAM_API_URL?.trim();
     if (!subtitleService) {
       setSubtitleCues([]);
-      setSubtitlesEnabled(false);
+      setSubtitlesEnabled(true);
       setSubtitleStatus("empty");
       return undefined;
     }
@@ -413,7 +413,7 @@ export default function CustomMoviePlayer({
       .then((cues) => {
         if (controller.signal.aborted) return;
         setSubtitleCues(cues);
-        setSubtitlesEnabled(cues.length > 0);
+        setSubtitlesEnabled(true);
         setSubtitleStatus(cues.length ? "ready" : "empty");
         setSubtitleError("");
       })
