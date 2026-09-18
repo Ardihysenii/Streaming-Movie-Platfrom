@@ -92,7 +92,7 @@ function cineSrcServerLabel(value) {
 
 function normalizeCineSrcQuality(value) {
   const normalized = String(value || "").trim().toLowerCase();
-  return CINESRC_QUALITY_OPTIONS.includes(normalized) ? normalized : "1080";
+  return CINESRC_QUALITY_OPTIONS.includes(normalized) ? normalized : "auto";
 }
 
 function cineSrcQualityLabel(value) {
@@ -223,7 +223,8 @@ export default function CustomMoviePlayer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileFullscreen, setMobileFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
-  const [quality, setQuality] = useState("1080");
+  const [quality, setQuality] = useState("auto");
+  const [reportedQuality, setReportedQuality] = useState("");
   const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
@@ -524,6 +525,7 @@ export default function CustomMoviePlayer({
     setIsReady(false);
     setConnectionSlow(false);
     setDuration(0);
+    setReportedQuality("");
     const timer = window.setTimeout(() => setConnectionSlow(true), 5000);
     return () => window.clearTimeout(timer);
   }, [embedUrl]);
@@ -743,6 +745,16 @@ export default function CustomMoviePlayer({
         case "cinesrc:sourceused": {
           const sourceId = normalizeCineSrcServer(payload?.sourceId ?? message.sourceId);
           if (sourceId) setActiveServer(sourceId);
+          break;
+        }
+        case "cinesrc:qualitychange":
+        case "cinesrc:resolutionchange":
+        case "cinesrc:variantchange": {
+          const reported = payload?.quality ?? payload?.resolution ?? payload?.height ?? message.quality ?? message.resolution ?? message.height;
+          if (reported !== undefined && reported !== null && String(reported).trim()) {
+            const value = String(reported).trim();
+            setReportedQuality(/^[0-9]+$/.test(value) ? `${value}p` : value);
+          }
           break;
         }
         case "cinesrc:response": {
@@ -1505,7 +1517,7 @@ export default function CustomMoviePlayer({
                     {settingsView === "root" ? (
                       <div className="player-settings-body">
                         <div className="player-settings-card">
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{cineSrcQualityLabel(quality)}<b>›</b></span></button>
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{reportedQuality ? `${reportedQuality} actual` : cineSrcQualityLabel(quality)}<b>›</b></span></button>
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? "On" : "Off"}<b>›</b></span></button>
                           <div className="player-settings-row is-disabled"><span>Audio</span><span>Original</span></div>
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("speed")}><span>Playback speed</span><span>{playbackRate}x<b>›</b></span></button>
