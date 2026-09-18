@@ -420,7 +420,7 @@ export default function CustomMoviePlayer({
       .catch((error) => {
         if (!controller.signal.aborted) {
           setSubtitleCues([]);
-          setSubtitlesEnabled(false);
+          setSubtitlesEnabled(true);
           setSubtitleStatus("error");
           setSubtitleError(error instanceof Error ? error.message : "Subtitle service unavailable");
         }
