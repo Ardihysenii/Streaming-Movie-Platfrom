@@ -317,20 +317,6 @@ export default function CustomMoviePlayer({
     [activeId, episodeNumber, mediaType, seasonNumber],
   );
 
-  useEffect(() => {
-    if (!isCineSrc) {
-      setCineSrcPreferencesReady(true);
-      return undefined;
-    }
-    const stored = readCineSrcPreferences(cineSrcPreferenceKey);
-    const storedServer = normalizeCineSrcServer(stored.server);
-    const storedQuality = normalizeCineSrcQuality(stored.quality);
-    setSelectedServer(storedServer || initialServer);
-    setActiveServer(storedServer || initialServer);
-    setQuality(storedQuality);
-    setCineSrcPreferencesReady(true);
-    return undefined;
-  }, [cineSrcPreferenceKey, initialServer, isCineSrc]);
 
 
 
@@ -375,6 +361,21 @@ export default function CustomMoviePlayer({
       return "";
     }
   }, [providerBase]);
+  useEffect(() => {
+    if (!isCineSrc) {
+      setCineSrcPreferencesReady(true);
+      return undefined;
+    }
+    const stored = readCineSrcPreferences(cineSrcPreferenceKey);
+    const storedServer = normalizeCineSrcServer(stored.server);
+    const storedQuality = normalizeCineSrcQuality(stored.quality);
+    setSelectedServer(storedServer || initialServer);
+    setActiveServer(storedServer || initialServer);
+    setQuality(storedQuality);
+    setCineSrcPreferencesReady(true);
+    return undefined;
+  }, [cineSrcPreferenceKey, initialServer, isCineSrc]);
+
 
 
 
