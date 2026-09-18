@@ -32,6 +32,7 @@ import {
 import { useNovaSettings } from "@/components/Providers";
 
 const CINESRC_SERVER_OPTIONS = [
+  { id: "auto", label: "Auto" },
   { id: "nebula", label: "Nebula" },
   { id: "surge", label: "Surge" },
   { id: "spark", label: "Spark" },
@@ -48,13 +49,65 @@ const CINESRC_SERVER_OPTIONS = [
   { id: "brisa", label: "Brisa (ES/LAT)" },
 ];
 
+const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
+const CINESRC_PREFERENCES_STORAGE_KEY = "nova-cinesrc-preferences-v1";
+
+function getCineSrcPreferenceKey(id, mediaType, seasonNumber, episodeNumber) {
+  const titleId = String(id || "unknown");
+  const season = mediaType === "tv" ? String(seasonNumber ?? 1) : "";
+  const episode = mediaType === "tv" ? String(episodeNumber ?? 1) : "";
+  return [mediaType, titleId, season, episode].join(":");
+}
+
+function readCineSrcPreferences(key) {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(CINESRC_PREFERENCES_STORAGE_KEY) || "{}");
+    const value = stored?.[key];
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeCineSrcPreferences(key, updates) {
+  if (typeof window === "undefined") return;
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(CINESRC_PREFERENCES_STORAGE_KEY) || "{}");
+    stored[key] = { ...(stored[key] || {}), ...updates };
+    window.localStorage.setItem(CINESRC_PREFERENCES_STORAGE_KEY, JSON.stringify(stored));
+  } catch {
+    // Preference storage is optional and must never interrupt playback.
+  }
+}
+
+function normalizeCineSrcServer(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return CINESRC_SERVER_OPTIONS.some((option) => option.id === normalized) ? normalized : "";
+}
+
+function cineSrcServerLabel(value) {
+  return CINESRC_SERVER_OPTIONS.find((option) => option.id === value)?.label || value || "Auto";
+}
+
+function normalizeCineSrcQuality(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return CINESRC_QUALITY_OPTIONS.includes(normalized) ? normalized : "1080";
+}
+
+function cineSrcQualityLabel(value) {
+  if (value === "auto") return "Auto";
+  if (value === "1080") return "Prefer 1080p";
+  return `${value}p`;
+}
+
 function getDefaultCineSrcServer(id, mediaType, seasonNumber, episodeNumber) {
   const cleanId = String(id || "");
   const season = Number(seasonNumber ?? 1);
   const episode = Number(episodeNumber ?? 0);
   if (mediaType === "movie" && cleanId === "1083381") return "surge";
   if (mediaType === "tv" && cleanId === "247718" && season === 1 && episode >= 2 && episode <= 10) return "surge";
-  return "nebula";
+  return "auto";
 }
 
 function formatRuntimeLabel(minutes) {
@@ -174,6 +227,7 @@ export default function CustomMoviePlayer({
   const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
+  const [cineSrcPreferencesReady, setCineSrcPreferencesReady] = useState(false);
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsView, setSettingsView] = useState("root");
@@ -258,6 +312,25 @@ export default function CustomMoviePlayer({
       : null,
     [currentTime, subtitleCues, subtitlesEnabled, subtitleOffset],
   );
+  const cineSrcPreferenceKey = useMemo(
+    () => getCineSrcPreferenceKey(activeId, mediaType, seasonNumber, episodeNumber),
+    [activeId, episodeNumber, mediaType, seasonNumber],
+  );
+
+  useEffect(() => {
+    if (!isCineSrc) {
+      setCineSrcPreferencesReady(true);
+      return undefined;
+    }
+    const stored = readCineSrcPreferences(cineSrcPreferenceKey);
+    const storedServer = normalizeCineSrcServer(stored.server);
+    const storedQuality = normalizeCineSrcQuality(stored.quality);
+    setSelectedServer(storedServer || initialServer);
+    setActiveServer(storedServer || initialServer);
+    setQuality(storedQuality);
+    setCineSrcPreferencesReady(true);
+    return undefined;
+  }, [cineSrcPreferenceKey, initialServer, isCineSrc]);
 
 
 
@@ -319,7 +392,7 @@ export default function CustomMoviePlayer({
 
 
   const embedUrl = useMemo(() => {
-    if (!activeId) return "";
+    if (!activeId || !cineSrcPreferencesReady) return "";
     const cleanId = String(activeId);
     const path = mediaType === "tv"
       ? isCineSrc
@@ -343,15 +416,15 @@ export default function CustomMoviePlayer({
       if (isBackroomsSurgeMovie) {
         params.set("lastserver", "surge");
       }
-      params.set("lastserver", selectedServer);
+      if (selectedServer !== "auto") params.set("lastserver", selectedServer);
       params.set("controls", "false");
       params.set("autoplay", settings.autoplayPlayer ? "true" : "false");
-      params.set("quality", quality);
+      if (quality !== "auto") params.set("quality", quality);
       params.set("color", "#e21d2f");
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer]);
+  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer]);
 
 
 
@@ -666,6 +739,11 @@ export default function CustomMoviePlayer({
           if (Number.isFinite(Number(payload?.volume))) setVolume(Number(payload.volume));
           if (typeof payload?.muted === "boolean") setMuted(payload.muted);
           break;
+        case "cinesrc:sourceused": {
+          const sourceId = normalizeCineSrcServer(payload?.sourceId ?? message.sourceId);
+          if (sourceId) setActiveServer(sourceId);
+          break;
+        }
         case "cinesrc:response": {
           // CineSrc returns getter responses as { command, result }.
           const command = message.command ?? payload?.command;
@@ -1214,7 +1292,9 @@ export default function CustomMoviePlayer({
 
 
   const handleQualityChange = (nextQuality) => {
-    setQuality(nextQuality);
+    const normalizedQuality = normalizeCineSrcQuality(nextQuality);
+    setQuality(normalizedQuality);
+    writeCineSrcPreferences(cineSrcPreferenceKey, { quality: normalizedQuality });
     setSettingsView("root");
     setIsReady(false);
     setControlsVisible(true);
@@ -1227,8 +1307,10 @@ export default function CustomMoviePlayer({
     }
     pendingServerSeekRef.current = currentTimeRef.current || currentTime;
     pendingServerPlayRef.current = isPlaying;
-    setSelectedServer(nextServer);
-    setActiveServer(nextServer);
+    const normalizedServer = normalizeCineSrcServer(nextServer) || "auto";
+    setSelectedServer(normalizedServer);
+    setActiveServer(normalizedServer);
+    writeCineSrcPreferences(cineSrcPreferenceKey, { server: normalizedServer });
     setServerMenuOpen(false);
     setIsReady(false);
     setControlsVisible(true);
@@ -1291,7 +1373,7 @@ export default function CustomMoviePlayer({
             <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
             <span className="nova-source-loading-brand">NOVA</span>
             <strong>{mediaType === "tv" ? "Preparing your episode" : "Preparing your movie"}</strong>
-            <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${activeServer}…` : "Connecting to your stream…"}</span>
+            <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${cineSrcServerLabel(activeServer)}…` : "Connecting to your stream…"}</span>
           </div>
         ) : null}
       {activeSubtitle ? (
@@ -1422,7 +1504,7 @@ export default function CustomMoviePlayer({
                     {settingsView === "root" ? (
                       <div className="player-settings-body">
                         <div className="player-settings-card">
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{quality === "1080" ? "Auto · 1080p" : quality + "p"}<b>›</b></span></button>
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{cineSrcQualityLabel(quality)}<b>›</b></span></button>
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? "On" : "Off"}<b>›</b></span></button>
                           <div className="player-settings-row is-disabled"><span>Audio</span><span>Original</span></div>
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("speed")}><span>Playback speed</span><span>{playbackRate}x<b>›</b></span></button>
@@ -1431,7 +1513,7 @@ export default function CustomMoviePlayer({
                       </div>
                     ) : null}
                     {settingsView === "quality" ? (
-                      <div className="player-settings-body player-settings-list">{["1080", "720", "480"].map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{option === "1080" ? "Auto · 1080p" : option + "p"}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
+                      <div className="player-settings-body player-settings-list">{CINESRC_QUALITY_OPTIONS.map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{cineSrcQualityLabel(option)}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
                     ) : null}
                     {settingsView === "subtitles" ? (
                       <div className="player-settings-body player-settings-subtitles">
@@ -1469,7 +1551,7 @@ export default function CustomMoviePlayer({
                 <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
                   <span className="player-server-cloud-icon" aria-hidden="true" />
                   <span className="player-setting-label">Server</span>
-                  <strong>{activeServer}</strong>
+                  <strong>{cineSrcServerLabel(activeServer)}</strong>
                 </button>
                 {serverMenuOpen ? (
                   <div className="player-server-menu" role="listbox" aria-label="CineSrc server">
