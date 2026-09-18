@@ -1,3 +1,5 @@
+import { unzipSync } from "fflate";
+
 interface KVNamespace {
   get<T = unknown>(key: string, type: "json"): Promise<T | null>;
 }
@@ -176,7 +178,127 @@ function subtitleDownloadUrl(value: unknown) {
 }
 
 
-async function readSubtitle(request: Request, env: Env) {
+const PODNAPISI_LANGUAGE_IDS: Record<string, number> = {
+  en: 2,
+  de: 14,
+  fr: 8,
+  es: 28,
+  it: 9,
+  pt: 26,
+  sl: 1,
+  hr: 38,
+  sr: 36,
+  bs: 42,
+  cs: 7,
+  sk: 37,
+  pl: 23,
+  hu: 20,
+  ro: 13,
+  bg: 33,
+  tr: 30,
+  el: 16,
+  nl: 15,
+  sv: 25,
+  da: 24,
+  no: 22,
+  fi: 17,
+  ru: 27,
+  ar: 12,
+  ja: 11,
+  zh: 17,
+};
+
+
+function decodeXml(value: string) {
+  return value
+    .replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .trim();
+}
+
+
+function podnapisiField(block: string, name: string) {
+  const match = block.match(new RegExp("<" + name + "\\\\b[^>]*>([\\s\\S]*?)</" + name + ">", "i"));
+  return match ? decodeXml(match[1]) : "";
+}
+
+
+function parsePodnapisiResults(xml: string, language: string) {
+  const languageId = String(PODNAPISI_LANGUAGE_IDS[language] || "");
+  const blocks = xml.match(/<subtitle\\b[\\s\\S]*?<\\/subtitle>/gi) || [];
+  return blocks.flatMap((block) => {
+    const pid = podnapisiField(block, "pid") || podnapisiField(block, "id");
+    const rawLanguage = podnapisiField(block, "language").toLowerCase();
+    if (!pid) return [];
+    if (rawLanguage && languageId && rawLanguage !== languageId && rawLanguage !== language && !rawLanguage.includes(language)) return [];
+    return [{ pid }];
+  });
+}
+
+
+function subtitleTextFromBytes(bytes: Uint8Array) {
+  try {
+    const files = unzipSync(bytes);
+    const entries = Object.entries(files)
+      .filter(([name, content]) => /\\.(srt|vtt)$/i.test(name) && content.length > 0)
+      .sort(([a], [b]) => {
+        const aSrt = /\\.srt$/i.test(a) ? 0 : 1;
+        const bSrt = /\\.srt$/i.test(b) ? 0 : 1;
+        return aSrt - bSrt || a.length - b.length;
+      });
+    if (entries.length) return new TextDecoder().decode(entries[0][1]);
+  } catch {
+    // Podnapisi normally returns ZIP, but some responses are raw subtitle text.
+  }
+  const raw = new TextDecoder().decode(bytes);
+  return raw.includes("-->") ? raw : null;
+}
+
+
+async function readPodnapisiSubtitle(request: Request) {
+  const requestUrl = new URL(request.url);
+  const title = requestUrl.searchParams.get("title")?.trim();
+  if (!title) return null;
+  const language = (requestUrl.searchParams.get("language") || "en").trim().toLowerCase().split(/[-_]/)[0];
+  const endpoint = new URL("https://www.podnapisi.net/subtitles/search/old");
+  endpoint.searchParams.set("sXML", "1");
+  endpoint.searchParams.set("sK", title);
+  endpoint.searchParams.set("sL", String(PODNAPISI_LANGUAGE_IDS[language] || PODNAPISI_LANGUAGE_IDS.en));
+  const type = requestUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
+  if (type === "tv") {
+    endpoint.searchParams.set("sTS", requestUrl.searchParams.get("season") || "1");
+    endpoint.searchParams.set("sTE", requestUrl.searchParams.get("episode") || "1");
+  }
+  const year = requestUrl.searchParams.get("year")?.trim();
+  if (year) endpoint.searchParams.set("sY", year);
+
+  try {
+    const searchResponse = await fetch(endpoint, {
+      headers: { Accept: "application/xml, text/xml, */*" },
+    });
+    if (!searchResponse.ok) return null;
+    const results = parsePodnapisiResults(await searchResponse.text(), language).slice(0, 5);
+    for (const result of results) {
+      const response = await fetch("https://www.podnapisi.net/subtitles/" + encodeURIComponent(result.pid) + "/download");
+      if (!response.ok) continue;
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (bytes.length > 15_000_000) continue;
+      const text = subtitleTextFromBytes(bytes);
+      if (text) return text;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+
+async function readSubdlSubtitle(request: Request, env: Env) {
   const apiKey = env.SUBDL_API_KEY?.trim();
   if (!apiKey) return new Response("Subtitle service is not configured.", { status: 503 });
   const requestUrl = new URL(request.url);
@@ -185,7 +307,6 @@ async function readSubtitle(request: Request, env: Env) {
   const type = requestUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
   const language = (requestUrl.searchParams.get("language") || "en").trim().toUpperCase();
   if (!tmdbId && !imdbId) return new Response("A title identifier is required.", { status: 400 });
-
 
   const endpoint = new URL("https://api.subdl.com/api/v1/subtitles");
   endpoint.searchParams.set("api_key", apiKey);
@@ -200,7 +321,6 @@ async function readSubtitle(request: Request, env: Env) {
     endpoint.searchParams.set("season_number", requestUrl.searchParams.get("season") || "1");
     endpoint.searchParams.set("episode_number", requestUrl.searchParams.get("episode") || "1");
   }
-
 
   const searchResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
   if (!searchResponse.ok) return new Response("Subtitle search failed.", { status: 502 });
@@ -226,7 +346,7 @@ async function readSubtitle(request: Request, env: Env) {
   }
   if (!subtitleResponse.ok) return new Response("Subtitle download failed.", { status: 502 });
   const text = await subtitleResponse.text();
-  if (/\.ass\b|\[Script Info\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
+  if (/\\.ass\\b|\\[Script Info\\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
     return new Response("This subtitle format is not supported.", { status: 415 });
   }
   return new Response(toWebVtt(text), {
@@ -237,6 +357,19 @@ async function readSubtitle(request: Request, env: Env) {
   });
 }
 
+
+async function readSubtitle(request: Request, env: Env) {
+  const podnapisiText = await readPodnapisiSubtitle(request);
+  if (podnapisiText) {
+    return new Response(toWebVtt(podnapisiText), {
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        "Content-Type": "text/vtt; charset=utf-8",
+      },
+    });
+  }
+  return readSubdlSubtitle(request, env);
+}
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
