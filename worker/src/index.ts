@@ -274,6 +274,23 @@ function podnapisiHtmlDecode(value: string) {
 }
 
 
+function podnapisiNormalizeTitle(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&amp;|&/g, "and")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+
+function podnapisiPageMatches(pageHtml: string, title: string, year: string | null) {
+  const match = pageHtml.match(/<title>\s*([^<]+?)\s+\((\d{4})\)\s*-\s*/i);
+  if (!match) return false;
+  if (podnapisiNormalizeTitle(match[1]) !== podnapisiNormalizeTitle(title)) return false;
+  return !year || match[2] === year;
+}
+
 function podnapisiInfoLinks(html: string) {
   const links: string[] = [];
   const pattern = /href=["']([^"']*\/info\/p\/[^"']+)["']/gi;
@@ -334,9 +351,11 @@ async function readPodnapisiSubtitle(request: Request) {
       if (!pageResponse.ok) continue;
       const pageHtml = await pageResponse.text();
       const pageText = podnapisiHtmlDecode(pageHtml);
+      if (!podnapisiPageMatches(pageHtml, title, year)) continue;
       if (!/Language:\s*English/i.test(pageText)) continue;
-      if (type === "tv" && (!new RegExp("Season:\s*" + season + "\\b", "i").test(pageText)
-        || !new RegExp("Episode:\s*" + episode + "\\b", "i").test(pageText))) continue;
+      const seasonPattern = new RegExp("Season:\\s*" + season + "\\b", "i");
+      const episodePattern = new RegExp("Episode:\\s*" + episode + "\\b", "i");
+      if (type === "tv" && (!seasonPattern.test(pageText) || !episodePattern.test(pageText))) continue;
       const archiveUrl = podnapisiArchiveLink(pageHtml);
       if (!archiveUrl) continue;
       const archiveResponse = await fetch(archiveUrl, { headers: { Accept: "application/zip" } });
