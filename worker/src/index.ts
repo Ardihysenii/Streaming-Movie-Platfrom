@@ -268,19 +268,19 @@ function podnapisiHtmlDecode(value: string) {
     .replace(/&gt;/gi, ">")
     .replace(/&quot;/gi, '"')
     .replace(/&#39;|&apos;/gi, "'")
-    .replace(/&#(\\d+);/g, (_, code) => String.fromCharCode(Number(code)))
-    .replace(/\\s+/g, " ")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/\s+/g, " ")
     .trim();
 }
 
 
 function podnapisiInfoLinks(html: string) {
   const links: string[] = [];
-  const pattern = /href=["']([^"']*\\/info\\/p\\/[^"']+)["']/gi;
+  const pattern = /href=["']([^"']*\/info\/p\/[^"']+)["']/gi;
   for (const match of html.matchAll(pattern)) {
     try {
       const url = new URL(match[1], "https://en.slo-podnapisi.net");
-      if (url.hostname === "en.slo-podnapisi.net" && /^\\/info\\/p\\//i.test(url.pathname)) {
+      if (url.hostname === "en.slo-podnapisi.net" && /^\/info\/p\//i.test(url.pathname)) {
         const value = url.toString();
         if (!links.includes(value)) links.push(value);
       }
@@ -293,12 +293,12 @@ function podnapisiInfoLinks(html: string) {
 
 
 function podnapisiArchiveLink(html: string) {
-  const pattern = /href=["']([^"']*\\/prenesi-podnapis\\/prenos\\/[^"']+\\.zip\\/?)["']/i;
+  const pattern = /href=["']([^"']*\/prenesi-podnapis\/prenos\/[^"']+\.zip\/?)["']/i;
   const match = html.match(pattern);
   if (!match) return null;
   try {
     const url = new URL(match[1], "https://en.slo-podnapisi.net");
-    return url.hostname === "en.slo-podnapisi.net" && /^\\/prenesi-podnapis\\/prenos\\//i.test(url.pathname)
+    return url.hostname === "en.slo-podnapisi.net" && /^\/prenesi-podnapis\/prenos\//i.test(url.pathname)
       ? url.toString()
       : null;
   } catch {
@@ -334,9 +334,9 @@ async function readPodnapisiSubtitle(request: Request) {
       if (!pageResponse.ok) continue;
       const pageHtml = await pageResponse.text();
       const pageText = podnapisiHtmlDecode(pageHtml);
-      if (!/Language:\\s*English/i.test(pageText)) continue;
-      if (type === "tv" && (!new RegExp("Season:\\s*" + season + "\\\\b", "i").test(pageText)
-        || !new RegExp("Episode:\\s*" + episode + "\\\\b", "i").test(pageText))) continue;
+      if (!/Language:\s*English/i.test(pageText)) continue;
+      if (type === "tv" && (!new RegExp("Season:\s*" + season + "\\b", "i").test(pageText)
+        || !new RegExp("Episode:\s*" + episode + "\\b", "i").test(pageText))) continue;
       const archiveUrl = podnapisiArchiveLink(pageHtml);
       if (!archiveUrl) continue;
       const archiveResponse = await fetch(archiveUrl, { headers: { Accept: "application/zip" } });
