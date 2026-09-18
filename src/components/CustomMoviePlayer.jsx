@@ -388,6 +388,8 @@ export default function CustomMoviePlayer({
       language: subtitleLanguage || "en",
     });
     if (imdbId) query.set("imdbId", String(imdbId));
+    if (title) query.set("title", String(title));
+    if (releaseYear) query.set("year", String(releaseYear));
     if (mediaType === "tv") {
       query.set("season", String(seasonNumber ?? 1));
       query.set("episode", String(episodeNumber ?? 1));
