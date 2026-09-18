@@ -334,36 +334,47 @@ async function readPodnapisiSubtitle(request: Request) {
   endpoint.searchParams.set("j", "3");
   const year = requestUrl.searchParams.get("year")?.trim();
   if (year) endpoint.searchParams.set("l", year);
-  if (type === "tv") {
-    endpoint.searchParams.set("se", requestUrl.searchParams.get("season") || "1");
-    endpoint.searchParams.set("ep", requestUrl.searchParams.get("episode") || "1");
-  }
+  // Podnapisi's season/episode search fields can suppress valid rows on the
+  // current mirror. Search by title/year first, then enforce the exact season
+  // and episode on each subtitle's detail page below.
 
   try {
-    const searchResponse = await fetch(endpoint, { headers: { Accept: "text/html" } });
-    if (!searchResponse.ok) return null;
-    const searchHtml = await searchResponse.text();
-    const links = podnapisiInfoLinks(searchHtml).slice(0, 10);
     const season = requestUrl.searchParams.get("season") || "1";
     const episode = requestUrl.searchParams.get("episode") || "1";
-    for (const pageUrl of links) {
-      const pageResponse = await fetch(pageUrl, { headers: { Accept: "text/html" } });
-      if (!pageResponse.ok) continue;
-      const pageHtml = await pageResponse.text();
-      const pageText = podnapisiHtmlDecode(pageHtml);
-      if (!podnapisiPageMatches(pageHtml, title, year)) continue;
-      if (!/Language:\s*English/i.test(pageText)) continue;
-      const seasonPattern = new RegExp("Season:\\s*" + season + "\\b", "i");
-      const episodePattern = new RegExp("Episode:\\s*" + episode + "\\b", "i");
-      if (type === "tv" && (!seasonPattern.test(pageText) || !episodePattern.test(pageText))) continue;
-      const archiveUrl = podnapisiArchiveLink(pageHtml);
-      if (!archiveUrl) continue;
-      const archiveResponse = await fetch(archiveUrl, { headers: { Accept: "application/zip" } });
-      if (!archiveResponse.ok) continue;
-      const bytes = new Uint8Array(await archiveResponse.arrayBuffer());
-      if (bytes.length > 15_000_000) continue;
-      const text = subtitleTextFromBytes(bytes);
-      if (text) return text;
+    const visitedInfoPages = new Set<string>();
+
+    // The provider paginates results and places unrelated "new subtitles" links
+    // in the same HTML. Walk a bounded number of pages, then keep only exact
+    // title/year/language/episode matches.
+    for (let page = 1; page <= 5; page += 1) {
+      const searchPage = new URL(endpoint);
+      if (page > 1) searchPage.searchParams.set("stran", String(page));
+      const searchResponse = await fetch(searchPage, { headers: { Accept: "text/html" } });
+      if (!searchResponse.ok) continue;
+      const links = podnapisiInfoLinks(await searchResponse.text());
+      if (!links.length) break;
+
+      for (const infoUrl of links) {
+        if (visitedInfoPages.has(infoUrl)) continue;
+        visitedInfoPages.add(infoUrl);
+        const pageResponse = await fetch(infoUrl, { headers: { Accept: "text/html" } });
+        if (!pageResponse.ok) continue;
+        const pageHtml = await pageResponse.text();
+        const pageText = podnapisiHtmlDecode(pageHtml);
+        if (!podnapisiPageMatches(pageHtml, title, year)) continue;
+        if (!/Language:\s*English/i.test(pageText)) continue;
+        const seasonPattern = new RegExp("Season:\\s*" + season + "\\b", "i");
+        const episodePattern = new RegExp("Episode:\\s*" + episode + "\\b", "i");
+        if (type === "tv" && (!seasonPattern.test(pageText) || !episodePattern.test(pageText))) continue;
+        const archiveUrl = podnapisiArchiveLink(pageHtml);
+        if (!archiveUrl) continue;
+        const archiveResponse = await fetch(archiveUrl, { headers: { Accept: "application/zip" } });
+        if (!archiveResponse.ok) continue;
+        const bytes = new Uint8Array(await archiveResponse.arrayBuffer());
+        if (bytes.length > 15_000_000) continue;
+        const text = subtitleTextFromBytes(bytes);
+        if (text) return text;
+      }
     }
   } catch {
     return null;
