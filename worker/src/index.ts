@@ -178,7 +178,7 @@ function subtitleDownloadUrl(value: unknown) {
 
 
 async function readSubtitle(request: Request, env: Env) {
-  const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2]
+  const apiKeys = [env.SUBDL_API_KEY_2, env.SUBDL_API_KEY]
     .map((value) => value?.trim())
     .filter((value): value is string => Boolean(value));
   if (!apiKeys.length) return new Response("Subtitle service is not configured.", { status: 503 });
