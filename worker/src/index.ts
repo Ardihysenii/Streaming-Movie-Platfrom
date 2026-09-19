@@ -179,6 +179,7 @@ function subtitleDownloadUrl(value: unknown) {
 
 
 async function readSubtitle(request: Request, env: Env) {
+  // Ordered runtime key pool: primary, then backups.
   const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2, env.SUBDL_API_KEY_3]
     .map((value) => value?.trim())
     .filter((value): value is string => Boolean(value));
