@@ -38,6 +38,7 @@ interface Env {
   SOURCE_API_TOKEN?: string;
   SUBDL_API_KEY?: string;
   SUBDL_API_KEY_2?: string;
+  SUBDL_API_KEY_3?: string;
   ALLOWED_ORIGINS?: string;
 }
 
@@ -178,7 +179,7 @@ function subtitleDownloadUrl(value: unknown) {
 
 
 async function readSubtitle(request: Request, env: Env) {
-  const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2]
+  const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2, env.SUBDL_API_KEY_3]
     .map((value) => value?.trim())
     .filter((value): value is string => Boolean(value));
   if (!apiKeys.length) return new Response("Subtitle service is not configured.", { status: 503 });
