@@ -149,10 +149,20 @@ export function Hero({ movies }: { movies: Movie[] }) {
             <span className="hero-poster-image">
               {movie.poster_path ? (
                 <Image
+                  className="hero-poster-desktop-image"
                   src={imageUrl(movie.poster_path, "w342")}
                   alt=""
                   fill
-                  sizes="(max-width: 680px) 24vw, 8vw"
+                  sizes="(max-width: 768px) 0px, 126px"
+                />
+              ) : null}
+              {movie.backdrop_path ? (
+                <Image
+                  className="hero-poster-mobile-image"
+                  src={imageUrl(movie.backdrop_path, "w780")}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 160px, 0px"
                 />
               ) : null}
             </span>
