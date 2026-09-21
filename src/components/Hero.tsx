@@ -75,9 +75,6 @@ export function Hero({ movies }: { movies: Movie[] }) {
       </div>
       <div className="hero-vignette" />
       <div className={`hero-copy${activeMovie.logo_url ? "" : " hero-copy-text"}`} key={`copy-${activeMovie.id}`}>
-        <p className="eyebrow">
-          Featured / {(activeIndex + 1).toString().padStart(2, "0")}
-        </p>
         {activeMovie.logo_url ? (
           <div className="hero-title-logo">
             <Image
@@ -131,11 +128,6 @@ export function Hero({ movies }: { movies: Movie[] }) {
         <ArrowRightIcon />
       </button>
 
-      <div className="hero-counter" aria-live="polite">
-        <strong>{(activeIndex + 1).toString().padStart(2, "0")}</strong>
-        <span />
-        <small>{slides.length.toString().padStart(2, "0")}</small>
-      </div>
     </section>
   );
 }
