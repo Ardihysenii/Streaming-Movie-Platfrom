@@ -133,7 +133,7 @@ img {
 }
 
 .site-header .wordmark {
-  left: clamp(76px, 9vw, 170px);
+  left: clamp(48px, 6vw, 115px);
   padding-left: 0;
   position: absolute;
   transform: none;
@@ -295,7 +295,7 @@ body:has(.hero) .header-actions {
 
 .hero-vignette {
   background:
-    linear-gradient(90deg, rgba(4, 5, 6, 0.99) 0%, rgba(4, 5, 6, 0.8) 28%, rgba(4, 5, 6, 0.12) 64%, rgba(4, 5, 6, 0.28) 100%),
+    linear-gradient(90deg, rgba(4, 5, 6, 0.68) 0%, rgba(4, 5, 6, 0.36) 28%, rgba(4, 5, 6, 0.08) 64%, rgba(4, 5, 6, 0.16) 100%),
     linear-gradient(0deg, var(--background) 0%, transparent 34%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 32%);
   inset: 0;
@@ -315,7 +315,7 @@ body:has(.hero) .header-actions {
 
 .hero-copy {
   animation: copyReveal 620ms 120ms both;
-  left: clamp(76px, 9vw, 170px);
+  left: clamp(48px, 6vw, 115px);
   max-width: min(720px, 52vw);
   position: absolute;
   top: 27%;
@@ -728,19 +728,19 @@ body:has(.hero) .header-actions {
 
 .hero-reference-button {
   align-items: center;
-  border-radius: 6px;
+  border-radius: 12px;
   display: inline-flex;
-  font-size: 0.66rem;
-  font-weight: 650;
-  gap: 6px;
-  min-height: 29px;
-  padding: 0 12px;
+  font-size: 1rem;
+  font-weight: 400;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 22px;
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .hero-reference-button svg {
-  height: 12px;
-  width: 12px;
+  height: 14px;
+  width: 14px;
 }
 
 .hero-play-button {
@@ -776,11 +776,11 @@ body:has(.hero) .header-actions {
   align-items: flex-end;
   bottom: clamp(78px, 9vh, 112px);
   display: flex;
-  gap: clamp(18px, 3vw, 46px);
-  left: clamp(76px, 9vw, 170px);
+  gap: clamp(24px, 5vw, 96px);
+  left: clamp(48px, 6vw, 115px);
   max-width: calc(100% - clamp(112px, 14vw, 224px));
   overflow-x: auto;
-  padding: 0 24px 0 44px;
+  padding: 0 24px 0 clamp(36px, 3.7vw, 70px);
   position: absolute;
   right: 36px;
   scrollbar-width: none;
@@ -796,7 +796,7 @@ body:has(.hero) .header-actions {
   background: transparent;
   border: 0;
   cursor: pointer;
-  flex: 0 0 clamp(52px, 5.4vw, 84px);
+  flex: 0 0 clamp(74px, 6.5vw, 124px);
   opacity: 0.78;
   padding: 0;
   position: relative;
@@ -837,9 +837,9 @@ body:has(.hero) .header-actions {
 .hero-poster-rank {
   bottom: -2px;
   color: transparent;
-  font-size: clamp(3.6rem, 5.8vw, 7rem);
+  font-size: clamp(7rem, 10vw, 12rem);
   font-weight: 800;
-  left: clamp(-42px, -3vw, -24px);
+  left: clamp(-88px, -4.4vw, -30px);
   letter-spacing: -0.08em;
   line-height: 0.74;
   pointer-events: none;
