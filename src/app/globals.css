@@ -8356,7 +8356,7 @@ body:has(.watch-page) .bottom-dock {
 
 @media (max-width: 1024px) and (orientation: landscape) {
   .hero-copy {
-    bottom: calc(56px + clamp(60px, 10vw, 86px) * 1.5 + 16px);
+    bottom: calc(64px + env(safe-area-inset-bottom));
   }
 }
 
@@ -8582,7 +8582,7 @@ body:has(.watch-page) .bottom-dock {
 
 @media (max-width: 768px) {
   .hero-copy {
-    bottom: calc(30px + 150px + 30px);
+    bottom: calc(64px + env(safe-area-inset-bottom));
   }
 
   .hero-poster-desktop-image {
