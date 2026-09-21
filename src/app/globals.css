@@ -8365,3 +8365,207 @@ body:has(.watch-page) .bottom-dock {
 .site-header .header-actions {
   display: none;
 }
+
+
+/* Shahflix parity pass: exact hero control geometry, spacing, and responsive behavior. */
+.hero-title-logo {
+  height: clamp(100px, 15vh, 190px);
+  margin-bottom: 24px;
+  max-width: 100%;
+}
+
+.hero-overview {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+  max-height: 120px;
+  max-width: 580px;
+  -webkit-line-clamp: 3;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.hero-reference-actions {
+  gap: 12px;
+}
+
+.hero-reference-button {
+  align-items: center;
+  border-radius: 12px;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 400;
+  gap: 8px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 22px;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-reference-button svg {
+  flex: 0 0 auto;
+  height: 1.05em;
+  width: 1.05em;
+}
+
+.hero-play-button {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0b0b0b;
+  min-width: 110px;
+}
+
+.hero-info-button {
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  min-width: 147px;
+}
+
+.hero-play-button:hover,
+.hero-info-button:hover {
+  background: initial;
+  border-color: initial;
+  color: initial;
+  transform: scale(1.07);
+}
+
+.hero-play-button:hover {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0b0b0b;
+}
+
+.hero-info-button:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .hero-overview {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    max-width: 580px;
+  }
+}
+
+@media (min-width: 901px) {
+  .hero-poster-rail {
+    gap: 0;
+  }
+
+  .hero-poster-card {
+    flex: 0 0 220px;
+    height: 180px;
+  }
+
+  .hero-poster-image {
+    height: 180px;
+    left: 70px;
+    right: auto;
+    width: 126px;
+  }
+
+  .hero-poster-rank {
+    bottom: 0;
+    font-size: 12rem;
+    font-weight: 900;
+    left: -18px;
+    letter-spacing: -10px;
+    line-height: 0.8;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.28);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    min-height: 700px;
+    padding-bottom: 30px;
+  }
+
+  .hero-copy {
+    bottom: 30px;
+    left: 16px;
+    max-width: none;
+    right: 16px;
+  }
+
+  .hero-title-logo {
+    align-self: flex-start;
+    height: 140px;
+    margin-bottom: 24px;
+    max-width: 72%;
+  }
+
+  .hero-meta {
+    font-size: 0.65rem;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .hero-meta-divider {
+    margin: 0 8px;
+  }
+
+  .hero-overview {
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 100%;
+  }
+
+  .hero-reference-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .hero-reference-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-reference-button {
+    flex: 0 0 auto;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .hero-poster-rail {
+    bottom: 30px;
+    gap: 0;
+    left: 0;
+    max-width: 100%;
+    padding: 0 0 0 70px;
+    right: 0;
+  }
+
+  .hero-poster-card {
+    flex: 0 0 210px;
+    height: 150px;
+  }
+
+  .hero-poster-image {
+    height: 90px;
+    left: 45px;
+    right: auto;
+    top: 0;
+    width: 160px;
+  }
+
+  .hero-poster-rank {
+    bottom: 25px;
+    font-size: 7.2rem;
+    left: -5px;
+    letter-spacing: -4px;
+    line-height: 0.7;
+    -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.28);
+  }
+
+  .hero-poster-card:hover {
+    transform: none;
+  }
+}
