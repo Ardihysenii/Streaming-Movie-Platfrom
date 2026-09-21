@@ -7,8 +7,8 @@
   --text: #f2f0eb;
   --muted: #a2a5a5;
   --quiet: #696e72;
-  --accent: #e21d2f;
-  --accent-rgb: 226, 29, 47;
+  --accent: #ff003c;
+  --accent-rgb: 255, 0, 60;
   --page-gutter: clamp(20px, 4vw, 72px);
   --section-gap: clamp(44px, 4.5vw, 76px);
   --card-width: clamp(156px, 14.2vw, 228px);
@@ -121,7 +121,7 @@ img {
 
 .wordmark {
   align-items: center;
-  color: var(--text);
+  color: var(--accent);
   display: inline-flex;
   font-size: clamp(1.08rem, 1.5vw, 1.38rem);
   font-weight: 850;
@@ -537,6 +537,67 @@ img {
   flex: 0 0 auto;
   height: 18px;
   width: 18px;
+}
+
+.hero-actions .hero-watch-now {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.94);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 700;
+  gap: 12px;
+  letter-spacing: -0.012em;
+  line-height: 1;
+  padding: 0;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.hero-actions .hero-watch-now-icon {
+  align-items: center;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.28), 0 0 0 5px rgba(var(--accent-rgb), 0.12);
+  display: inline-flex;
+  height: 48px;
+  justify-content: center;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  width: 48px;
+}
+
+.hero-actions .hero-watch-now-icon svg {
+  height: 18px;
+  margin-left: 2px;
+  width: 18px;
+}
+
+.hero-actions .hero-watch-now:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.hero-actions .hero-watch-now:hover .hero-watch-now-icon {
+  background: color-mix(in srgb, var(--accent) 82%, white);
+  box-shadow: 0 14px 30px rgba(var(--accent-rgb), 0.38), 0 0 0 7px rgba(var(--accent-rgb), 0.14);
+  transform: scale(1.04);
+}
+
+.hero-actions .hero-watch-now:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 5px;
+  border-radius: 999px;
+}
+
+.hero-actions .hero-watch-now.is-coming-soon {
+  cursor: default;
+  opacity: 0.72;
+  transform: none;
+}
+
+.hero-actions .hero-watch-now.is-coming-soon .hero-watch-now-icon {
+  box-shadow: none;
 }
 
 .hero-actions .primary-button:focus-visible,
