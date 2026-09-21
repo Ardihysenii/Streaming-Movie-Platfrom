@@ -5307,7 +5307,7 @@ body:has(.watch-page) .bottom-dock {
 
   .hero-poster-rail {
     bottom: 82px;
-    gap: 18px;
+    gap: clamp(18px, 4vw, 30px);
     left: var(--page-gutter);
     max-width: calc(100% - var(--page-gutter));
     padding-left: 24px;
@@ -5315,7 +5315,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .hero-poster-card {
-    flex-basis: 58px;
+    flex-basis: clamp(68px, 10vw, 92px);
   }
 
   .movie-grid,
