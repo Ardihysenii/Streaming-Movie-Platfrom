@@ -5,7 +5,7 @@ import { useNovaSettings } from "./Providers";
 import type { AccentName, DensityName } from "@/lib/types";
 
 const accentOptions: { value: AccentName; label: string; color: string }[] = [
-  { value: "signal", label: "Signal red", color: "#e21d2f" },
+  { value: "signal", label: "Signal red", color: "#ff003c" },
   { value: "cobalt", label: "Purple", color: "#b69cff" },
   { value: "sage", label: "Sage", color: "#91ad9a" },
 ];
