@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, StarIcon } from "./Icons";
+import { ArrowLeftIcon, ArrowRightIcon, InfoIcon, PlayIcon, StarIcon } from "./Icons";
 import { useNovaSettings } from "./Providers";
 import { genreNames, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
@@ -103,21 +103,28 @@ export function Hero({ movies }: { movies: Movie[] }) {
           ))}
         </div>
         <p className="hero-overview">{activeMovie.overview}</p>
-        <div className="hero-actions">
+        <div className="hero-actions hero-reference-actions">
           {isAvailable ? (
             <Link
-              className="hero-watch-now"
+              className="hero-reference-button hero-play-button"
               href={isSeries ? `/series/details/?id=${contentId}` : `/watch/?id=${contentId}`}
             >
-              <span className="hero-watch-now-icon"><PlayIcon /></span>
-              <span>Watch Now</span>
+              <PlayIcon />
+              <span>Play</span>
             </Link>
           ) : (
-            <button className="hero-watch-now is-coming-soon" type="button" disabled>
-              <span className="hero-watch-now-icon"><PlayIcon /></span>
-              <span>Coming Soon</span>
+            <button className="hero-reference-button hero-play-button is-coming-soon" type="button" disabled>
+              <PlayIcon />
+              <span>Play</span>
             </button>
           )}
+          <Link
+            className="hero-reference-button hero-info-button"
+            href={isSeries ? `/series/details/?id=${contentId}` : `/movie/?id=${contentId}`}
+          >
+            <InfoIcon />
+            <span>More Info</span>
+          </Link>
         </div>
       </div>
 
@@ -127,6 +134,31 @@ export function Hero({ movies }: { movies: Movie[] }) {
       <button className="hero-arrow hero-arrow-right" onClick={() => move(1)} aria-label="Next featured movie">
         <ArrowRightIcon />
       </button>
+
+      <div className="hero-poster-rail" aria-label="Featured movie selection">
+        {slides.map((movie, index) => (
+          <button
+            className={`hero-poster-card${index === activeIndex ? " is-active" : ""}`}
+            key={`hero-poster-${movie.id}`}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            aria-label={`Show ${movie.title}`}
+            aria-pressed={index === activeIndex}
+          >
+            <span className="hero-poster-rank" aria-hidden="true">{index + 1}</span>
+            <span className="hero-poster-image">
+              {movie.poster_path ? (
+                <Image
+                  src={imageUrl(movie.poster_path, "w342")}
+                  alt=""
+                  fill
+                  sizes="(max-width: 680px) 24vw, 8vw"
+                />
+              ) : null}
+            </span>
+          </button>
+        ))}
+      </div>
 
     </section>
   );
