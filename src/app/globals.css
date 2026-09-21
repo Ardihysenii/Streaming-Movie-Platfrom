@@ -8359,3 +8359,9 @@ body:has(.watch-page) .bottom-dock {
     bottom: calc(56px + clamp(60px, 10vw, 86px) * 1.5 + 16px);
   }
 }
+
+
+/* Keep search and settings available only in the bottom navigation. */
+.site-header .header-actions {
+  display: none;
+}
