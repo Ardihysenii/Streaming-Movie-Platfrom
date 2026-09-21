@@ -8316,3 +8316,46 @@ body:has(.watch-page) .bottom-dock {
     flex-basis: clamp(60px, 10vw, 86px);
   }
 }
+
+
+/* Final hero scale and position pass: keep controls readable without rail collisions. */
+@media (min-width: 901px) {
+  .hero-copy {
+    top: clamp(170px, 25vh, 280px);
+  }
+
+  .hero-reference-button {
+    font-size: 1.05rem;
+    min-height: 46px;
+    padding: 0 24px;
+  }
+
+  .hero-reference-button svg {
+    height: 15px;
+    width: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-reference-button {
+    font-size: 1rem;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero-copy {
+    bottom: calc(max(82px, env(safe-area-inset-bottom) + 74px) + clamp(70px, 22vw, 92px) * 1.5 + 18px);
+  }
+
+  .hero-reference-button {
+    min-height: 44px;
+    padding: 0 14px;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .hero-copy {
+    bottom: calc(56px + clamp(60px, 10vw, 86px) * 1.5 + 16px);
+  }
+}
