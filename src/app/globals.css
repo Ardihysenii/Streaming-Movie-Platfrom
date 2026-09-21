@@ -180,15 +180,6 @@ img {
   z-index: 50;
 }
 
-.site-header::after {
-  background: linear-gradient(90deg, var(--line), transparent 72%);
-  bottom: 0;
-  content: "";
-  height: 1px;
-  left: var(--page-gutter);
-  position: absolute;
-  right: var(--page-gutter);
-}
 
 .desktop-nav {
   align-items: center;
@@ -339,6 +330,7 @@ img {
 .hero-title-logo {
   align-items: flex-end;
   display: flex;
+  margin-left: clamp(-34px, -2vw, -18px);
   height: clamp(112px, 14vw, 210px);
   margin: 0 0 26px;
   max-width: min(620px, 44vw);
@@ -697,33 +689,6 @@ img {
   right: 18px;
 }
 
-.hero-counter {
-  align-items: center;
-  bottom: clamp(70px, 8vw, 118px);
-  display: flex;
-  gap: 14px;
-  position: absolute;
-  right: var(--page-gutter);
-  z-index: 4;
-}
-
-.hero-counter strong {
-  font-size: 1.4rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.08em;
-}
-
-.hero-counter span {
-  background: rgba(255, 255, 255, 0.34);
-  height: 1px;
-  width: 48px;
-}
-
-.hero-counter small {
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-}
 
 .home-content,
 .inner-page-content {
