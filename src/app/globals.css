@@ -136,6 +136,35 @@ img {
   transform: translateX(88px);
 }
 
+.wordmark-letters {
+  align-items: flex-start;
+  display: inline-flex;
+  gap: clamp(0.01rem, 0.08vw, 0.08rem);
+}
+
+.wordmark-letter {
+  display: inline-block;
+}
+
+.wordmark-letter:nth-child(1),
+.wordmark-letter:nth-child(7) {
+  transform: translateY(0);
+}
+
+.wordmark-letter:nth-child(2),
+.wordmark-letter:nth-child(6) {
+  transform: translateY(3px);
+}
+
+.wordmark-letter:nth-child(3),
+.wordmark-letter:nth-child(5) {
+  transform: translateY(5px);
+}
+
+.wordmark-letter:nth-child(4) {
+  transform: translateY(6px);
+}
+
 .site-header .wordmark::after {
   display: none;
 }
