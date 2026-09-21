@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Credits } from "@/components/Credits";
-import { BackIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
+import { MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
 import { PageLoader } from "@/components/Loading";
 import { WishlistButton } from "@/components/MovieCard";
 import { MovieRail } from "@/components/MovieRail";
@@ -170,13 +170,9 @@ function MoviePageContent() {
           </button>
         ) : null}
         <div className="detail-content">
-          <Link className="back-link" href="/">
-            <BackIcon /> Back
-          </Link>
           <div className="detail-layout">
             <div className="detail-copy">
               <div className="detail-title-stack">
-                <p className="eyebrow">Feature film</p>
                 {movie.logo_url ? (
                   <div className="detail-title-logo">
                     <Image
