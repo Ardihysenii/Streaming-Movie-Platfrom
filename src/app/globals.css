@@ -133,7 +133,7 @@ img {
 }
 
 .site-header .wordmark {
-  transform: translateX(48px);
+  transform: translateX(88px);
 }
 
 .site-header .wordmark::after {
