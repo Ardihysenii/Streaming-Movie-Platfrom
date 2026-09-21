@@ -24,7 +24,15 @@ export function Header() {
   return (
     <header className="site-header">
       <Link className="wordmark" href="/" aria-label="MONTANA home">
-        MONTANA
+        <span className="wordmark-letters" aria-hidden="true">
+          <span className="wordmark-letter">M</span>
+          <span className="wordmark-letter">O</span>
+          <span className="wordmark-letter">N</span>
+          <span className="wordmark-letter">T</span>
+          <span className="wordmark-letter">A</span>
+          <span className="wordmark-letter">N</span>
+          <span className="wordmark-letter">A</span>
+        </span>
       </Link>
       <div className="header-actions">
         <Link className="icon-button" href={searchHref} aria-label="Search movies and series">
