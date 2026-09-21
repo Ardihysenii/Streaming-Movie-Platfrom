@@ -256,6 +256,10 @@ img {
   transform: scaleX(1);
 }
 
+body:has(.hero) .header-actions {
+  display: none;
+}
+
 .header-actions {
   align-items: center;
   display: flex;
@@ -724,6 +728,131 @@ img {
 
 .hero-arrow-right {
   right: 18px;
+}
+
+.hero-reference-actions {
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-reference-button {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 650;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 17px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.hero-reference-button svg {
+  height: 15px;
+  width: 15px;
+}
+
+.hero-play-button {
+  background: #ffffff;
+  color: #0b0d10;
+}
+
+.hero-play-button:hover {
+  background: #f0f1f2;
+  color: #0b0d10;
+  transform: translateY(-1px);
+}
+
+.hero-info-button {
+  background: rgba(28, 31, 35, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hero-info-button:hover {
+  background: rgba(50, 54, 60, 0.9);
+  border-color: rgba(255, 255, 255, 0.42);
+  transform: translateY(-1px);
+}
+
+.hero-reference-button.is-coming-soon {
+  cursor: default;
+  opacity: 0.7;
+  transform: none;
+}
+
+.hero-poster-rail {
+  align-items: flex-end;
+  bottom: clamp(78px, 9vh, 112px);
+  display: flex;
+  gap: clamp(26px, 4.3vw, 70px);
+  left: clamp(76px, 9vw, 170px);
+  max-width: calc(100% - clamp(112px, 14vw, 224px));
+  overflow-x: auto;
+  padding: 0 24px 0 44px;
+  position: absolute;
+  right: 36px;
+  scrollbar-width: none;
+  z-index: 4;
+}
+
+.hero-poster-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.hero-poster-card {
+  aspect-ratio: 2 / 3;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  flex: 0 0 clamp(72px, 7.2vw, 112px);
+  opacity: 0.78;
+  padding: 0;
+  position: relative;
+  transform: translateY(0);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.hero-poster-card:hover,
+.hero-poster-card.is-active {
+  opacity: 1;
+  transform: translateY(-5px);
+}
+
+.hero-poster-card:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+.hero-poster-image {
+  background: rgba(15, 17, 19, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
+  display: block;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 1;
+}
+
+.hero-poster-image img {
+  object-fit: cover;
+}
+
+.hero-poster-rank {
+  bottom: -2px;
+  color: transparent;
+  font-size: clamp(5rem, 8vw, 9rem);
+  font-weight: 800;
+  left: clamp(-42px, -3vw, -24px);
+  letter-spacing: -0.08em;
+  line-height: 0.74;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: none;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+  z-index: 0;
 }
 
 
@@ -5179,6 +5308,19 @@ body:has(.watch-page) .bottom-dock {
     height: 48px;
     top: 31%;
     width: 48px;
+  }
+
+  .hero-poster-rail {
+    bottom: 82px;
+    gap: 18px;
+    left: var(--page-gutter);
+    max-width: calc(100% - var(--page-gutter));
+    padding-left: 24px;
+    right: 0;
+  }
+
+  .hero-poster-card {
+    flex-basis: 74px;
   }
 
   .movie-grid,
