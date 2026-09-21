@@ -422,7 +422,7 @@ export default function CustomMoviePlayer({
       params.set("controls", "false");
       params.set("autoplay", settings.autoplayPlayer ? "true" : "false");
       if (quality !== "auto") params.set("quality", quality);
-      params.set("color", "#e21d2f");
+      params.set("color", "#ff003c");
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
