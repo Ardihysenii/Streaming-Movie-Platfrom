@@ -8569,3 +8569,27 @@ body:has(.watch-page) .bottom-dock {
     transform: none;
   }
 }
+
+
+/* Shahflix mobile parity: separate rail artwork and reserve copy space. */
+.hero-poster-desktop-image {
+  display: block;
+}
+
+.hero-poster-mobile-image {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hero-copy {
+    bottom: calc(30px + 150px + 30px);
+  }
+
+  .hero-poster-desktop-image {
+    display: none;
+  }
+
+  .hero-poster-mobile-image {
+    display: block;
+  }
+}
