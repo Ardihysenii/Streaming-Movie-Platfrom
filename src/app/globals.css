@@ -8208,3 +8208,111 @@ body:has(.watch-page) .bottom-dock {
     letter-spacing: 0.08em;
   }
 }
+
+
+/* Responsive hero spacing: keep the copy above the poster rail. */
+@media (min-width: 901px) {
+  .hero-copy {
+    max-width: min(650px, 48vw);
+    top: clamp(150px, 22vh, 248px);
+  }
+
+  .hero-title-logo {
+    height: clamp(104px, 11.5vw, 180px);
+    margin-bottom: 18px;
+    max-width: min(560px, 40vw);
+  }
+
+  .hero-meta {
+    margin-bottom: 14px;
+  }
+
+  .hero-overview {
+    line-height: 1.5;
+    margin-bottom: 20px;
+    max-width: 50ch;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-copy {
+    bottom: clamp(196px, 28vh, 292px);
+  }
+
+  .hero-title-logo {
+    height: clamp(96px, 18vw, 146px);
+    margin-bottom: 14px;
+  }
+
+  .hero-meta {
+    margin-bottom: 12px;
+  }
+
+  .hero-overview {
+    line-height: 1.45;
+    margin-bottom: 16px;
+  }
+
+  .hero-reference-actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero-copy {
+    bottom: clamp(190px, 27vh, 250px);
+  }
+
+  .hero-title-logo {
+    height: clamp(92px, 26vw, 126px);
+    margin-bottom: 12px;
+  }
+
+  .hero-meta {
+    margin-bottom: 10px;
+  }
+
+  .hero-overview {
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+
+  .hero-poster-rail {
+    bottom: max(82px, calc(env(safe-area-inset-bottom) + 74px));
+  }
+
+  .hero-poster-card {
+    flex-basis: clamp(70px, 22vw, 92px);
+  }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .hero-copy {
+    bottom: clamp(132px, 22vh, 190px);
+    max-width: min(600px, 58vw);
+  }
+
+  .hero-title-logo {
+    height: clamp(72px, 16vh, 118px);
+    margin-bottom: 10px;
+    max-width: min(420px, 42vw);
+  }
+
+  .hero-meta {
+    margin-bottom: 8px;
+  }
+
+  .hero-overview {
+    -webkit-line-clamp: 2;
+    margin-bottom: 12px;
+  }
+
+  .hero-poster-rail {
+    bottom: 56px;
+  }
+
+  .hero-poster-card {
+    flex-basis: clamp(60px, 10vw, 86px);
+  }
+}
