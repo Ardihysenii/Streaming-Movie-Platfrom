@@ -5137,9 +5137,6 @@ body:has(.watch-page) .bottom-dock {
     max-width: min(620px, 62vw);
   }
 
-  .hero-counter {
-    bottom: 34px;
-  }
 
   .hero-arrow {
     height: 48px;
@@ -5329,9 +5326,6 @@ body:has(.watch-page) .bottom-dock {
   .hero-arrow-left { left: 10px; }
   .hero-arrow-right { right: 10px; }
 
-  .hero-counter {
-    bottom: 22px;
-  }
 
   .home-content {
     margin-top: clamp(30px, 8vw, 48px);
