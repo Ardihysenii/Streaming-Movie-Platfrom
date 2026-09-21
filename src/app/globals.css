@@ -330,9 +330,9 @@ img {
 .hero-title-logo {
   align-items: flex-end;
   display: flex;
-  margin-left: clamp(-34px, -2vw, -18px);
   height: clamp(112px, 14vw, 210px);
   margin: 0 0 26px;
+  margin-left: clamp(18px, 2vw, 34px);
   max-width: min(620px, 44vw);
   width: 100%;
 }
