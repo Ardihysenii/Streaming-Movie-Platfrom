@@ -130,8 +130,7 @@ img {
   padding: 0 0 9px 0.24em;
   position: relative;
   text-transform: uppercase;
-  transform: translateX(clamp(18px, 2vw, 34px));
-  transition: color 180ms ease, transform 180ms ease;
+  transform: translateX(clamp(36px, 2.5vw, 48px));
 }
 
 .wordmark::after {
@@ -146,14 +145,6 @@ img {
   width: 31px;
 }
 
-.wordmark:hover {
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.wordmark:hover::after {
-  transform: scaleX(1.5);
-}
 
 .wordmark-small {
   font-size: 0.9rem;
