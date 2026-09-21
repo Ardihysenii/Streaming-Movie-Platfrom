@@ -13,7 +13,7 @@ type PlayerUrlOptions = {
 };
 
 const accentHex: Record<AccentName, string> = {
-  signal: "e21d2f",
+  signal: "ff003c",
   cobalt: "4e72ff",
   sage: "91ad9a",
 };
