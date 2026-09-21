@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, InfoIcon, PlayIcon, StarIcon } from "./Icons";
+import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, StarIcon } from "./Icons";
 import { useNovaSettings } from "./Providers";
 import { genreNames, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
@@ -109,22 +109,18 @@ export function Hero({ movies }: { movies: Movie[] }) {
         <div className="hero-actions">
           {isAvailable ? (
             <Link
-              className="primary-button"
+              className="hero-watch-now"
               href={isSeries ? `/series/details/?id=${contentId}` : `/watch/?id=${contentId}`}
             >
-              <PlayIcon /> Play
+              <span className="hero-watch-now-icon"><PlayIcon /></span>
+              <span>Watch Now</span>
             </Link>
           ) : (
-            <button className="primary-button is-coming-soon" type="button" disabled>
-              Coming Soon
+            <button className="hero-watch-now is-coming-soon" type="button" disabled>
+              <span className="hero-watch-now-icon"><PlayIcon /></span>
+              <span>Coming Soon</span>
             </button>
           )}
-          <Link
-            className="secondary-button"
-            href={isSeries ? `/series/details/?id=${contentId}` : `/movie/?id=${contentId}`}
-          >
-            <InfoIcon /> More Info
-          </Link>
         </div>
       </div>
 
