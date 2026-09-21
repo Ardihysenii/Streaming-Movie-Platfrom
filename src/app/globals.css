@@ -125,7 +125,7 @@ img {
   display: inline-flex;
   font-size: clamp(1.08rem, 1.5vw, 1.38rem);
   font-weight: 850;
-  letter-spacing: 0.24em;
+  letter-spacing: 0;
   line-height: 1;
   padding: 0 0 9px 0.24em;
   position: relative;
@@ -149,31 +149,14 @@ img {
   align-items: flex-start;
   display: inline-flex;
   gap: 0;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.03em;
 }
 
 .wordmark-letter {
   display: inline-block;
+  transform: none;
 }
 
-.wordmark-letter:nth-child(1),
-.wordmark-letter:nth-child(7) {
-  transform: translateY(0);
-}
-
-.wordmark-letter:nth-child(2),
-.wordmark-letter:nth-child(6) {
-  transform: translateY(4px);
-}
-
-.wordmark-letter:nth-child(3),
-.wordmark-letter:nth-child(5) {
-  transform: translateY(8px);
-}
-
-.wordmark-letter:nth-child(4) {
-  transform: translateY(10px);
-}
 
 .site-header .wordmark::after {
   display: none;
@@ -702,14 +685,22 @@ body:has(.hero) .header-actions {
   color: white;
   cursor: pointer;
   display: flex;
-  height: 48px;
+  height: 36px;
   justify-content: center;
+  opacity: 0;
+  pointer-events: none;
   position: absolute;
   top: 48%;
   transform: translateY(-50%);
-  transition: color 180ms ease, transform 180ms ease;
-  width: 48px;
+  transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+  width: 36px;
   z-index: 5;
+}
+
+.hero:hover .hero-arrow,
+.hero:focus-within .hero-arrow {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .hero-arrow:hover {
@@ -718,8 +709,8 @@ body:has(.hero) .header-actions {
 
 .hero-arrow svg {
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.72));
-  height: 24px;
-  width: 24px;
+  height: 18px;
+  width: 18px;
 }
 
 .hero-arrow-left {
@@ -737,19 +728,19 @@ body:has(.hero) .header-actions {
 
 .hero-reference-button {
   align-items: center;
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-flex;
-  font-size: 0.78rem;
+  font-size: 0.66rem;
   font-weight: 650;
-  gap: 8px;
-  min-height: 34px;
-  padding: 0 17px;
+  gap: 6px;
+  min-height: 29px;
+  padding: 0 12px;
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .hero-reference-button svg {
-  height: 15px;
-  width: 15px;
+  height: 12px;
+  width: 12px;
 }
 
 .hero-play-button {
@@ -785,7 +776,7 @@ body:has(.hero) .header-actions {
   align-items: flex-end;
   bottom: clamp(78px, 9vh, 112px);
   display: flex;
-  gap: clamp(26px, 4.3vw, 70px);
+  gap: clamp(18px, 3vw, 46px);
   left: clamp(76px, 9vw, 170px);
   max-width: calc(100% - clamp(112px, 14vw, 224px));
   overflow-x: auto;
@@ -805,7 +796,7 @@ body:has(.hero) .header-actions {
   background: transparent;
   border: 0;
   cursor: pointer;
-  flex: 0 0 clamp(72px, 7.2vw, 112px);
+  flex: 0 0 clamp(52px, 5.4vw, 84px);
   opacity: 0.78;
   padding: 0;
   position: relative;
@@ -813,10 +804,14 @@ body:has(.hero) .header-actions {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.hero-poster-card:hover,
+.hero-poster-card:hover {
+  opacity: 1;
+  transform: scale(1.12) translateY(-5px);
+  z-index: 3;
+}
+
 .hero-poster-card.is-active {
   opacity: 1;
-  transform: translateY(-5px);
 }
 
 .hero-poster-card:focus-visible {
@@ -842,7 +837,7 @@ body:has(.hero) .header-actions {
 .hero-poster-rank {
   bottom: -2px;
   color: transparent;
-  font-size: clamp(5rem, 8vw, 9rem);
+  font-size: clamp(3.6rem, 5.8vw, 7rem);
   font-weight: 800;
   left: clamp(-42px, -3vw, -24px);
   letter-spacing: -0.08em;
@@ -5305,9 +5300,9 @@ body:has(.watch-page) .bottom-dock {
 
 
   .hero-arrow {
-    height: 48px;
+    height: 30px;
     top: 31%;
-    width: 48px;
+    width: 30px;
   }
 
   .hero-poster-rail {
@@ -5320,7 +5315,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .hero-poster-card {
-    flex-basis: 74px;
+    flex-basis: 58px;
   }
 
   .movie-grid,
