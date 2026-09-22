@@ -8943,3 +8943,50 @@ body:has(.watch-page) .bottom-dock {
   }
 }
 
+
+
+/* Resume playback from detail pages. */
+.detail-actions.has-resume {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-resume-progress {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(170px, 300px) auto;
+  max-width: min(100%, 360px);
+  width: 100%;
+}
+
+.detail-resume-track {
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.detail-resume-track i {
+  background: var(--accent);
+  border-radius: inherit;
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.52);
+  display: block;
+  height: 100%;
+}
+
+.detail-resume-progress > span:last-child {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .detail-resume-progress {
+    grid-template-columns: minmax(130px, 1fr) auto;
+  }
+}
