@@ -146,8 +146,9 @@ export function Hero({ movies }: { movies: Movie[] }) {
       </button>
 
       <div className="hero-poster-rail-shell">
-        <div ref={posterRailRef} className="hero-poster-rail" aria-label="Featured movie selection">
-          {slides.map((movie, index) => (
+        <div ref={posterRailRef} className="hero-poster-rail-viewport">
+          <div className="hero-poster-rail" aria-label="Featured movie selection">
+            {slides.map((movie, index) => (
           <button
             className={`hero-poster-card${index === activeIndex ? " is-active" : ""}`}
             key={`hero-poster-${movie.id}`}
@@ -178,7 +179,8 @@ export function Hero({ movies }: { movies: Movie[] }) {
               ) : null}
             </span>
           </button>
-          ))}
+            ))}
+          </div>
         </div>
         <button
           className="rail-arrow rail-arrow-left"
