@@ -7224,8 +7224,8 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-movie-player-cinesrc .player-progress {
-  accent-color: var(--accent, #8d6bff);
-  background: linear-gradient(90deg, var(--accent, #8d6bff) var(--played), rgba(255, 255, 255, 0.2) var(--played));
+  accent-color: var(--accent, #e50914);
+  background: linear-gradient(90deg, var(--accent, #e50914) var(--played), rgba(255, 255, 255, 0.2) var(--played));
   border-radius: 99px;
   height: 4px;
   margin: 0 0 15px;
@@ -7728,17 +7728,23 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player-cinesrc .player-progress {
   accent-color: #e50914 !important;
   background: linear-gradient(90deg, #e50914 0%, #ff4b2b var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
-  box-shadow: 0 0 12px rgba(229, 9, 20, 0.42);
 }
 
-.custom-movie-player-cinesrc .player-progress::-webkit-slider-thumb {
-  background: #fff;
-  box-shadow: 0 0 15px #ff4b2b, 0 0 25px rgba(255, 255, 255, 0.8);
-}
-
+.custom-movie-player-cinesrc .player-progress::-webkit-slider-thumb,
 .custom-movie-player-cinesrc .player-progress::-moz-range-thumb {
   background: #fff;
-  box-shadow: 0 0 15px #ff4b2b, 0 0 25px rgba(255, 255, 255, 0.8);
+}
+
+.custom-movie-player-cinesrc .player-progress::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #e50914 0%, #ff4b2b var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
+}
+
+.custom-movie-player-cinesrc .player-progress::-moz-range-track {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-movie-player-cinesrc .player-progress::-moz-range-progress {
+  background: #e50914 !important;
 }
 
 .custom-movie-player-cinesrc .player-quality-button .player-setting-label,
@@ -7768,7 +7774,7 @@ body:has(.watch-page) .bottom-dock {
 
 
 .custom-movie-player-cinesrc .player-progress::-webkit-slider-runnable-track {
-  background: linear-gradient(90deg, #a98bff var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
+  background: linear-gradient(90deg, #e50914 var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
 }
 
 .custom-movie-player-cinesrc .player-progress::-moz-range-track {
@@ -7776,7 +7782,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-movie-player-cinesrc .player-progress::-moz-range-progress {
-  background: #a98bff !important;
+  background: #e50914 !important;
 }
 
 
