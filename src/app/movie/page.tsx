@@ -169,6 +169,7 @@ function MoviePageContent() {
             {trailerMuted ? <MutedIcon /> : <VolumeIcon />}
           </button>
         ) : null}
+        <WishlistButton movie={movie} className="detail-wishlist-button" icon="heart" />
         <div className="detail-content">
           <div className="detail-layout">
             <div className="detail-copy">
@@ -218,7 +219,6 @@ function MoviePageContent() {
                     Coming Soon
                   </button>
                 )}
-                <WishlistButton movie={movie} className="wishlist-detail-button" />
               </div>
             </div>
           </div>
