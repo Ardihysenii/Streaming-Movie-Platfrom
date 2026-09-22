@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookmarkIcon, StarIcon, TrashIcon } from "./Icons";
+import { BookmarkIcon, HeartIcon, StarIcon, TrashIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
 import { imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
@@ -19,7 +19,7 @@ type MovieCardProps = {
   removeActionLabel?: string;
 };
 
-export function WishlistButton({ movie, className = "" }: { movie: Movie; className?: string }) {
+export function WishlistButton({ movie, className = "", icon = "bookmark" }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" }) {
   const [saved, setSaved] = useState(false);
   const identity = `${movie.media_type ?? "movie"}:${movie.tmdb_id ?? movie.id}`;
 
@@ -43,7 +43,7 @@ export function WishlistButton({ movie, className = "" }: { movie: Movie; classN
       title={saved ? "Remove from Wishlist" : "Add to Wishlist"}
       onClick={() => setSaved(toggleWishlist(movie))}
     >
-      <BookmarkIcon />
+      {icon === "heart" ? <HeartIcon /> : <BookmarkIcon />}
     </button>
   );
 }
