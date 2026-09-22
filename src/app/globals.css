@@ -3063,6 +3063,7 @@ body:has(.hero) .header-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 6px;
   min-height: 48px;
   position: relative;
   z-index: 2;
@@ -3074,14 +3075,11 @@ body:has(.hero) .header-actions {
   opacity: 0.68;
 }
 
+/* Keep the title, subtitle, metadata, and synopsis available while the trailer is idle. */
 .detail-hero.is-cinematic-idle .detail-info {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(26px);
-}
-
-.detail-hero.is-cinematic-idle .detail-title-stack {
-  transform: translateY(clamp(126px, 17vh, 188px)) scale(0.96);
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
 }
 
 .detail-trailer-audio {
