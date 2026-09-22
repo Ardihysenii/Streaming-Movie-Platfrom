@@ -8945,105 +8945,112 @@ body:has(.watch-page) .bottom-dock {
 
 
 
-/* Modern resume playback treatment. */
+/* ShahFlix-matched resume playback treatment. */
 .detail-actions.has-resume > .primary-button {
-  background: rgba(10, 12, 15, 0.76);
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: transparent !important;
+  border: 1px solid #e50914 !important;
+  border-radius: 0;
+  box-shadow: none;
+  color: #fff !important;
+  font-size: 0.82rem;
+  font-weight: 400;
+  height: 36px;
+  letter-spacing: 0;
+  min-height: 36px;
+  min-width: 90px;
+  padding: 0 14px;
+  text-transform: none;
 }
 
 .detail-actions.has-resume > .primary-button:hover {
-  background: rgba(255, 255, 255, 0.94);
-  border-color: #ffffff;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
-  color: #0b0d10;
+  background: rgba(229, 9, 20, 0.15) !important;
+  border-color: #f40612 !important;
+  box-shadow: none;
+  color: #fff !important;
+  transform: none;
 }
 
 .detail-resume-progress {
-  max-width: min(100%, 380px);
-  width: 100%;
-}
-
-.detail-resume-caption {
-  align-items: baseline;
-  color: rgba(255, 255, 255, 0.55);
+  animation: fadeInUp 0.8s ease forwards;
   display: flex;
-  font-size: 0.62rem;
-  font-weight: 700;
-  justify-content: space-between;
-  letter-spacing: 0.14em;
-  margin-bottom: 9px;
-  text-transform: uppercase;
-}
-
-.detail-resume-caption strong {
-  color: rgba(255, 255, 255, 0.94);
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-}
-
-.detail-resume-caption span:last-child {
-  color: rgba(255, 255, 255, 0.34);
-  font-size: 0.56rem;
-  letter-spacing: 0.12em;
-}
-
-.detail-resume-row {
-  align-items: center;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(170px, 1fr) auto;
-}
-
-.detail-resume-track {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  display: block;
-  height: 7px;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+  max-width: 300px;
   width: 100%;
 }
 
-.detail-resume-track i {
-  background: linear-gradient(90deg, #f4f5f6 0%, #aeb5bd 100%);
-  border-radius: inherit;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
-  display: block;
-  height: 100%;
+.detail-resume-label-row {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
 }
 
-.detail-resume-time {
-  align-items: baseline;
-  color: rgba(255, 255, 255, 0.5);
-  display: inline-flex;
-  gap: 4px;
+.detail-resume-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.detail-resume-time strong {
-  color: rgba(255, 255, 255, 0.96);
+.detail-resume-label strong {
+  color: rgba(255, 255, 255, 0.94);
   font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 1rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  font-weight: 700;
 }
 
-.detail-resume-time small {
-  font-size: 0.56rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.detail-resume-label span {
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0 4px;
+}
+
+.detail-resume-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  height: 4px;
+  overflow: visible;
+  position: relative;
+  width: 100%;
+}
+
+.detail-resume-fill {
+  background: linear-gradient(90deg, #e50914, #ff4b2b);
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(229, 9, 20, 0.6);
+  display: block;
+  height: 100%;
+  position: relative;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detail-resume-fill::after {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #ff4b2b, 0 0 25px rgba(255, 255, 255, 0.8);
+  content: "";
+  height: 7px;
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  z-index: 1;
 }
 
 @media (max-width: 680px) {
-  .detail-resume-row {
-    gap: 10px;
-    grid-template-columns: minmax(130px, 1fr) auto;
+  .detail-resume-progress {
+    max-width: min(100%, 300px);
+  }
+
+  .detail-resume-label {
+    font-size: 0.68rem;
   }
 }
 
