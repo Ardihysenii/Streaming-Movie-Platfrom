@@ -9386,3 +9386,15 @@ body:has(.watch-page) .bottom-dock {
     font-size: 0.8rem;
   }
 }
+
+/* Mobile-only alignment: match the featured Top 10 card height and lower the bottom dock without changing larger layouts. */
+@media (max-width: 680px) {
+  .top-ten-card-shell.is-featured .top-ten-card {
+    aspect-ratio: auto;
+    height: 222px;
+  }
+
+  .bottom-dock {
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
