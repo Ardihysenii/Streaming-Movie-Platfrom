@@ -1382,11 +1382,19 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
         {isCineSrc && !isReady ? (
-          <div className="nova-source-loading" role="status" aria-live="polite">
-            <span className="nova-source-loading-orbit" aria-hidden="true"><span /></span>
-            <span className="nova-source-loading-brand">NOVA</span>
-            <strong>{mediaType === "tv" ? "Preparing your episode" : "Preparing your movie"}</strong>
-            <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${cineSrcServerLabel(activeServer)}…` : "Connecting to your stream…"}</span>
+          <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
+            <div className="montana-player-intro-sheen" aria-hidden="true" />
+            <div className="montana-player-intro-content">
+              <p className="montana-player-intro-kicker">Now screening</p>
+              <div className="montana-player-intro-brand" aria-label="MONTANA">
+                {[..."MONTANA"].map((letter, index) => (
+                  <span key={letter + index} style={{ animationDelay: index * 95 + "ms" }}>{letter}</span>
+                ))}
+              </div>
+              <div className="montana-player-intro-rule" aria-hidden="true"><span /> <i /></div>
+              <strong>{mediaType === "tv" ? "Your episode is about to begin" : "Your movie is about to begin"}</strong>
+              <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${cineSrcServerLabel(activeServer)}…` : "Connecting to your stream…"}</span>
+            </div>
           </div>
         ) : null}
       {activeSubtitle ? (
