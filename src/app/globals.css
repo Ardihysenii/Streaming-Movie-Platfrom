@@ -9531,3 +9531,62 @@ body:has(.watch-page) .bottom-dock {
   box-shadow: none !important;
   filter: none !important;
 }
+
+
+/* Watch player control refinement: red, crisp, custom glyph treatment. */
+.custom-movie-player .player-center-play {
+    background: linear-gradient(145deg, #ff2a3d 0%, #c9071f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 18px 26px 18px 26px;
+    box-shadow: none;
+    color: #fff;
+}
+
+.custom-movie-player .player-center-play::after {
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 12px 19px 12px 19px;
+    inset: 6px;
+}
+
+.custom-movie-player .player-center-play:hover {
+    background: linear-gradient(145deg, #ff3b4d 0%, #df0a28 100%);
+    border-color: rgba(255, 255, 255, 0.62);
+    box-shadow: none;
+    scale: 1.04;
+}
+
+.custom-movie-player .player-center-play:focus-visible {
+    outline: 2px solid #ff3045;
+    outline-offset: 4px;
+}
+
+.custom-movie-player .player-center-play.is-play .nova-center-glyph::before {
+    border-bottom: 11px solid transparent;
+    border-left: 18px solid #fff;
+    border-top: 11px solid transparent;
+    filter: none;
+    left: 6px;
+    top: 3px;
+    transform: skewX(-8deg);
+}
+
+.custom-movie-player .player-center-play.is-pause .nova-center-glyph::before {
+    background: #fff;
+    border-radius: 2px 4px 2px 4px;
+    box-shadow: 11px 0 0 #fff;
+    height: 22px;
+    left: 2px;
+    top: 3px;
+    transform: skewY(-7deg);
+    width: 7px;
+}
+
+.custom-movie-player .player-control-row > button:hover {
+    background: rgba(229, 9, 20, 0.18);
+    color: #ff3045;
+}
+
+.custom-movie-player-cinesrc .player-control-row > button:hover {
+    background: transparent;
+    color: #ff3045;
+}
