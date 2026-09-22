@@ -8820,3 +8820,40 @@ body:has(.watch-page) .bottom-dock {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Simple icon-only card remove control. */
+.remove-card {
+  backdrop-filter: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.78);
+  height: 30px;
+  transform: translateY(0) scale(1);
+  transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+  width: 30px;
+}
+
+.remove-card svg {
+  height: 18px;
+  width: 18px;
+}
+
+.movie-card:hover .remove-card,
+.remove-card:focus-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.remove-card:hover {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--accent);
+  transform: scale(1.08);
+}
+
+.remove-card:hover svg {
+  transform: none;
+}
