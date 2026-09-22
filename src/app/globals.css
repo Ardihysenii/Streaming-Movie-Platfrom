@@ -8676,9 +8676,26 @@ body:has(.watch-page) .bottom-dock {
   }
 }
 
-/* Short desktop/laptop viewports: keep the poster cards unchanged and lift only the hero copy to preserve clear space above the rail. */
+/* Laptop hero rail scale: reduce only the desktop cards on laptop widths; large desktop and mobile remain unchanged. */
 @media (min-width: 901px) and (max-width: 1440px) and (max-height: 820px) {
   .hero-copy {
     top: clamp(118px, 16vh, 170px);
+  }
+
+  .hero-poster-rail-shell .hero-poster-card {
+    flex-basis: 180px;
+    height: 150px;
+  }
+
+  .hero-poster-rail-shell .hero-poster-image {
+    height: 150px;
+    left: 58px;
+    width: 105px;
+  }
+
+  .hero-poster-rail-shell .hero-poster-rank {
+    font-size: 10rem;
+    left: -14px;
+    letter-spacing: -8px;
   }
 }
