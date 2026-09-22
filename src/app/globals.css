@@ -8699,3 +8699,35 @@ body:has(.watch-page) .bottom-dock {
     letter-spacing: -8px;
   }
 }
+
+/* Laptop hero rail safety: preserve large-monitor sizing while clearing the action buttons. */
+@media (min-width: 901px) and (max-width: 1600px) and (max-height: 950px) {
+  .hero-poster-rail-shell {
+    bottom: clamp(56px, 7vh, 78px);
+  }
+
+  .hero-poster-rail-viewport {
+    padding-top: 18px;
+  }
+
+  .hero-poster-rail-shell .hero-poster-card {
+    flex-basis: 150px;
+    height: 124px;
+  }
+
+  .hero-poster-rail-shell .hero-poster-image {
+    height: 124px;
+    left: 48px;
+    width: 88px;
+  }
+
+  .hero-poster-rail-shell .hero-poster-rank {
+    font-size: 8.4rem;
+    left: -10px;
+    letter-spacing: -6px;
+  }
+
+  .hero-poster-rail-shell .rail-arrow {
+    top: 18px;
+  }
+}
