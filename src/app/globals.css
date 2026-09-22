@@ -8599,3 +8599,42 @@ body:has(.watch-page) .bottom-dock {
     display: none;
   }
 }
+
+
+/* Hero rail controls: reuse the platform rail arrows and scale the complete numbered card. */
+@media (min-width: 901px) {
+  .hero-poster-rail-shell {
+    align-items: flex-end;
+    bottom: clamp(78px, 9vh, 112px);
+    display: flex;
+    left: clamp(48px, 6vw, 115px);
+    max-width: calc(100% - clamp(112px, 14vw, 224px));
+    position: absolute;
+    right: 36px;
+    z-index: 4;
+  }
+
+  .hero-poster-rail-shell .hero-poster-rail {
+    bottom: auto;
+    flex: 1 1 auto;
+    left: auto;
+    max-width: none;
+    position: relative;
+    right: auto;
+    width: 100%;
+  }
+
+  .hero-poster-rail-shell .hero-poster-card {
+    transform-origin: center bottom;
+  }
+
+  .hero-poster-rail-shell .hero-poster-rank {
+    z-index: 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-poster-rail-shell {
+    display: none;
+  }
+}
