@@ -1189,19 +1189,41 @@ body:has(.hero) .header-actions {
 }
 
 .watch-progress {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   bottom: 0;
   height: 4px;
   left: 0;
+  overflow: visible;
   position: absolute;
   right: 0;
+  width: 100%;
   z-index: 3;
 }
 
 .watch-progress i {
-  background: var(--accent);
+  background: linear-gradient(90deg, #e50914, #ff4b2b);
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(229, 9, 20, 0.6);
   display: block;
   height: 100%;
+  position: relative;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.watch-progress i::after {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #ff4b2b, 0 0 25px rgba(255, 255, 255, 0.8);
+  content: "";
+  height: 7px;
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  z-index: 1;
 }
 
 .movie-card-copy {
