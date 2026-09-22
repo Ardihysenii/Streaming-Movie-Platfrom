@@ -8591,3 +8591,11 @@ body:has(.watch-page) .bottom-dock {
     display: block;
   }
 }
+
+
+/* Keep the hero card rail on laptop and desktop screens only. */
+@media (max-width: 900px) {
+  .hero-poster-rail {
+    display: none;
+  }
+}
