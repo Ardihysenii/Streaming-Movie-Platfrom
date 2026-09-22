@@ -861,8 +861,8 @@ body:has(.hero) .header-actions {
 
 .home-page,
 .home-content {
-  --background: #000;
-  background: #000;
+  --background: #0b0b0b;
+  background: #0b0b0b;
 }
 
 .home-content {
@@ -871,7 +871,7 @@ body:has(.hero) .header-actions {
 }
 
 .home-content::before {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000 92%);
+  background: linear-gradient(180deg, rgba(11, 11, 11, 0) 0%, #0b0b0b 92%);
   content: "";
   height: 96px;
   left: 0;
