@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookmarkIcon, HeartIcon, StarIcon, TrashIcon } from "./Icons";
+import { BookmarkIcon, CloseIcon, HeartIcon, StarIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
 import { imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
@@ -102,7 +102,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             </span>
           ) : null}
         </Link>
-        <WishlistButton movie={movie} />
         <div className="movie-card-copy">
           <Link href={href}>{movie.title}</Link>
           <span className="movie-card-meta">
@@ -118,7 +117,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
         </div>
         {onRemove ? (
           <button className="remove-card" onClick={onRemove} aria-label={`Remove ${movie.title} from ${removeActionLabel}`}>
-            <TrashIcon />
+            <CloseIcon />
           </button>
         ) : null}
       </div>
