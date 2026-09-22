@@ -861,6 +861,7 @@ body:has(.hero) .header-actions {
 
 .home-page,
 .home-content {
+  --background: #000;
   background: #000;
 }
 
