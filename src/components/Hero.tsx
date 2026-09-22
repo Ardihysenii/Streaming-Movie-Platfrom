@@ -145,16 +145,9 @@ export function Hero({ movies }: { movies: Movie[] }) {
         <ArrowRightIcon />
       </button>
 
-      <div ref={posterRailRef} className="hero-poster-rail" aria-label="Featured movie selection">
-        <button
-          className="rail-arrow rail-arrow-left"
-          type="button"
-          onClick={() => scrollPosterRail(-1)}
-          aria-label="Scroll featured movies left"
-        >
-          <ArrowLeftIcon />
-        </button>
-        {slides.map((movie, index) => (
+      <div className="hero-poster-rail-shell">
+        <div ref={posterRailRef} className="hero-poster-rail" aria-label="Featured movie selection">
+          {slides.map((movie, index) => (
           <button
             className={`hero-poster-card${index === activeIndex ? " is-active" : ""}`}
             key={`hero-poster-${movie.id}`}
@@ -185,7 +178,16 @@ export function Hero({ movies }: { movies: Movie[] }) {
               ) : null}
             </span>
           </button>
-        ))}
+          ))}
+        </div>
+        <button
+          className="rail-arrow rail-arrow-left"
+          type="button"
+          onClick={() => scrollPosterRail(-1)}
+          aria-label="Scroll featured movies left"
+        >
+          <ArrowLeftIcon />
+        </button>
         <button
           className="rail-arrow rail-arrow-right"
           type="button"
