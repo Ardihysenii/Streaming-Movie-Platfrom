@@ -131,6 +131,13 @@ export const HistoryIcon = (props: IconProps) => (
 );
 
 
+export const HeartIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M20.8 8.9c0 5.1-8.8 10.1-8.8 10.1S3.2 14 3.2 8.9A5 5 0 0 1 12 5.6a5 5 0 0 1 8.8 3.3Z" />
+  </IconBase>
+);
+
+
 export const BookmarkIcon = (props: IconProps) => (
   <IconBase {...props}>
     <path d="M6 4.5A2.5 2.5 0 0 1 8.5 2h7A2.5 2.5 0 0 1 18 4.5V21l-6-3.7L6 21V4.5Z" />
