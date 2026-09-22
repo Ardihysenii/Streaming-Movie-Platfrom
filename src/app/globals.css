@@ -3075,11 +3075,18 @@ body:has(.hero) .header-actions {
   opacity: 0.68;
 }
 
-/* Keep the title, subtitle, metadata, and synopsis available while the trailer is idle. */
 .detail-hero.is-cinematic-idle .detail-info {
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(26px);
+}
+
+.detail-hero.is-cinematic-idle .detail-tagline {
+  display: none;
+}
+
+.detail-hero.is-cinematic-idle .detail-title-stack {
+  transform: translateY(clamp(126px, 17vh, 188px)) scale(0.96);
 }
 
 .detail-trailer-audio {
