@@ -8675,3 +8675,10 @@ body:has(.watch-page) .bottom-dock {
     display: none;
   }
 }
+
+/* Short desktop/laptop viewports: keep the poster cards unchanged and lift only the hero copy to preserve clear space above the rail. */
+@media (min-width: 901px) and (max-height: 820px) {
+  .hero-copy {
+    top: clamp(118px, 16vh, 170px);
+  }
+}
