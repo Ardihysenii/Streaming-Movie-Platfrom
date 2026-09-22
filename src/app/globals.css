@@ -8945,48 +8945,105 @@ body:has(.watch-page) .bottom-dock {
 
 
 
-/* Resume playback from detail pages. */
-.detail-actions.has-resume {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 12px;
+/* Modern resume playback treatment. */
+.detail-actions.has-resume > .primary-button {
+  background: rgba(10, 12, 15, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.detail-actions.has-resume > .primary-button:hover {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: #ffffff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  color: #0b0d10;
 }
 
 .detail-resume-progress {
-  align-items: center;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(170px, 300px) auto;
-  max-width: min(100%, 360px);
+  max-width: min(100%, 380px);
   width: 100%;
 }
 
+.detail-resume-caption {
+  align-items: baseline;
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  font-size: 0.62rem;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.14em;
+  margin-bottom: 9px;
+  text-transform: uppercase;
+}
+
+.detail-resume-caption strong {
+  color: rgba(255, 255, 255, 0.94);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+
+.detail-resume-caption span:last-child {
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+}
+
+.detail-resume-row {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(170px, 1fr) auto;
+}
+
 .detail-resume-track {
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   display: block;
-  height: 4px;
+  height: 7px;
   overflow: hidden;
   width: 100%;
 }
 
 .detail-resume-track i {
-  background: var(--accent);
+  background: linear-gradient(90deg, #f4f5f6 0%, #aeb5bd 100%);
   border-radius: inherit;
-  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.52);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
   display: block;
   height: 100%;
 }
 
-.detail-resume-progress > span:last-child {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
+.detail-resume-time {
+  align-items: baseline;
+  color: rgba(255, 255, 255, 0.5);
+  display: inline-flex;
+  gap: 4px;
   white-space: nowrap;
 }
 
+.detail-resume-time strong {
+  color: rgba(255, 255, 255, 0.96);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.detail-resume-time small {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 680px) {
-  .detail-resume-progress {
+  .detail-resume-row {
+    gap: 10px;
     grid-template-columns: minmax(130px, 1fr) auto;
   }
 }
+
