@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage } from "./MovieCard";
+import { imageUrl, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
@@ -225,6 +227,58 @@ function RailScroller({ children, label, itemCount }: { children: ReactNode; lab
         </button>
       ) : null}
     </div>
+  );
+}
+
+
+export function TopTenRail({ movies }: { movies: Movie[] }) {
+  const topTen = movies.slice(0, 10);
+  if (!topTen.length) return null;
+
+  return (
+    <section className="content-section top-ten-section">
+      <header className="top-ten-heading">
+        <span className="top-ten-heading-accent" aria-hidden="true" />
+        <div className="top-ten-heading-text">
+          <div className="top-ten-title-row">
+            <h2>Top 10 on</h2>
+            <span className="top-ten-brand">MONTANA</span>
+          </div>
+          <p>The most watched titles right now</p>
+        </div>
+      </header>
+      <RailScroller label="Top 10 on MONTANA" itemCount={topTen.length}>
+        {topTen.map((movie, index) => {
+          const isFeatured = index === 0;
+          const href = movie.media_type === "tv"
+            ? `/series/details/?id=${movie.tmdb_id ?? movie.id}`
+            : `/movie/?id=${movie.tmdb_id ?? movie.id}`;
+          return (
+            <article className={`top-ten-card-shell${isFeatured ? " is-featured" : ""}`} key={movieKey(movie, index)}>
+              <Link className="top-ten-card" href={href} aria-label={`Top ${index + 1}: ${movie.title}`}>
+                <span className="top-ten-badge" aria-hidden="true">
+                  <small>TOP</small>
+                  <strong>{String(index + 1).padStart(2, "0")}</strong>
+                </span>
+                <span className="top-ten-image">
+                  <Image
+                    src={imageUrl(isFeatured ? movie.backdrop_path ?? movie.poster_path : movie.poster_path, isFeatured ? "w780" : "w500")}
+                    alt={`${movie.title} artwork`}
+                    fill
+                    sizes={isFeatured ? "(max-width: 680px) 82vw, 530px" : "200px"}
+                  />
+                  <span className="top-ten-hover-overlay" aria-hidden="true" />
+                </span>
+              </Link>
+              <div className="top-ten-meta">
+                <h3>{movie.title}</h3>
+                <p>{movie.vote_average.toFixed(1)} <span aria-hidden="true">·</span> {releaseYear(movie)} <span aria-hidden="true">·</span> {movie.media_type === "tv" ? "TV Show" : "Movie"}</p>
+              </div>
+            </article>
+          );
+        })}
+      </RailScroller>
+    </section>
   );
 }
 
