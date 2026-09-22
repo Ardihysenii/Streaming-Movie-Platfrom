@@ -8731,3 +8731,49 @@ body:has(.watch-page) .bottom-dock {
     top: 18px;
   }
 }
+
+/* Detail Wishlist: keep the function beside the volume control without a text button. */
+.detail-wishlist-button {
+  align-items: center;
+  background: rgba(8, 10, 12, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  height: 46px;
+  justify-content: center;
+  position: absolute;
+  right: var(--page-gutter);
+  top: calc(var(--header-height) + 34px + 58px);
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+  width: 46px;
+  z-index: 6;
+}
+
+.detail-wishlist-button:hover,
+.detail-wishlist-button.is-saved {
+  background: rgba(var(--accent-rgb), 0.2);
+  border-color: rgba(var(--accent-rgb), 0.78);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32), 0 0 0 4px rgba(var(--accent-rgb), 0.12);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.detail-wishlist-button svg {
+  height: 21px;
+  width: 21px;
+}
+
+@media (max-width: 680px) {
+  .detail-wishlist-button {
+    height: 42px;
+    top: calc(var(--header-height) + 22px + 54px);
+    width: 42px;
+  }
+
+  .detail-wishlist-button svg {
+    height: 19px;
+    width: 19px;
+  }
+}
