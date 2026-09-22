@@ -51,15 +51,6 @@ export function Hero({ movies }: { movies: Movie[] }) {
   const isAvailable = isSeries || isReleased(activeMovie);
   const contentId = activeMovie.tmdb_id ?? activeMovie.series_id ?? activeMovie.id;
 
-  const posterRailRef = useRef<HTMLDivElement>(null);
-
-  function scrollPosterRail(direction: -1 | 1) {
-    const rail = posterRailRef.current;
-    if (!rail) return;
-    const distance = direction * Math.max(320, rail.clientWidth * 0.82);
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    rail.scrollBy({ left: distance, behavior });
-  }
 
   return (
     <section
@@ -145,60 +136,7 @@ export function Hero({ movies }: { movies: Movie[] }) {
         <ArrowRightIcon />
       </button>
 
-      <div className="hero-poster-rail-shell">
-        <div ref={posterRailRef} className="hero-poster-rail-viewport">
-          <div className="hero-poster-rail" aria-label="Featured movie selection">
-            {slides.map((movie, index) => (
-          <button
-            className={`hero-poster-card${index === activeIndex ? " is-active" : ""}`}
-            key={`hero-poster-${movie.id}`}
-            type="button"
-            onClick={() => setActiveIndex(index)}
-            aria-label={`Show ${movie.title}`}
-            aria-pressed={index === activeIndex}
-          >
-            <span className="hero-poster-rank" aria-hidden="true">{index + 1}</span>
-            <span className="hero-poster-image">
-              {movie.poster_path ? (
-                <Image
-                  className="hero-poster-desktop-image"
-                  src={imageUrl(movie.poster_path, "w342")}
-                  alt=""
-                  fill
-                  sizes="(max-width: 768px) 0px, 126px"
-                />
-              ) : null}
-              {movie.backdrop_path ? (
-                <Image
-                  className="hero-poster-mobile-image"
-                  src={imageUrl(movie.backdrop_path, "w780")}
-                  alt=""
-                  fill
-                  sizes="(max-width: 768px) 160px, 0px"
-                />
-              ) : null}
-            </span>
-          </button>
-            ))}
-          </div>
-        </div>
-        <button
-          className="rail-arrow rail-arrow-left"
-          type="button"
-          onClick={() => scrollPosterRail(-1)}
-          aria-label="Scroll featured movies left"
-        >
-          <ArrowLeftIcon />
-        </button>
-        <button
-          className="rail-arrow rail-arrow-right"
-          type="button"
-          onClick={() => scrollPosterRail(1)}
-          aria-label="Scroll featured movies right"
-        >
-          <ArrowRightIcon />
-        </button>
-      </div>
+
 
 
 
