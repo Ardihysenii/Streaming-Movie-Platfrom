@@ -166,6 +166,7 @@ function SeriesDetailsContent() {
             {trailerMuted ? <MutedIcon /> : <VolumeIcon />}
           </button>
         ) : null}
+        <WishlistButton movie={series} className="detail-wishlist-button" icon="heart" />
         <div className="detail-content">
           <div className="detail-layout">
             <div className="detail-copy">
@@ -205,7 +206,6 @@ function SeriesDetailsContent() {
                     <PlayIcon /> Start series
                   </Link>
                 ) : null}
-                <WishlistButton movie={series} className="wishlist-detail-button" />
               </div>
             </div>
           </div>
