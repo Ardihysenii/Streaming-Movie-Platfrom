@@ -1194,11 +1194,11 @@ body:has(.hero) .header-actions {
   border-radius: 10px;
   bottom: 6px;
   height: 4px;
-  left: 0;
+  left: 8px;
   overflow: visible;
   position: absolute;
-  right: 0;
-  width: 100%;
+  right: 8px;
+  width: auto;
   z-index: 3;
 }
 
