@@ -8711,20 +8711,20 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .hero-poster-rail-shell .hero-poster-card {
-    flex-basis: 150px;
-    height: 124px;
+    flex-basis: 170px;
+    height: 140px;
   }
 
   .hero-poster-rail-shell .hero-poster-image {
-    height: 124px;
-    left: 48px;
-    width: 88px;
+    height: 140px;
+    left: 54px;
+    width: 100px;
   }
 
   .hero-poster-rail-shell .hero-poster-rank {
-    font-size: 8.4rem;
-    left: -10px;
-    letter-spacing: -6px;
+    font-size: 9.4rem;
+    left: -12px;
+    letter-spacing: -7px;
   }
 
   .hero-poster-rail-shell .rail-arrow {
