@@ -9120,6 +9120,7 @@ body:has(.watch-page) .bottom-dock {
 /* ShahFlix-inspired Top 10 rail: featured landscape card followed by ranked posters. */
 .top-ten-section {
   margin-bottom: clamp(42px, 5vw, 76px);
+  padding-left: clamp(0px, 2.25vw, 43px);
 }
 
 .top-ten-heading {
@@ -9307,6 +9308,10 @@ body:has(.watch-page) .bottom-dock {
 }
 
 @media (max-width: 900px) {
+  .top-ten-section {
+    padding-left: 0;
+  }
+
   .top-ten-card-shell.is-featured {
     flex-basis: min(470px, 74vw);
   }
