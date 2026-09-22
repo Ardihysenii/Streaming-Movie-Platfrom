@@ -9,12 +9,6 @@ import type { SearchScope } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
 
 const RECENT_SEARCHES_KEY = "nova-recent-searches";
-const SCOPE_OPTIONS: Array<{ value: SearchScope; label: string }> = [
-  { value: "all", label: "Everything" },
-  { value: "movies", label: "Films" },
-  { value: "series", label: "Series" },
-  { value: "anime", label: "Anime" },
-];
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -52,10 +46,10 @@ export default function SearchPage() {
         .then(setMovies)
         .catch(() => undefined)
         .finally(() => setLoading(false));
-      const typeParam = scope === "all" ? "" : "&type=" + scope;
+      const typeParam = scope === "all" ? "" : `&type=${scope}`;
       const next = query
-        ? "/search/?q=" + encodeURIComponent(query) + typeParam
-        : scope === "all" ? "/search/" : "/search/?type=" + scope;
+        ? `/search/?q=${encodeURIComponent(query)}${typeParam}`
+        : scope === "all" ? "/search/" : `/search/?type=${scope}`;
       window.history.replaceState({}, "", next);
     }, 350);
     return () => {
@@ -92,61 +86,32 @@ export default function SearchPage() {
     }
   }
 
-  const activeScopeLabel = SCOPE_OPTIONS.find((option) => option.value === scope)?.label ?? "Everything";
-
   return (
-    <main className="search-page search-page-movie">
+    <main className="search-page">
       <div className="search-atmosphere" aria-hidden="true">
         <span className="search-frame search-frame-one" />
         <span className="search-frame search-frame-two" />
         <span className="search-orbit search-orbit-one" />
         <span className="search-orbit search-orbit-two" />
       </div>
-
       <header className="search-header">
-        <div className="search-intro">
-          <div className="search-film-index">DISCOVERY / 01</div>
-          <p className="eyebrow">Find your next frame</p>
-          <h1>Find a film<br /><span>worth staying for.</span></h1>
-          <p className="search-lede">Search a growing library of movies, series, and worlds worth getting lost in.</p>
-        </div>
-
+        <p className="eyebrow">Find your next frame</p>
         <form className="search-field" onSubmit={submitSearch} role="search">
           <SearchIcon />
           <input
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by title, character, or mood"
+            placeholder="Search movies or series…"
             aria-label="Search movies and series"
           />
-          <span className="search-count" aria-live="polite">
-            {loading ? <LoadingSpinner label="Searching" /> : movies.length + " titles"}
-          </span>
+          {loading ? <LoadingSpinner label="Searching" /> : <span className="search-count">{movies.length}</span>}
         </form>
-
-        <div className="search-tools">
-          <div className="search-scopes" role="group" aria-label="Search library">
-            {SCOPE_OPTIONS.map((option) => (
-              <button
-                className={scope === option.value ? "is-active" : ""}
-                key={option.value}
-                type="button"
-                aria-pressed={scope === option.value}
-                onClick={() => setScope(option.value)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          <span className="search-scope-note">Browsing {activeScopeLabel}</span>
-        </div>
-
         {!query && recentSearches.length ? (
           <div className="recent-searches" aria-label="Recent searches">
             <div className="recent-searches-heading">
-              <span>Continue exploring</span>
-              <button type="button" onClick={clearRecentSearches}>Clear history</button>
+              <span>Recent searches</span>
+              <button type="button" onClick={clearRecentSearches}>Clear</button>
             </div>
             <div className="recent-searches-list">
               {recentSearches.map((term) => (
@@ -167,20 +132,17 @@ export default function SearchPage() {
           </div>
         ) : null}
       </header>
-
       <section className="search-results">
-        <div className="search-results-heading">
+        <div className="section-heading">
           <div>
-            <p className="eyebrow">{query ? "Your search" : "Curated starting points"}</p>
-            <h2>{query ? "Titles matching “" + query + "”" : "Popular movies & series"}</h2>
+            <p className="eyebrow">{query ? "Search results" : "Starting points"}</p>
+            <h1>{query ? `Titles matching “${query}”` : "Popular movies & series"}</h1>
           </div>
-          <p className="search-results-caption">{loading ? "Scanning the library" : movies.length + " titles in " + activeScopeLabel.toLowerCase()}</p>
         </div>
         {!loading && !movies.length ? (
-          <div className="empty-state search-empty-state">
-            <span className="search-empty-mark">00</span>
+          <div className="empty-state">
             <h2>No matching frames.</h2>
-            <p>Try another title, actor, or a different library filter.</p>
+            <p>Try another title or check the spelling.</p>
           </div>
         ) : (
           <MovieGrid movies={movies} />
