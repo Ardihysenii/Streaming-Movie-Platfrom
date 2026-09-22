@@ -3086,7 +3086,7 @@ body:has(.hero) .header-actions {
 }
 
 .detail-hero.is-cinematic-idle .detail-title-stack {
-  transform: translateY(clamp(42px, 6vh, 72px)) scale(0.96);
+  transform: translateY(clamp(70px, 8vh, 100px)) scale(0.96);
 }
 
 .detail-trailer-audio {
@@ -5647,7 +5647,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .detail-hero.is-cinematic-idle .detail-title-stack {
-    transform: translateY(clamp(34px, 5vh, 56px)) scale(0.94);
+    transform: translateY(clamp(52px, 7vh, 76px)) scale(0.94);
   }
 
   .detail-trailer-audio {
