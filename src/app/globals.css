@@ -8609,19 +8609,51 @@ body:has(.watch-page) .bottom-dock {
     display: flex;
     left: clamp(48px, 6vw, 115px);
     max-width: calc(100% - clamp(112px, 14vw, 224px));
+    overflow: visible;
     position: absolute;
     right: 36px;
     z-index: 4;
   }
 
-  .hero-poster-rail-shell .hero-poster-rail {
-    bottom: auto;
+  .hero-poster-rail-viewport {
     flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-top: 24px;
+    scrollbar-width: none;
+  }
+
+  .hero-poster-rail-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-poster-rail-viewport .hero-poster-rail {
+    align-items: flex-end;
+    bottom: auto;
+    display: flex;
+    gap: 0;
     left: auto;
     max-width: none;
+    overflow: visible;
+    padding: 0 24px 0 clamp(36px, 3.7vw, 70px);
     position: relative;
     right: auto;
-    width: 100%;
+    width: max-content;
+  }
+
+  .hero-poster-rail-shell .rail-arrow {
+    bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    top: 24px;
+    transition: color 180ms ease, opacity 180ms ease;
+  }
+
+  .hero-poster-rail-shell:hover .rail-arrow,
+  .hero-poster-rail-shell:focus-within .rail-arrow {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .hero-poster-rail-shell .hero-poster-card {
