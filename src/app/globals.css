@@ -1082,8 +1082,8 @@ body:has(.hero) .header-actions {
 }
 
 .movie-card:hover {
-  filter: brightness(1.06);
-  transform: translateY(-5px);
+  filter: brightness(1.08);
+  transform: translateY(-4px);
 }
 
 .movie-card.is-ranked {
@@ -1127,10 +1127,12 @@ body:has(.hero) .header-actions {
 .poster-link {
   aspect-ratio: 2 / 3;
   background: var(--surface-raised);
-  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
   display: block;
   overflow: hidden;
   position: relative;
+  transition: border-color 220ms ease, box-shadow 220ms ease;
 }
 
 .poster-loader {
@@ -1173,9 +1175,9 @@ body:has(.hero) .header-actions {
 }
 
 .poster-sheen {
-  background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.56));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.42));
   inset: 0;
-  opacity: 0.4;
+  opacity: 1;
   position: absolute;
   transition: opacity 220ms ease;
 }
@@ -1185,7 +1187,7 @@ body:has(.hero) .header-actions {
 }
 
 .poster-link:hover .poster-sheen {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .watch-progress {
