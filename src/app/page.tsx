@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
-import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail } from "@/components/MovieRail";
+import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching } from "@/lib/storage";
 import { getHomeData, getNetflixSeries } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
@@ -71,6 +71,7 @@ export default function HomePage() {
     <main className="home-page">
       <Hero movies={data.trending} />
       <div className="home-content">
+        <TopTenRail movies={data.trending} />
         <ContinueRail items={continueWatching} onChange={refreshContinue} />
         <ForYouRail movies={forYou} />
         <MoodRail movies={discoveryPool} />
