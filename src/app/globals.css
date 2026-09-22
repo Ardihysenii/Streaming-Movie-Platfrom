@@ -709,8 +709,9 @@ body:has(.hero) .header-actions {
 
 .hero-arrow svg {
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.72));
-  height: 18px;
-  width: 18px;
+  height: 22px;
+  stroke-width: 2.4;
+  width: 22px;
 }
 
 .hero-arrow-left {
