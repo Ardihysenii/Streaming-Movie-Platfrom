@@ -51,6 +51,16 @@ export function Hero({ movies }: { movies: Movie[] }) {
   const isAvailable = isSeries || isReleased(activeMovie);
   const contentId = activeMovie.tmdb_id ?? activeMovie.series_id ?? activeMovie.id;
 
+  const posterRailRef = useRef<HTMLDivElement>(null);
+
+  function scrollPosterRail(direction: -1 | 1) {
+    const rail = posterRailRef.current;
+    if (!rail) return;
+    const distance = direction * Math.max(320, rail.clientWidth * 0.82);
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    rail.scrollBy({ left: distance, behavior });
+  }
+
   return (
     <section
       className="hero"
@@ -135,7 +145,15 @@ export function Hero({ movies }: { movies: Movie[] }) {
         <ArrowRightIcon />
       </button>
 
-      <div className="hero-poster-rail" aria-label="Featured movie selection">
+      <div ref={posterRailRef} className="hero-poster-rail" aria-label="Featured movie selection">
+        <button
+          className="rail-arrow rail-arrow-left"
+          type="button"
+          onClick={() => scrollPosterRail(-1)}
+          aria-label="Scroll featured movies left"
+        >
+          <ArrowLeftIcon />
+        </button>
         {slides.map((movie, index) => (
           <button
             className={`hero-poster-card${index === activeIndex ? " is-active" : ""}`}
@@ -168,6 +186,14 @@ export function Hero({ movies }: { movies: Movie[] }) {
             </span>
           </button>
         ))}
+        <button
+          className="rail-arrow rail-arrow-right"
+          type="button"
+          onClick={() => scrollPosterRail(1)}
+          aria-label="Scroll featured movies right"
+        >
+          <ArrowRightIcon />
+        </button>
       </div>
 
 
