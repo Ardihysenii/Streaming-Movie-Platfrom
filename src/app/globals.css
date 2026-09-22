@@ -859,8 +859,31 @@ body:has(.hero) .header-actions {
   z-index: 6;
 }
 
+.home-page,
 .home-content {
-  margin-top: clamp(40px, 5vw, 76px);
+  background: #000;
+}
+
+.home-content {
+  margin-top: clamp(24px, 1.25vw, 28px);
+  overflow: visible;
+}
+
+.home-content::before {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000 92%);
+  content: "";
+  height: 96px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: -96px;
+  z-index: 0;
+}
+
+.home-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .inner-page-content {
@@ -9178,6 +9201,7 @@ body:has(.watch-page) .bottom-dock {
   aspect-ratio: 2 / 3;
   background: var(--surface-raised);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
   display: block;
   overflow: hidden;
   position: relative;
