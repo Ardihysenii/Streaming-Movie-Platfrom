@@ -51,27 +51,7 @@ export function BottomDock() {
   const { setSettingsOpen } = useNovaSettings();
   const [browseOpen, setBrowseOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(false);
-  const [agentNudgeOpen, setAgentNudgeOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
-
-  useEffect(() => {
-    setAgentNudgeOpen(false);
-    if (pathname.startsWith("/watch")) return undefined;
-    try {
-      if (window.sessionStorage.getItem("nova-agent-nudge-seen")) return undefined;
-    } catch {
-      // Continue without session storage when it is unavailable.
-    }
-    const timer = window.setTimeout(() => {
-      try {
-        window.sessionStorage.setItem("nova-agent-nudge-seen", "true");
-      } catch {
-        // The nudge can still be shown for this page when storage is unavailable.
-      }
-      setAgentNudgeOpen(true);
-    }, 30000);
-    return () => window.clearTimeout(timer);
-  }, [pathname]);
 
   useEffect(() => {
     const type = pathname.startsWith("/series")
@@ -96,11 +76,10 @@ export function BottomDock() {
       ))}
       <div className="agent-launcher">
         <button
-          className={agentOpen ? "is-active" : agentNudgeOpen ? "is-attention" : ""}
+          className={agentOpen ? "is-active" : ""}
           type="button"
           onClick={() => {
             setAgentOpen(true);
-            setAgentNudgeOpen(false);
           }}
           aria-label="Open MONTANA Agent"
           aria-haspopup="dialog"
@@ -109,29 +88,6 @@ export function BottomDock() {
           <AgentIcon />
           <span>Agent</span>
         </button>
-        {agentNudgeOpen && !agentOpen ? (
-          <div className="agent-nudge">
-            <button
-              className="agent-nudge-message"
-              type="button"
-              aria-label="Open MONTANA Agent message"
-              onClick={() => {
-                setAgentOpen(true);
-                setAgentNudgeOpen(false);
-              }}
-            >
-              Can’t decide what to watch? Jarvis can find something for you.
-            </button>
-            <button
-              className="agent-nudge-close"
-              type="button"
-              aria-label="Dismiss Agent message"
-              onClick={() => setAgentNudgeOpen(false)}
-            >
-              ×
-            </button>
-          </div>
-        ) : null}
       </div>
       <button
         className={browseOpen ? "is-active" : ""}
