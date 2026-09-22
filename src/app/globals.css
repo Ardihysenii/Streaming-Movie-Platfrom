@@ -1192,7 +1192,7 @@ body:has(.hero) .header-actions {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  bottom: 0;
+  bottom: 6px;
   height: 4px;
   left: 0;
   overflow: visible;
