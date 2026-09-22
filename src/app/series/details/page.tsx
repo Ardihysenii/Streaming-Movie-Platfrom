@@ -230,13 +230,11 @@ function SeriesDetailsContent() {
                 ) : null}
                 {resumeCandidate ? (
                   <div className="detail-resume-progress" aria-label={`${Math.round(resumePercent)} percent watched, ${formatWatchedMinutes(resumeCandidate.watchedSeconds)} in`}>
-                    <div className="detail-resume-caption">
-                      <span><strong>{Math.round(resumePercent)}%</strong> watched</span>
-                      <span>Continue position</span>
+                    <div className="detail-resume-label-row">
+                      <span className="detail-resume-label"><strong>{Math.round(resumePercent)}%</strong> WATCHED <span aria-hidden="true">·</span> {formatWatchedMinutes(resumeCandidate.watchedSeconds).replace(" min", "")}M IN</span>
                     </div>
-                    <div className="detail-resume-row">
-                      <span className="detail-resume-track"><i style={{ width: `${resumePercent}%` }} /></span>
-                      <span className="detail-resume-time"><strong>{formatWatchedMinutes(resumeCandidate.watchedSeconds).replace(" min", "")}</strong><small>min in</small></span>
+                    <div className="detail-resume-bar">
+                      <i className="detail-resume-fill" style={{ width: `${resumePercent}%` }} />
                     </div>
                   </div>
                 ) : null}
