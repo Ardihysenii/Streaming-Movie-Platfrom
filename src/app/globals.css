@@ -7726,8 +7726,8 @@ body:has(.watch-page) .bottom-dock {
 
 /* Final CineSrc control polish */
 .custom-movie-player-cinesrc .player-progress {
-  accent-color: #e50914 !important;
-  background: linear-gradient(90deg, #e50914 0%, #ff4b2b var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
+  accent-color: #ff003c !important;
+  background: linear-gradient(90deg, #ff003c var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
 }
 
 .custom-movie-player-cinesrc .player-progress::-webkit-slider-thumb,
@@ -7736,7 +7736,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-movie-player-cinesrc .player-progress::-webkit-slider-runnable-track {
-  background: linear-gradient(90deg, #e50914 0%, #ff4b2b var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
+  background: linear-gradient(90deg, #ff003c var(--played), rgba(255, 255, 255, 0.2) var(--played)) !important;
 }
 
 .custom-movie-player-cinesrc .player-progress::-moz-range-track {
@@ -7744,7 +7744,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-movie-player-cinesrc .player-progress::-moz-range-progress {
-  background: #e50914 !important;
+  background: #ff003c !important;
 }
 
 .custom-movie-player-cinesrc .player-quality-button .player-setting-label,
