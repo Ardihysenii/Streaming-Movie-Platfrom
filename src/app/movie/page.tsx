@@ -8,9 +8,14 @@ import { Credits } from "@/components/Credits";
 import { MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
 import { PageLoader } from "@/components/Loading";
 import { WishlistButton } from "@/components/MovieCard";
+import { readContinueWatching } from "@/lib/storage";
 import { MovieRail } from "@/components/MovieRail";
 import { formatRuntime, getMovie, getSimilarMovies, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
-import type { Movie, MovieDetails } from "@/lib/types";
+import type { ContinueWatchingItem, Movie, MovieDetails } from "@/lib/types";
+
+function formatWatchedMinutes(seconds: number) {
+  return `${Math.max(1, Math.floor(seconds / 60))} min`;
+}
 
 export default function MoviePage() {
   return (
@@ -25,6 +30,7 @@ function MoviePageContent() {
   const id = searchParams.get("id")?.trim() ?? "";
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [similar, setSimilar] = useState<Movie[]>([]);
+  const [resumeItem, setResumeItem] = useState<ContinueWatchingItem | null>(null);
   const [missingId, setMissingId] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
   const [trailerMuted, setTrailerMuted] = useState(true);
@@ -41,6 +47,7 @@ function MoviePageContent() {
     setMissingId(false);
     setMovie(null);
     setSimilar([]);
+    setResumeItem(null);
     setIsIdle(false);
     setTrailerMuted(true);
     setTrailerVisible(false);
@@ -49,6 +56,9 @@ function MoviePageContent() {
       .then(([details, related]) => {
         setMovie(details);
         setSimilar(related);
+        const identityIds = new Set([details.id, details.tmdb_id, id].filter(Boolean).map(String));
+        const saved = readContinueWatching().find((item) => (item.media_type ?? "movie") !== "tv" && identityIds.has(String(item.tmdb_id ?? item.id)));
+        setResumeItem(saved ?? null);
       })
       .catch(() => undefined);
     return () => controller.abort();
@@ -139,6 +149,12 @@ function MoviePageContent() {
   const trailerUrl = movie.trailer_key
     ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(movie.trailer_key)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(movie.trailer_key)}&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&enablejsapi=1`
     : null;
+  const resumeCandidate = resumeItem && resumeItem.watchedSeconds < Math.max(60, resumeItem.estimatedDurationSeconds - 15)
+    ? resumeItem
+    : null;
+  const resumePercent = resumeCandidate
+    ? Math.min(100, Math.max(2, (resumeCandidate.watchedSeconds / Math.max(1, resumeCandidate.estimatedDurationSeconds)) * 100))
+    : 0;
 
   return (
     <main className="detail-page">
@@ -209,16 +225,22 @@ function MoviePageContent() {
                 </div>
                 <p className="detail-overview">{movie.overview}</p>
               </div>
-              <div className="detail-actions">
+              <div className={`detail-actions${resumeCandidate && isReleased(movie) ? " has-resume" : ""}`}>
                 {isReleased(movie) ? (
                   <Link className="primary-button" href={`/watch/?id=${movie.id}`}>
-                    <PlayIcon /> Watch now
+                    <PlayIcon /> {resumeCandidate ? "Continue" : "Watch now"}
                   </Link>
                 ) : (
                   <button className="primary-button is-coming-soon" type="button" disabled>
                     Coming Soon
                   </button>
                 )}
+                {resumeCandidate ? (
+                  <div className="detail-resume-progress" aria-label={`${formatWatchedMinutes(resumeCandidate.watchedSeconds)} watched`}>
+                    <span className="detail-resume-track"><i style={{ width: `${resumePercent}%` }} /></span>
+                    <span>{formatWatchedMinutes(resumeCandidate.watchedSeconds)}</span>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
