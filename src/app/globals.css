@@ -9437,15 +9437,15 @@ body:has(.watch-page) .bottom-dock {
 .custom-movie-player-cinesrc .player-progress {
   -webkit-appearance: none !important;
   appearance: none !important;
-  accent-color: #ff003c !important;
-  background: linear-gradient(to right, #ff003c 0 var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
+  accent-color: #e50914 !important;
+  background: linear-gradient(to right, #e50914 0 var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
   box-shadow: none !important;
   filter: none !important;
 }
 
 .custom-movie-player-cinesrc .player-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none !important;
-  background: linear-gradient(to right, #ff003c 0 var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
+  background: linear-gradient(to right, #e50914 0 var(--played), rgba(255, 255, 255, 0.2) var(--played) 100%) !important;
   box-shadow: none !important;
   filter: none !important;
 }
@@ -9457,7 +9457,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .custom-movie-player-cinesrc .player-progress::-moz-range-progress {
-  background: #ff003c !important;
+  background: #e50914 !important;
   box-shadow: none !important;
   filter: none !important;
 }
