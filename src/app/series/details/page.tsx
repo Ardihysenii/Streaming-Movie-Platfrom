@@ -9,9 +9,14 @@ import { EpisodeBrowser } from "@/components/EpisodeBrowser";
 import { MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
 import { PageLoader } from "@/components/Loading";
 import { WishlistButton } from "@/components/MovieCard";
+import { readContinueWatching } from "@/lib/storage";
 import { MovieRail } from "@/components/MovieRail";
 import { formatRuntime, getSeries, getSimilarSeries, imageUrl, releaseYear } from "@/lib/tmdb";
-import type { Movie, SeriesDetails } from "@/lib/types";
+import type { ContinueWatchingItem, Movie, SeriesDetails } from "@/lib/types";
+
+function formatWatchedMinutes(seconds: number) {
+  return `${Math.max(1, Math.floor(seconds / 60))} min`;
+}
 
 export default function SeriesDetailsPage() {
   return (
@@ -26,6 +31,7 @@ function SeriesDetailsContent() {
   const id = searchParams.get("id")?.trim() ?? "";
   const [series, setSeries] = useState<SeriesDetails | null>(null);
   const [similar, setSimilar] = useState<Movie[]>([]);
+  const [resumeItem, setResumeItem] = useState<ContinueWatchingItem | null>(null);
   const [missingId, setMissingId] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
@@ -44,6 +50,7 @@ function SeriesDetailsContent() {
     setLoadFailed(false);
     setSeries(null);
     setSimilar([]);
+    setResumeItem(null);
     setIsIdle(false);
     setTrailerMuted(true);
     setTrailerVisible(false);
@@ -52,6 +59,8 @@ function SeriesDetailsContent() {
       .then(([details, related]) => {
         setSeries(details);
         setSimilar(related);
+        const saved = readContinueWatching().find((item) => item.media_type === "tv" && String(item.series_id ?? "") === String(details.id));
+        setResumeItem(saved ?? null);
       })
       .catch((error) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) setLoadFailed(true);
@@ -133,6 +142,15 @@ function SeriesDetailsContent() {
   const firstEpisodeUrl = firstSeason
     ? `/watch/?id=${series.id}&type=tv&season=${firstSeason.season_number}&episode=1`
     : null;
+  const resumeCandidate = resumeItem && resumeItem.watchedSeconds < Math.max(60, resumeItem.estimatedDurationSeconds - 15)
+    ? resumeItem
+    : null;
+  const resumeEpisodeUrl = resumeCandidate
+    ? `/watch/?id=${resumeCandidate.series_id ?? series.id}&type=tv&season=${resumeCandidate.season_number}&episode=${resumeCandidate.episode_number}`
+    : null;
+  const resumePercent = resumeCandidate
+    ? Math.min(100, Math.max(2, (resumeCandidate.watchedSeconds / Math.max(1, resumeCandidate.estimatedDurationSeconds)) * 100))
+    : 0;
   const trailerUrl = series.trailer_key
     ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(series.trailer_key)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(series.trailer_key)}&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&enablejsapi=1`
     : null;
@@ -200,11 +218,21 @@ function SeriesDetailsContent() {
                 </div>
                 <p className="detail-overview">{series.overview}</p>
               </div>
-              <div className="detail-actions">
-                {firstEpisodeUrl ? (
+              <div className={`detail-actions${resumeCandidate && resumeEpisodeUrl ? " has-resume" : ""}`}>
+                {resumeEpisodeUrl ? (
+                  <Link className="primary-button" href={resumeEpisodeUrl}>
+                    <PlayIcon /> Continue
+                  </Link>
+                ) : firstEpisodeUrl ? (
                   <Link className="primary-button" href={firstEpisodeUrl}>
                     <PlayIcon /> Start series
                   </Link>
+                ) : null}
+                {resumeCandidate ? (
+                  <div className="detail-resume-progress" aria-label={`${formatWatchedMinutes(resumeCandidate.watchedSeconds)} watched`}>
+                    <span className="detail-resume-track"><i style={{ width: `${resumePercent}%` }} /></span>
+                    <span>{formatWatchedMinutes(resumeCandidate.watchedSeconds)}</span>
+                  </div>
                 ) : null}
               </div>
             </div>
