@@ -236,9 +236,15 @@ function MoviePageContent() {
                   </button>
                 )}
                 {resumeCandidate ? (
-                  <div className="detail-resume-progress" aria-label={`${formatWatchedMinutes(resumeCandidate.watchedSeconds)} watched`}>
-                    <span className="detail-resume-track"><i style={{ width: `${resumePercent}%` }} /></span>
-                    <span>{formatWatchedMinutes(resumeCandidate.watchedSeconds)}</span>
+                  <div className="detail-resume-progress" aria-label={`${Math.round(resumePercent)} percent watched, ${formatWatchedMinutes(resumeCandidate.watchedSeconds)} in`}>
+                    <div className="detail-resume-caption">
+                      <span><strong>{Math.round(resumePercent)}%</strong> watched</span>
+                      <span>Continue position</span>
+                    </div>
+                    <div className="detail-resume-row">
+                      <span className="detail-resume-track"><i style={{ width: `${resumePercent}%` }} /></span>
+                      <span className="detail-resume-time"><strong>{formatWatchedMinutes(resumeCandidate.watchedSeconds).replace(" min", "")}</strong><small>min in</small></span>
+                    </div>
                   </div>
                 ) : null}
               </div>
