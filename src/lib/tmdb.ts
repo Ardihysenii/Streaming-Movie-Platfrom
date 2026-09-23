@@ -469,36 +469,24 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
       .filter((movie) => movie.backdrop_path && movie.tmdb_id !== 1506560)
       .slice(0, 10);
     const heroMoviesWithLogos = await Promise.all(heroMovies.map((movie) => withTmdbLogo(movie, signal)));
+    const [trendingSeriesWithLogos, airingSeriesWithLogos, topRatedSeriesWithLogos] = await Promise.all([
+      Promise.all(trendingSeries.results.map(toSeries).filter((series) => series.poster_path).map((series) => withTmdbLogo(series, signal))),
+      Promise.all(airingSeries.results.map(toSeries).filter((series) => series.poster_path).map((series) => withTmdbLogo(series, signal))),
+      Promise.all(topRatedSeries.results.map(toSeries).filter((series) => series.poster_path).map((series) => withTmdbLogo(series, signal))),
+    ]);
     return organizeHomeData({
       trending: heroMoviesWithLogos.map(applyTitleLogoOverride),
       nowPlaying: nowPlaying.results.map(toMovie),
       topRated: topRated.results.map(toMovie),
       action: action.results.map(toMovie),
-      trendingSeries: trendingSeries.results.map(toSeries).filter((series) => series.poster_path),
-      airingSeries: airingSeries.results.map(toSeries).filter((series) => series.poster_path),
-      topRatedSeries: topRatedSeries.results.map(toSeries).filter((series) => series.poster_path),
+      trendingSeries: trendingSeriesWithLogos,
+      airingSeries: airingSeriesWithLogos,
+      topRatedSeries: topRatedSeriesWithLogos,
       usingFallback: false,
     });
   } catch (error) {
     if (isAbortError(error)) throw error;
     return getCinemetaHomeData(signal);
-  }
-}
-
-export async function getTrailer(
-  id: string | number,
-  mediaType: "movie" | "tv" = "movie",
-  signal?: AbortSignal,
-) {
-  if (!TMDB_API_KEY) return null;
-  try {
-    const details = mediaType === "tv"
-      ? await loadSeriesDetails(id, signal)
-      : await loadDetails(id, signal);
-    return details.trailer_key ?? null;
-  } catch (error) {
-    if (isAbortError(error)) throw error;
-    return null;
   }
 }
 
