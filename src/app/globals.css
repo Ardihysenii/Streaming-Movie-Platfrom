@@ -9499,17 +9499,46 @@ body:has(.watch-page) .bottom-dock {
 .top-ten-featured-description {
   bottom: 54px;
   color: rgba(255, 255, 255, 0.84);
-  display: -webkit-box;
+  display: flex;
+  flex-direction: column;
   font-size: clamp(0.7rem, 0.8vw, 0.82rem);
+  gap: 7px;
   left: 18px;
   line-height: 1.4;
   max-width: min(72%, 390px);
   overflow: hidden;
   position: absolute;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.82);
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
   z-index: 2;
+}
+
+.top-ten-featured-title {
+  color: #ffffff;
+  display: block;
+  font-size: clamp(1.25rem, 2.2vw, 2.1rem);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+  max-width: 74%;
+  text-transform: uppercase;
+}
+
+.top-ten-featured-title img {
+  display: block;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.72));
+  height: auto;
+  max-height: 52px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left bottom;
+  width: auto;
+}
+
+.top-ten-featured-overview {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .top-ten-card-shell.is-featured {
