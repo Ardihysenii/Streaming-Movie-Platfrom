@@ -139,14 +139,16 @@ function SeriesDetailsContent() {
   const firstSeason = series.seasons.find((season) => season.season_number === 1)
     ?? series.seasons.find((season) => season.season_number > 0)
     ?? series.seasons[0];
+  const watchTmdbId = series.tmdb_id ?? series.id;
+  const watchImdbId = series.id;
   const firstEpisodeUrl = firstSeason
-    ? `/watch/?id=${series.id}&type=tv&season=${firstSeason.season_number}&episode=1`
+    ? `/watch/?id=${encodeURIComponent(String(watchTmdbId))}&imdbId=${encodeURIComponent(String(watchImdbId))}&type=tv&season=${firstSeason.season_number}&episode=1`
     : null;
   const resumeCandidate = resumeItem && resumeItem.watchedSeconds < Math.max(60, resumeItem.estimatedDurationSeconds - 15)
     ? resumeItem
     : null;
   const resumeEpisodeUrl = resumeCandidate
-    ? `/watch/?id=${resumeCandidate.series_id ?? series.id}&type=tv&season=${resumeCandidate.season_number}&episode=${resumeCandidate.episode_number}`
+    ? `/watch/?id=${encodeURIComponent(String(resumeCandidate.tmdb_id ?? watchTmdbId))}&imdbId=${encodeURIComponent(String(resumeCandidate.series_id ?? watchImdbId))}&type=tv&season=${resumeCandidate.season_number}&episode=${resumeCandidate.episode_number}`
     : null;
   const resumePercent = resumeCandidate
     ? Math.min(100, Math.max(2, (resumeCandidate.watchedSeconds / Math.max(1, resumeCandidate.estimatedDurationSeconds)) * 100))
