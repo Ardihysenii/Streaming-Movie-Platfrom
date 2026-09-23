@@ -309,7 +309,15 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
         <div className="top-ten-heading-text">
           <div className="top-ten-title-row">
             <h2>Top 10 on</h2>
-            <span className="top-ten-brand">MONTANA</span>
+            <span className="top-ten-brand wordmark-letters" aria-label="MONTANA">
+              <span className="wordmark-letter">M</span>
+              <span className="wordmark-letter">O</span>
+              <span className="wordmark-letter">N</span>
+              <span className="wordmark-letter">T</span>
+              <span className="wordmark-letter">A</span>
+              <span className="wordmark-letter">N</span>
+              <span className="wordmark-letter">A</span>
+            </span>
           </div>
           <p>The most watched titles right now</p>
         </div>
