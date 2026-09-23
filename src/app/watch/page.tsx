@@ -16,6 +16,7 @@ import type { Movie, MovieDetails, SeriesDetails } from "@/lib/types";
 export default function WatchPage() {
   const searchParams = useSearchParams();
   const queryId = searchParams.get("id")?.trim() ?? "";
+  const queryImdbId = searchParams.get("imdbId")?.trim() ?? "";
   const queryType = searchParams.get("type") === "tv" ? "tv" : "movie";
   const querySeason = Number(searchParams.get("season"));
   const queryEpisode = Number(searchParams.get("episode"));
@@ -57,13 +58,13 @@ export default function WatchPage() {
 
     detailsRequest
       .then((details) => {
-        const progressId = type === "tv" ? String(id) + ":s" + season + "e" + episode : id;
+        const progressId = type === "tv" ? String(queryImdbId || id) + ":s" + season + "e" + episode : id;
         // TMDB detail records use the IMDb ID as `id`, while cards and watch
         // URLs commonly use the numeric TMDB ID. Check both aliases so a
         // movie always resumes the exact position that was saved for it.
         const progressIds: Array<string | number> = type === "tv"
           ? [progressId]
-          : [details.id, details.tmdb_id, progressId].filter(
+          : [details.id, details.tmdb_id, queryImdbId, progressId].filter(
               (value, index, values): value is string | number => (
                 value !== undefined && values.indexOf(value) === index
               ),
@@ -94,7 +95,7 @@ export default function WatchPage() {
       .catch(() => undefined);
 
     return () => controller.abort();
-  }, [queryEpisode, queryId, querySeason, queryType]);
+  }, [queryEpisode, queryId, queryImdbId, querySeason, queryType]);
 
   useEffect(() => {
     if (!continueItem) return;
