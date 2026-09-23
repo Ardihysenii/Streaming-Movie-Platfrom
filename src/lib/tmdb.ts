@@ -485,6 +485,23 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
   }
 }
 
+export async function getTrailer(
+  id: string | number,
+  mediaType: "movie" | "tv" = "movie",
+  signal?: AbortSignal,
+) {
+  if (!TMDB_API_KEY) return null;
+  try {
+    const details = mediaType === "tv"
+      ? await loadSeriesDetails(id, signal)
+      : await loadDetails(id, signal);
+    return details.trailer_key ?? null;
+  } catch (error) {
+    if (isAbortError(error)) throw error;
+    return null;
+  }
+}
+
 export async function getMovie(id: string | number, signal?: AbortSignal) {
   if (!TMDB_API_KEY) return getCinemetaMovie(id, signal);
   try {
