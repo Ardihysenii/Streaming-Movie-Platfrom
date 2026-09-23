@@ -9515,11 +9515,11 @@ body:has(.watch-page) .bottom-dock {
 .top-ten-featured-title {
   color: #ffffff;
   display: block;
-  font-size: clamp(1.25rem, 2.2vw, 2.1rem);
+  font-size: clamp(1.05rem, 1.7vw, 1.65rem);
   font-weight: 850;
   letter-spacing: -0.045em;
   line-height: 0.96;
-  max-width: 74%;
+  max-width: 62%;
   text-transform: uppercase;
 }
 
@@ -9527,7 +9527,7 @@ body:has(.watch-page) .bottom-dock {
   display: block;
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.72));
   height: auto;
-  max-height: 52px;
+  max-height: 40px;
   max-width: 100%;
   object-fit: contain;
   object-position: left bottom;
