@@ -325,7 +325,7 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                     {trailerKey ? (
                       <iframe
                         ref={trailerRef}
-                        src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(trailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"}
+                        src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(trailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&showinfo=0&enablejsapi=1"}
                         title={movie.title + " trailer"}
                         allow="autoplay; encrypted-media; picture-in-picture"
                       />
