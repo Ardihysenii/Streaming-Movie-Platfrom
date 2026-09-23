@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from "./Icons";
+import { ArrowLeftIcon, ArrowRightIcon, CloseIcon, PlayIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage } from "./MovieCard";
-import { imageUrl, releaseYear } from "@/lib/tmdb";
+import { getMovie, imageUrl, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
@@ -233,6 +233,53 @@ function RailScroller({ children, label, itemCount }: { children: ReactNode; lab
 
 export function TopTenRail({ movies }: { movies: Movie[] }) {
   const topTen = movies.slice(0, 10);
+  const [trailerMovie, setTrailerMovie] = useState<Movie | null>(null);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
+  const [trailerError, setTrailerError] = useState(false);
+  const trailerRequestRef = useRef(0);
+
+  useEffect(() => {
+    if (!trailerMovie) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setTrailerMovie(null);
+        setTrailerKey(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [trailerMovie]);
+
+  const closeTrailer = () => {
+    trailerRequestRef.current += 1;
+    setTrailerMovie(null);
+    setTrailerKey(null);
+    setTrailerLoading(false);
+    setTrailerError(false);
+  };
+
+  const openTrailer = async (movie: Movie) => {
+    const requestId = trailerRequestRef.current + 1;
+    trailerRequestRef.current = requestId;
+    setTrailerMovie(movie);
+    setTrailerKey(movie.trailer_key ?? null);
+    setTrailerError(false);
+    if (movie.trailer_key) return;
+
+    setTrailerLoading(true);
+    try {
+      const details = await getMovie(movie.tmdb_id ?? movie.id);
+      if (trailerRequestRef.current !== requestId) return;
+      setTrailerKey(details.trailer_key ?? null);
+      setTrailerError(!details.trailer_key);
+    } catch {
+      if (trailerRequestRef.current === requestId) setTrailerError(true);
+    } finally {
+      if (trailerRequestRef.current === requestId) setTrailerLoading(false);
+    }
+  };
+
   if (!topTen.length) return null;
 
   return (
@@ -268,8 +315,24 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                     sizes={isFeatured ? "(max-width: 680px) 82vw, 530px" : "200px"}
                   />
                   <span className="top-ten-hover-overlay" aria-hidden="true" />
+                  {isFeatured ? (
+                    <span className="top-ten-featured-description">
+                      {movie.overview}
+                    </span>
+                  ) : null}
                 </span>
               </Link>
+              {isFeatured ? (
+                <button
+                  className="top-ten-trailer-button"
+                  type="button"
+                  onClick={() => void openTrailer(movie)}
+                  disabled={trailerLoading && trailerMovie?.id === movie.id}
+                >
+                  <PlayIcon />
+                  {trailerLoading && trailerMovie?.id === movie.id ? "Loading trailer" : "See trailer"}
+                </button>
+              ) : null}
               <div className="top-ten-meta">
                 <h3>{movie.title}</h3>
                 <p>{movie.vote_average.toFixed(1)} <span aria-hidden="true">·</span> {releaseYear(movie)} <span aria-hidden="true">·</span> {movie.media_type === "tv" ? "TV Show" : "Movie"}</p>
@@ -278,6 +341,34 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
           );
         })}
       </RailScroller>
+      {trailerMovie ? (
+        <div className="top-ten-trailer-modal" role="dialog" aria-modal="true" aria-label={trailerMovie.title + " trailer"}>
+          <button className="top-ten-trailer-backdrop" type="button" onClick={closeTrailer} aria-label="Close trailer" />
+          <div className="top-ten-trailer-dialog">
+            <div className="top-ten-trailer-dialog-header">
+              <div>
+                <p className="eyebrow">Top 01 trailer</p>
+                <h3>{trailerMovie.title}</h3>
+              </div>
+              <button className="top-ten-trailer-close" type="button" onClick={closeTrailer} aria-label="Close trailer">
+                <CloseIcon />
+              </button>
+            </div>
+            {trailerKey ? (
+              <div className="top-ten-trailer-frame">
+                <iframe
+                  src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(trailerKey) + "?autoplay=1&rel=0&modestbranding=1&playsinline=1"}
+                  title={trailerMovie.title + " trailer"}
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <p className="top-ten-trailer-status">{trailerLoading ? "Loading trailer…" : trailerError ? "No trailer is available for this title." : "Loading trailer…"}</p>
+            )}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
