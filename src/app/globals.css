@@ -9497,12 +9497,12 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .top-ten-featured-description {
-  bottom: 72px;
+  bottom: 62px;
   color: rgba(255, 255, 255, 0.84);
   display: flex;
   flex-direction: column;
   font-size: clamp(0.7rem, 0.8vw, 0.82rem);
-  gap: 7px;
+  gap: 12px;
   left: 18px;
   line-height: 1.4;
   max-width: min(72%, 390px);
@@ -9671,7 +9671,7 @@ body:has(.watch-page) .bottom-dock {
 
 @media (max-width: 680px) {
   .top-ten-featured-description {
-    bottom: 66px;
+    bottom: 58px;
     left: 14px;
     max-width: 82%;
   }
