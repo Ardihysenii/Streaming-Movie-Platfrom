@@ -20,7 +20,30 @@ export default function WatchPage() {
   const queryType = searchParams.get("type") === "tv" ? "tv" : "movie";
   const querySeason = Number(searchParams.get("season"));
   const queryEpisode = Number(searchParams.get("episode"));
-  const [movie, setMovie] = useState<MovieDetails | SeriesDetails | null>(null);
+  const playerSeed: MovieDetails | SeriesDetails | null = queryId && (queryType !== "tv" || (querySeason && queryEpisode))
+    ? ({
+        id: queryImdbId || queryId,
+        tmdb_id: /^\d+$/.test(queryId) ? Number(queryId) : undefined,
+        media_type: queryType,
+        title: queryType === "tv" ? "Starting your episode…" : "Starting your movie…",
+        overview: "",
+        poster_path: null,
+        backdrop_path: null,
+        release_date: "",
+        vote_average: 0,
+        vote_count: 0,
+        popularity: 0,
+        genre_ids: [],
+        runtime: 0,
+        genres: [],
+        cast: [],
+        ...(queryType === "tv"
+          ? { creators: [], seasons: [], number_of_seasons: 0, number_of_episodes: 0 }
+          : { directors: [] }),
+      } as MovieDetails | SeriesDetails)
+    : null;
+  const [movie, setMovie] = useState<MovieDetails | SeriesDetails | null>(playerSeed);
+  const [detailsLoaded, setDetailsLoaded] = useState(false);
   const [similar, setSimilar] = useState<Movie[]>([]);
   const [missingId, setMissingId] = useState(false);
   const [isSeries, setIsSeries] = useState(false);
@@ -38,7 +61,8 @@ export default function WatchPage() {
     const season = querySeason;
     const episode = queryEpisode;
     setMissingId(false);
-    setMovie(null);
+    setMovie(playerSeed);
+    setDetailsLoaded(false);
     setSimilar([]);
     setResumeAt(0);
     setContinueItem(null);
@@ -74,6 +98,7 @@ export default function WatchPage() {
           0,
         );
         setMovie(details);
+        setDetailsLoaded(true);
         const continueItem: Movie = type === "tv"
           ? {
               ...details,
@@ -169,7 +194,7 @@ export default function WatchPage() {
 
       <section className="player-shell provider-player-shell">
         <CustomMoviePlayer
-          key={`${movie.id}:${seasonNumber ?? ""}:${episodeNumber ?? ""}`}
+          key={`${queryId}:${seasonNumber ?? ""}:${episodeNumber ?? ""}`}
           tmdbId={movie.tmdb_id ?? movie.id}
           imdbId={movie.id}
           mediaType={isSeries ? "tv" : "movie"}
@@ -216,7 +241,7 @@ export default function WatchPage() {
       </div>
 
       <div className="inner-page-content">
-        {isSeries && "seasons" in movie ? (
+        {detailsLoaded && isSeries && "seasons" in movie ? (
           <EpisodeBrowser series={movie} initialSeasonNumber={seasonNumber} />
         ) : null}
         <MovieRail
