@@ -317,7 +317,18 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                   <span className="top-ten-hover-overlay" aria-hidden="true" />
                   {isFeatured ? (
                     <span className="top-ten-featured-description">
-                      {movie.overview}
+                      <span className="top-ten-featured-title">
+                        {movie.logo_url ? (
+                          <Image
+                            src={movie.logo_url}
+                            alt={movie.title}
+                            width={movie.logo_width ?? 900}
+                            height={movie.logo_height ?? 320}
+                            sizes="(max-width: 680px) 68vw, 300px"
+                          />
+                        ) : movie.title}
+                      </span>
+                      <span className="top-ten-featured-overview">{movie.overview}</span>
                     </span>
                   ) : null}
                 </span>
