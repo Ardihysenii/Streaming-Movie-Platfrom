@@ -9,6 +9,11 @@ type TitleLogoOverride = {
 // A small override table covers titles whose catalog provider has no usable
 // transparent logo. The key may be either the TMDB id or the IMDb id.
 const TITLE_LOGO_OVERRIDES: Record<string, TitleLogoOverride> = {
+  "247718": {
+    url: "https://image.tmdb.org/t/p/original/a9YLMuK3MoQr1Au5SJPVp4dMn3o.png",
+    width: 4318,
+    height: 820,
+  },
   "1548004": {
     url: "https://image.tmdb.org/t/p/original/hdai3rsQ9R13gyV62nGYOjlsGC9.png",
     width: 1200,
