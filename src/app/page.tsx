@@ -72,6 +72,12 @@ export default function HomePage() {
           .slice(0, 9),
       ]
     : data.trending.slice(0, 10);
+  const heroMovies = mobLand
+    ? [
+        mobLand,
+        ...data.trending.filter((movie) => movie.title.trim().toLowerCase() !== "mobland"),
+      ].slice(0, 10)
+    : data.trending;
   const discoveryPool = uniqueMovies(
     data.trending,
     data.nowPlaying,
@@ -84,7 +90,7 @@ export default function HomePage() {
 
   return (
     <main className="home-page">
-      <Hero movies={data.trending} />
+      <Hero movies={heroMovies} />
       <div className="home-content">
         <TopTenRail movies={topTenMovies} />
         <ContinueRail items={continueWatching} onChange={refreshContinue} />
