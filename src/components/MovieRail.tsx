@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, CloseIcon, PlayIcon } from "./Icons";
+import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, VolumeIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage } from "./MovieCard";
 import { getMovie, imageUrl, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
@@ -237,19 +237,9 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [trailerLoading, setTrailerLoading] = useState(false);
   const [trailerError, setTrailerError] = useState(false);
+  const [trailerMuted, setTrailerMuted] = useState(true);
+  const trailerRef = useRef<HTMLIFrameElement>(null);
   const trailerRequestRef = useRef(0);
-
-  useEffect(() => {
-    if (!trailerMovie) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTrailerMovie(null);
-        setTrailerKey(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [trailerMovie]);
 
   const closeTrailer = () => {
     trailerRequestRef.current += 1;
@@ -257,6 +247,27 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
     setTrailerKey(null);
     setTrailerLoading(false);
     setTrailerError(false);
+    setTrailerMuted(true);
+  };
+
+  useEffect(() => {
+    if (!trailerMovie) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeTrailer();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [trailerMovie]);
+
+  const toggleTrailerSound = () => {
+    const frame = trailerRef.current?.contentWindow;
+    if (!frame) return;
+    const nextMuted = !trailerMuted;
+    frame.postMessage(
+      JSON.stringify({ event: "command", func: nextMuted ? "mute" : "unMute", args: [] }),
+      "https://www.youtube-nocookie.com",
+    );
+    setTrailerMuted(nextMuted);
   };
 
   const openTrailer = async (movie: Movie) => {
@@ -264,6 +275,7 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
     trailerRequestRef.current = requestId;
     setTrailerMovie(movie);
     setTrailerKey(movie.trailer_key ?? null);
+    setTrailerMuted(true);
     setTrailerError(false);
     if (movie.trailer_key) return;
 
@@ -297,43 +309,81 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
       <RailScroller label="Top 10 on MONTANA" itemCount={topTen.length}>
         {topTen.map((movie, index) => {
           const isFeatured = index === 0;
+          const trailerActive = isFeatured && trailerMovie?.id === movie.id;
           const href = movie.media_type === "tv"
-            ? `/series/details/?id=${movie.tmdb_id ?? movie.id}`
-            : `/movie/?id=${movie.tmdb_id ?? movie.id}`;
+            ? "/series/details/?id=" + (movie.tmdb_id ?? movie.id)
+            : "/movie/?id=" + (movie.tmdb_id ?? movie.id);
           return (
-            <article className={`top-ten-card-shell${isFeatured ? " is-featured" : ""}`} key={movieKey(movie, index)}>
-              <Link className="top-ten-card" href={href} aria-label={`Top ${index + 1}: ${movie.title}`}>
-                <span className="top-ten-badge" aria-hidden="true">
-                  <small>TOP</small>
-                  <strong>{String(index + 1).padStart(2, "0")}</strong>
-                </span>
-                <span className="top-ten-image">
-                  <Image
-                    src={imageUrl(isFeatured ? movie.backdrop_path ?? movie.poster_path : movie.poster_path, isFeatured ? "w780" : "w500")}
-                    alt={`${movie.title} artwork`}
-                    fill
-                    sizes={isFeatured ? "(max-width: 680px) 82vw, 530px" : "200px"}
-                  />
-                  <span className="top-ten-hover-overlay" aria-hidden="true" />
-                  {isFeatured ? (
-                    <span className="top-ten-featured-description">
-                      <span className="top-ten-featured-title">
-                        {movie.logo_url ? (
-                          <Image
-                            src={movie.logo_url}
-                            alt={movie.title}
-                            width={movie.logo_width ?? 900}
-                            height={movie.logo_height ?? 320}
-                            sizes="(max-width: 680px) 68vw, 300px"
-                          />
-                        ) : movie.title}
+            <article className={"top-ten-card-shell" + (isFeatured ? " is-featured" : "")} key={movieKey(movie, index)}>
+              {trailerActive ? (
+                <div className="top-ten-card top-ten-card-trailer" aria-label={movie.title + " trailer"}>
+                  <span className="top-ten-badge" aria-hidden="true">
+                    <small>TOP</small>
+                    <strong>{String(index + 1).padStart(2, "0")}</strong>
+                  </span>
+                  <span className="top-ten-trailer-media">
+                    {trailerKey ? (
+                      <iframe
+                        ref={trailerRef}
+                        src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(trailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"}
+                        title={movie.title + " trailer"}
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                      />
+                    ) : (
+                      <span className="top-ten-trailer-loading">
+                        {trailerLoading ? "Loading trailer…" : trailerError ? "No trailer available" : "Loading trailer…"}
                       </span>
-                      <span className="top-ten-featured-overview">{movie.overview}</span>
-                    </span>
+                    )}
+                  </span>
+                  <button className="top-ten-trailer-back" type="button" onClick={closeTrailer} aria-label="Back to featured card">
+                    <ArrowLeftIcon />
+                  </button>
+                  {trailerKey ? (
+                    <button
+                      className="top-ten-trailer-volume"
+                      type="button"
+                      onClick={toggleTrailerSound}
+                      aria-label={trailerMuted ? "Unmute trailer" : "Mute trailer"}
+                      title={trailerMuted ? "Unmute trailer" : "Mute trailer"}
+                    >
+                      {trailerMuted ? <MutedIcon /> : <VolumeIcon />}
+                    </button>
                   ) : null}
-                </span>
-              </Link>
-              {isFeatured ? (
+                </div>
+              ) : (
+                <Link className="top-ten-card" href={href} aria-label={"Top " + (index + 1) + ": " + movie.title}>
+                  <span className="top-ten-badge" aria-hidden="true">
+                    <small>TOP</small>
+                    <strong>{String(index + 1).padStart(2, "0")}</strong>
+                  </span>
+                  <span className="top-ten-image">
+                    <Image
+                      src={imageUrl(isFeatured ? movie.backdrop_path ?? movie.poster_path : movie.poster_path, isFeatured ? "w780" : "w500")}
+                      alt={movie.title + " artwork"}
+                      fill
+                      sizes={isFeatured ? "(max-width: 680px) 82vw, 530px" : "200px"}
+                    />
+                    <span className="top-ten-hover-overlay" aria-hidden="true" />
+                    {isFeatured ? (
+                      <span className="top-ten-featured-description">
+                        <span className="top-ten-featured-title">
+                          {movie.logo_url ? (
+                            <Image
+                              src={movie.logo_url}
+                              alt={movie.title}
+                              width={movie.logo_width ?? 900}
+                              height={movie.logo_height ?? 320}
+                              sizes="(max-width: 680px) 68vw, 300px"
+                            />
+                          ) : movie.title}
+                        </span>
+                        <span className="top-ten-featured-overview">{movie.overview}</span>
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
+              )}
+              {isFeatured && !trailerActive ? (
                 <button
                   className="top-ten-trailer-button"
                   type="button"
@@ -352,34 +402,6 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
           );
         })}
       </RailScroller>
-      {trailerMovie ? (
-        <div className="top-ten-trailer-modal" role="dialog" aria-modal="true" aria-label={trailerMovie.title + " trailer"}>
-          <button className="top-ten-trailer-backdrop" type="button" onClick={closeTrailer} aria-label="Close trailer" />
-          <div className="top-ten-trailer-dialog">
-            <div className="top-ten-trailer-dialog-header">
-              <div>
-                <p className="eyebrow">Top 01 trailer</p>
-                <h3>{trailerMovie.title}</h3>
-              </div>
-              <button className="top-ten-trailer-close" type="button" onClick={closeTrailer} aria-label="Close trailer">
-                <CloseIcon />
-              </button>
-            </div>
-            {trailerKey ? (
-              <div className="top-ten-trailer-frame">
-                <iframe
-                  src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(trailerKey) + "?autoplay=1&rel=0&modestbranding=1&playsinline=1"}
-                  title={trailerMovie.title + " trailer"}
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <p className="top-ten-trailer-status">{trailerLoading ? "Loading trailer…" : trailerError ? "No trailer is available for this title." : "Loading trailer…"}</p>
-            )}
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
