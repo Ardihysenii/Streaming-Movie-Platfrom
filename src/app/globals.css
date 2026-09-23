@@ -9497,7 +9497,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .top-ten-featured-description {
-  bottom: 54px;
+  bottom: 72px;
   color: rgba(255, 255, 255, 0.84);
   display: flex;
   flex-direction: column;
@@ -9671,7 +9671,7 @@ body:has(.watch-page) .bottom-dock {
 
 @media (max-width: 680px) {
   .top-ten-featured-description {
-    bottom: 50px;
+    bottom: 66px;
     left: 14px;
     max-width: 82%;
   }
