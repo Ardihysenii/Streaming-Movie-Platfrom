@@ -9312,11 +9312,15 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .top-ten-brand {
+  align-items: flex-start;
   color: var(--accent);
+  display: inline-flex;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: clamp(1.2rem, 1.7vw, 1.75rem);
-  font-weight: 850;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
   text-transform: uppercase;
 }
 
