@@ -123,12 +123,14 @@ img {
   align-items: center;
   color: var(--accent);
   display: inline-flex;
-  font-size: clamp(1.28rem, 1.85vw, 1.68rem);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(1.45rem, 2.05vw, 1.9rem);
   font-weight: 900;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 0 0 9px 0.24em;
+  letter-spacing: 0.015em;
+  line-height: 0.92;
+  padding: 0 0 9px 0.12em;
   position: relative;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
   text-transform: uppercase;
 }
 
@@ -154,8 +156,16 @@ img {
 
 .wordmark-letter {
   display: inline-block;
-  transform: none;
+  transform-origin: center bottom;
 }
+
+.wordmark-letter:nth-child(1) { transform: rotate(-6deg) translateY(1px); }
+.wordmark-letter:nth-child(2) { transform: rotate(-2deg) translateY(-1px); }
+.wordmark-letter:nth-child(3) { transform: rotate(1deg); }
+.wordmark-letter:nth-child(4) { transform: rotate(-1deg) translateY(-1px); }
+.wordmark-letter:nth-child(5) { transform: rotate(2deg); }
+.wordmark-letter:nth-child(6) { transform: rotate(4deg) translateY(1px); }
+.wordmark-letter:nth-child(7) { transform: rotate(6deg) translateY(2px); }
 
 
 .site-header .wordmark::after {
@@ -5492,7 +5502,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .wordmark {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .hero {
