@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, VolumeIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage } from "./MovieCard";
-import { getMovie, imageUrl, releaseYear } from "@/lib/tmdb";
+import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
@@ -289,10 +289,13 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
 
     setTrailerLoading(true);
     try {
-      const details = await getMovie(movie.tmdb_id ?? movie.id);
+      const trailer = await getTrailer(
+        movie.tmdb_id ?? movie.id,
+        movie.media_type === "tv" ? "tv" : "movie",
+      );
       if (trailerRequestRef.current !== requestId) return;
-      setTrailerKey(details.trailer_key ?? null);
-      setTrailerError(!details.trailer_key);
+      setTrailerKey(trailer);
+      setTrailerError(!trailer);
     } catch {
       if (trailerRequestRef.current === requestId) setTrailerError(true);
     } finally {
