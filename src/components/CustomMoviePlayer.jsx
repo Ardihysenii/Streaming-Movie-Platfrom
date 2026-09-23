@@ -212,7 +212,6 @@ export default function CustomMoviePlayer({
   logoHeight = 310,
 }) {
   const { settings } = useNovaSettings();
-  const [isClient, setIsClient] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [connectionSlow, setConnectionSlow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -334,9 +333,7 @@ export default function CustomMoviePlayer({
 
 
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+
 
 
 
@@ -1344,7 +1341,7 @@ export default function CustomMoviePlayer({
 
 
 
-  if (!isClient || !activeId) {
+  if (!activeId) {
     return <div className="w-full h-96 bg-zinc-950 rounded-xl" />;
   }
 
