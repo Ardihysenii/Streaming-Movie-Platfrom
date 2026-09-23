@@ -123,7 +123,7 @@ img {
   align-items: center;
   color: var(--accent);
   display: inline-flex;
-  font-size: clamp(1.08rem, 1.5vw, 1.38rem);
+  font-size: clamp(1.16rem, 1.65vw, 1.52rem);
   font-weight: 850;
   letter-spacing: 0;
   line-height: 1;
@@ -685,7 +685,7 @@ body:has(.hero) .header-actions {
   color: white;
   cursor: pointer;
   display: flex;
-  height: 36px;
+  height: 42px;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
@@ -693,7 +693,7 @@ body:has(.hero) .header-actions {
   top: 48%;
   transform: translateY(-50%);
   transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
-  width: 36px;
+  width: 42px;
   z-index: 5;
 }
 
@@ -709,9 +709,9 @@ body:has(.hero) .header-actions {
 
 .hero-arrow svg {
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.72));
-  height: 22px;
+  height: 26px;
   stroke-width: 2.4;
-  width: 22px;
+  width: 26px;
 }
 
 .hero-arrow-left {
@@ -5492,7 +5492,7 @@ body:has(.watch-page) .bottom-dock {
   }
 
   .wordmark {
-    font-size: 1rem;
+    font-size: 1.08rem;
   }
 
   .hero {
