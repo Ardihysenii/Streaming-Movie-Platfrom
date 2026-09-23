@@ -24,6 +24,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://cinesrc.st" />
+        <link rel="dns-prefetch" href="//cinesrc.st" />
+      </head>
       <body>
         <Providers>
           <SplashScreen />
