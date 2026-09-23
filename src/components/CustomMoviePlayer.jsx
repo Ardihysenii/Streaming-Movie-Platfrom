@@ -1381,7 +1381,7 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
-        {isCineSrc && !isReady ? (
+        {isCineSrc && (!isReady || duration <= 0) ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
             <div className="montana-player-intro-content">
@@ -1402,7 +1402,7 @@ export default function CustomMoviePlayer({
           {activeSubtitle.text}
         </div>
       ) : null}
-      {isCineSrc ? (
+      {isCineSrc && isReady && duration > 0 ? (
         <div className="custom-player-ui">
           {!isPlaying && isReady && duration > 0 ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
