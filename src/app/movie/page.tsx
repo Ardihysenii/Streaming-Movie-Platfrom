@@ -227,7 +227,7 @@ function MoviePageContent() {
               </div>
               <div className={`detail-actions${resumeCandidate && isReleased(movie) ? " has-resume" : ""}`}>
                 {isReleased(movie) ? (
-                  <Link className="primary-button" href={`/watch/?id=${movie.id}`}>
+                  <Link className="primary-button" href={`/watch/?id=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}&imdbId=${encodeURIComponent(String(movie.id))}`}>
                     <PlayIcon /> {resumeCandidate ? "Continue" : "Watch now"}
                   </Link>
                 ) : (
