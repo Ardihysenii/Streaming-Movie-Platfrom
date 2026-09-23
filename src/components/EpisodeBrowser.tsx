@@ -59,12 +59,12 @@ export function EpisodeBrowser({
     const controller = new AbortController();
     setLoading(true);
     setSeason(null);
-    getSeasonDetails(series.id, seasonNumber, controller.signal)
+    getSeasonDetails(series.tmdb_id ?? series.id, seasonNumber, controller.signal)
       .then(setSeason)
       .catch(() => undefined)
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [seasonNumber, series.id]);
+  }, [seasonNumber, series.id, series.tmdb_id]);
 
   const episodes = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
@@ -161,7 +161,7 @@ export function EpisodeBrowser({
             return (
               <Link
                 className="episode-card"
-                href={`/watch/?id=${series.id}&type=tv&season=${episode.season_number}&episode=${episode.episode_number}`}
+                href={`/watch/?id=${encodeURIComponent(String(series.tmdb_id ?? series.id))}&imdbId=${encodeURIComponent(String(series.id))}&type=tv&season=${episode.season_number}&episode=${episode.episode_number}`}
                 key={episode.id}
               >
                 <div className="episode-copy">
