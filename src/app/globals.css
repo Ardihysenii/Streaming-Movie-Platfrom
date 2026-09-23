@@ -9522,6 +9522,29 @@ body:has(.watch-page) .bottom-dock {
   pointer-events: none;
 }
 
+.top-ten-trailer-media::before,
+.top-ten-trailer-media::after {
+  background: #050606;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 2;
+}
+
+.top-ten-trailer-media::before {
+  height: 52px;
+  top: 0;
+}
+
+.top-ten-trailer-media::after {
+  bottom: 0;
+  height: 58px;
+}
+
+
+
 .top-ten-trailer-loading {
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.75rem;
