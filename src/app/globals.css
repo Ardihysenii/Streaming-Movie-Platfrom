@@ -3078,7 +3078,7 @@ body:has(.hero) .header-actions {
   pointer-events: none;
   position: absolute;
   top: 50%;
-  transform: translate(-50%, -50%) scale(1.045);
+  transform: translate(-50%, -50%) scale(1.5);
   transition: opacity 900ms ease;
   width: max(100%, 177.78vh);
 }
