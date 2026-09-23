@@ -411,6 +411,10 @@ export default function CustomMoviePlayer({
       }
     }
     if (isCineSrc) {
+      // CineSrc only honors lastserver when prioritize is enabled. Keep the
+      // remembered working server first, while still allowing CineSrc to
+      // fall back automatically if that server is unavailable.
+      params.set("prioritize", "true");
       const isBackroomsSurgeMovie = mediaType === "movie" && cleanId === "1083381";
       if (isBackroomsSurgeMovie) {
         params.set("lastserver", "surge");
@@ -741,7 +745,12 @@ export default function CustomMoviePlayer({
           break;
         case "cinesrc:sourceused": {
           const sourceId = normalizeCineSrcServer(payload?.sourceId ?? message.sourceId);
-          if (sourceId) setActiveServer(sourceId);
+          if (sourceId) {
+            setActiveServer(sourceId);
+            // Reuse the source that actually returned a playable stream on the
+            // next launch instead of making Auto retry the same slow servers.
+            writeCineSrcPreferences(cineSrcPreferenceKey, { server: sourceId });
+          }
           break;
         }
         case "cinesrc:qualitychange":
