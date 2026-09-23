@@ -56,7 +56,11 @@ export default function HomePage() {
     data.trendingSeries,
     data.topRatedSeries,
   );
-  const series = uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries).slice(0, 14);
+  const seriesPool = uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries);
+  const mobLand = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "mobland");
+  const series = mobLand
+    ? [mobLand, ...seriesPool.filter((movie) => movie !== mobLand)].slice(0, 14)
+    : seriesPool.slice(0, 14);
   const discoveryPool = uniqueMovies(
     data.trending,
     data.nowPlaying,
