@@ -9658,10 +9658,11 @@ body:has(.watch-page) .bottom-dock {
   font-weight: 750;
   gap: 7px;
   justify-content: center;
-  margin: -62px 0 10px 16px;
+  margin: -48px 0 10px 16px;
   min-height: 34px;
   padding: 0 13px;
   position: relative;
+  top: -14px;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
   z-index: 4;
 }
