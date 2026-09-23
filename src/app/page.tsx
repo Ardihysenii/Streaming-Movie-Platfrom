@@ -61,6 +61,17 @@ export default function HomePage() {
   const series = mobLand
     ? [mobLand, ...seriesPool.filter((movie) => movie !== mobLand)].slice(0, 14)
     : seriesPool.slice(0, 14);
+  const topTenMovies = mobLand
+    ? [
+        mobLand,
+        ...data.trending
+          .filter((movie) => {
+            const title = movie.title.trim().toLowerCase();
+            return title !== "forgotten island" && title !== "mobland";
+          })
+          .slice(0, 9),
+      ]
+    : data.trending.slice(0, 10);
   const discoveryPool = uniqueMovies(
     data.trending,
     data.nowPlaying,
@@ -75,7 +86,7 @@ export default function HomePage() {
     <main className="home-page">
       <Hero movies={data.trending} />
       <div className="home-content">
-        <TopTenRail movies={data.trending} />
+        <TopTenRail movies={topTenMovies} />
         <ContinueRail items={continueWatching} onChange={refreshContinue} />
         <ForYouRail movies={forYou} />
         <MoodRail movies={discoveryPool} />
