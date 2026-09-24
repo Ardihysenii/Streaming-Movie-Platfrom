@@ -1229,17 +1229,6 @@ body:has(.hero) .header-actions {
   width: auto;
 }
 
-.poster-title-mark strong {
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: clamp(0.95rem, 1.35vw, 1.35rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.96;
-  max-width: 78%;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95);
-}
-
 .poster-sheen {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.42));
   inset: 0;
@@ -10059,4 +10048,58 @@ body:has(.watch-page) .bottom-dock {
 .person-page .person-back:hover {
   background: transparent;
   transform: translateX(-3px);
+}
+
+/* Shahflix-aligned regular homepage rails. Hero and Top 10 remain outside this scope. */
+.home-page .content-section:not(.top-ten-section) {
+  font-family: "Montserrat", "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  margin-bottom: 32px;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading {
+  margin-bottom: 20px;
+}
+
+.home-page .content-section:not(.top-ten-section) .movie-rail {
+  gap: 20px;
+}
+
+.home-page .content-section:not(.top-ten-section) .movie-card-copy {
+  padding-top: 10px;
+}
+
+.home-page .content-section:not(.top-ten-section) .movie-card-copy > a {
+  font-family: "Montserrat", "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.28;
+}
+
+.home-page .content-section:not(.top-ten-section) .movie-card-meta {
+  font-family: "Montserrat", "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 0.72rem;
+  margin-top: 6px;
+}
+
+.poster-title-mark {
+  align-items: flex-end;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.58));
+  bottom: 0;
+  display: flex;
+  inset-inline: 0;
+  min-height: 38%;
+  padding: 16px 14px 12px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.poster-title-mark img {
+  height: auto;
+  max-height: 74px;
+  max-width: 78%;
+  object-fit: contain;
+  object-position: left bottom;
+  width: auto;
 }
