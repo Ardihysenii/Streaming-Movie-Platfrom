@@ -5,14 +5,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
-import { getMovie, getSeries, getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
+import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
-
-type CardLogo = { url: string; width?: number; height?: number };
-const cardLogoCache = new Map<string, CardLogo | null>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -80,7 +77,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const [previewActive, setPreviewActive] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
-  const [cardLogo, setCardLogo] = useState<CardLogo | null>(movie.logo_url ? { url: movie.logo_url, width: movie.logo_width, height: movie.logo_height } : null);
   const previewTimerRef = useRef<number | null>(null);
   const previewRequestRef = useRef(0);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
@@ -89,44 +85,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
-
-  useEffect(() => {
-    if (movie.logo_url) {
-      setCardLogo({ url: movie.logo_url, width: movie.logo_width, height: movie.logo_height });
-      return;
-    }
-    const cachedLogo = cardLogoCache.get(previewIdentity);
-    if (cachedLogo !== undefined) {
-      setCardLogo(cachedLogo);
-      return;
-    }
-    const node = cardRef.current;
-    if (!node) return;
-    let cancelled = false;
-    const loadLogo = () => {
-      const detailsLoader = movie.media_type === "tv" ? getSeries(movie.tmdb_id ?? movie.id) : getMovie(movie.tmdb_id ?? movie.id);
-      void detailsLoader.then((details) => {
-        const logo = details.logo_url ? { url: details.logo_url, width: details.logo_width, height: details.logo_height } : null;
-        cardLogoCache.set(previewIdentity, logo);
-        if (!cancelled) setCardLogo(logo);
-      }).catch(() => {
-        cardLogoCache.set(previewIdentity, null);
-        if (!cancelled) setCardLogo(null);
-      });
-    };
-    if (typeof IntersectionObserver === "undefined") {
-      loadLogo();
-      return () => { cancelled = true; };
-    }
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        observer.disconnect();
-        loadLogo();
-      }
-    }, { rootMargin: "240px" });
-    observer.observe(node);
-    return () => { cancelled = true; observer.disconnect(); };
-  }, [movie.id, movie.logo_url, movie.logo_width, movie.logo_height, movie.media_type, movie.tmdb_id, previewIdentity]);
 
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
@@ -220,16 +178,9 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             </span>
           ) : null}
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
-            <Image src={imageUrl(movie.backdrop_path ?? movie.poster_path, "w780")} alt={movie.title + " backdrop"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
+            <Image src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w500")} alt={movie.title + " backdrop"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
-          <span className="poster-title-mark" aria-hidden="true">
-            {cardLogo ? (
-              <Image src={cardLogo.url} alt="" width={cardLogo.width ?? 900} height={cardLogo.height ?? 320} />
-            ) : (
-              <span className="poster-title-text">{movie.title}</span>
-            )}
-          </span>
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
         {previewActive ? (
