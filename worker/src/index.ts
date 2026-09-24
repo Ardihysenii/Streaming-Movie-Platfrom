@@ -182,7 +182,15 @@ function subtitleDownloadUrl(value: unknown) {
 let openSubtitlesSession: { token: string; baseUrl: string; expiresAt: number } | null = null;
 
 function openSubtitlesBaseUrl(value?: string) {
-  return (value || "https://api.opensubtitles.com/api/v1").replace(/\/+$/, "");
+  const raw = (value || "https://api.opensubtitles.com/api/v1").trim().replace(/\/+$/, "");
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const parsed = new URL(withScheme);
+    if (!parsed.pathname || parsed.pathname === "/") parsed.pathname = "/api/v1";
+    return parsed.toString().replace(/\/+$/, "");
+  } catch {
+    return "https://api.opensubtitles.com/api/v1";
+  }
 }
 function openSubtitlesUserAgent(env: Env) {
   return env.OPEN_SUBTITLES_USER_AGENT?.trim() || "MONTANA Subtitle Service/1.0 (https://streaming-movie-platfrom.vercel.app)";
