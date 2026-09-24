@@ -9275,6 +9275,13 @@ body:has(.watch-page) .bottom-dock {
   padding-left: clamp(0px, 2.25vw, 43px);
 }
 
+@media (min-width: 901px) {
+  /* Keep every homepage rail aligned with the Top 10 card start. */
+  .home-page .content-section:not(.top-ten-section) {
+    padding-left: clamp(0px, 2.25vw, 43px);
+  }
+}
+
 .top-ten-heading {
   align-items: stretch;
   display: flex;
