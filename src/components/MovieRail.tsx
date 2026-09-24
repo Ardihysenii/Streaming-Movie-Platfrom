@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, VolumeIcon } from "./Icons";
+import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage } from "./MovieCard";
 import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
@@ -311,7 +311,7 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
         <span className="top-ten-heading-accent" aria-hidden="true" />
         <div className="top-ten-heading-text">
           <div className="top-ten-title-row">
-            <h2>Top 10 on</h2>
+            <h2 className="top-ten-section-title">Top 10 on</h2>
             <span className="top-ten-brand wordmark-letters" aria-label="MONTANA">
               <span className="wordmark-letter">M</span>
               <span className="wordmark-letter">O</span>
@@ -416,7 +416,7 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
               ) : null}
               <div className="top-ten-meta">
                 <h3>{movie.title}</h3>
-                <p>{movie.vote_average.toFixed(1)} <span aria-hidden="true">·</span> {releaseYear(movie)} <span aria-hidden="true">·</span> {movie.media_type === "tv" ? "TV Show" : "Movie"}</p>
+                <p><span className="top-ten-rating"><StarIcon /> {movie.vote_average.toFixed(1)}</span> <span aria-hidden="true">·</span> {releaseYear(movie)} <span aria-hidden="true">·</span> {movie.media_type === "tv" ? "TV Show" : "Movie"}</p>
               </div>
             </article>
           );
