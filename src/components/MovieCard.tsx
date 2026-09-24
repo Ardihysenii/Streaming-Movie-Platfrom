@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { BookmarkIcon, CloseIcon, HeartIcon, StarIcon } from "./Icons";
+import { useEffect, useRef, useState } from "react";
+import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
-import { imageUrl, releaseYear } from "@/lib/tmdb";
+import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
+
+const trailerPreviewCache = new Map<string, string | null>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -72,54 +74,134 @@ export function movieKey(movie: Movie, index: number) {
 
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
+  const [previewActive, setPreviewActive] = useState(false);
+  const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
+  const [previewMuted, setPreviewMuted] = useState(true);
+  const previewTimerRef = useRef<number | null>(null);
+  const previewRequestRef = useRef(0);
+  const previewFrameRef = useRef<HTMLIFrameElement>(null);
   const rankLabel = rank ? rank.toString() : null;
   const href = mediaHref(movie, continueWatching);
+  const previewEnabled = !continueWatching;
+  const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
+
+  useEffect(() => {
+    setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
+    setPreviewActive(false);
+    setPreviewMuted(true);
+  }, [movie.trailer_key, previewIdentity]);
+
+  useEffect(() => () => {
+    if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current);
+    previewRequestRef.current += 1;
+  }, [previewIdentity]);
+
+  const stopPreview = () => {
+    if (previewTimerRef.current !== null) {
+      window.clearTimeout(previewTimerRef.current);
+      previewTimerRef.current = null;
+    }
+    previewRequestRef.current += 1;
+    setPreviewActive(false);
+    setPreviewMuted(true);
+  };
+
+  const startPreview = () => {
+    if (!previewEnabled) return;
+    setPreviewActive(true);
+    setPreviewMuted(true);
+    if (movie.trailer_key) {
+      setPreviewTrailerKey(movie.trailer_key);
+      return;
+    }
+    const cachedTrailer = trailerPreviewCache.get(previewIdentity);
+    if (cachedTrailer !== undefined) {
+      setPreviewTrailerKey(cachedTrailer);
+      return;
+    }
+    const requestId = previewRequestRef.current + 1;
+    previewRequestRef.current = requestId;
+    void getTrailer(movie.tmdb_id ?? movie.id, movie.media_type === "tv" ? "tv" : "movie")
+      .then((trailer) => {
+        trailerPreviewCache.set(previewIdentity, trailer);
+        if (previewRequestRef.current === requestId) setPreviewTrailerKey(trailer);
+      })
+      .catch(() => {
+        trailerPreviewCache.set(previewIdentity, null);
+        if (previewRequestRef.current === requestId) setPreviewTrailerKey(null);
+      });
+  };
+
+  const queuePreview = () => {
+    if (!previewEnabled || previewActive) return;
+    if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current);
+    previewTimerRef.current = window.setTimeout(() => {
+      previewTimerRef.current = null;
+      startPreview();
+    }, 2000);
+  };
+
+  const sendTrailerCommand = (command: string) => {
+    const frame = previewFrameRef.current?.contentWindow;
+    if (!frame) return;
+    frame.postMessage(JSON.stringify({ event: "command", func: command, args: [] }), "https://www.youtube-nocookie.com");
+  };
+
+  const togglePreviewSound = (event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const nextMuted = !previewMuted;
+    sendTrailerCommand(nextMuted ? "mute" : "unMute");
+    setPreviewMuted(nextMuted);
+  };
+
+  const handleCardBlur = (event: any) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopPreview();
+  };
 
   return (
-    <article className={`movie-card${rankLabel ? " is-ranked" : ""}`}>
+    <article
+      className={"movie-card" + (rankLabel ? " is-ranked" : "") + (previewActive ? " is-preview-active" : "")}
+      onMouseEnter={previewEnabled ? queuePreview : undefined}
+      onMouseLeave={previewEnabled ? stopPreview : undefined}
+      onFocusCapture={previewEnabled ? queuePreview : undefined}
+      onBlurCapture={previewEnabled ? handleCardBlur : undefined}
+    >
       {rankLabel ? <span className="rank-number">{rankLabel}</span> : null}
       <div className="movie-card-body">
-        <Link href={href} aria-label={`View ${movie.title}`} className="poster-link">
+        <Link href={href} aria-label={"View " + movie.title} className="poster-link">
           {!loaded ? (
             <span className="poster-loader">
-              <LoadingSpinner label={`Loading ${movie.title} artwork`} />
+              <LoadingSpinner label={"Loading " + movie.title + " artwork"} />
             </span>
           ) : null}
-          <span className={`poster-image${loaded ? " is-loaded" : ""}`}>
-            <Image
-              src={imageUrl(movie.poster_path, "w500")}
-              alt={`${movie.title} poster`}
-              fill
-              sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px"
-              priority={priority}
-              onLoad={() => setLoaded(true)}
-            />
+          <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
+            <Image src={imageUrl(movie.poster_path, "w500")} alt={movie.title + " poster"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
-          {typeof progress === "number" ? (
-            <span className="watch-progress" aria-label={`${Math.round(progress)} percent watched`}>
-              <i style={{ width: `${Math.min(100, Math.max(2, progress))}%` }} />
-            </span>
-          ) : null}
+          {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
+        {previewActive ? (
+          <div className="movie-card-preview" aria-label={movie.title + " trailer preview"}>
+            <div className="movie-card-preview-media">
+              {previewTrailerKey ? (
+                <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media; picture-in-picture" onLoad={() => { sendTrailerCommand("playVideo"); window.setTimeout(() => sendTrailerCommand("playVideo"), 350); }} />
+              ) : <Image src={imageUrl(movie.backdrop_path ?? movie.poster_path, "w780")} alt="" fill sizes="420px" />}
+            </div>
+            <span className="movie-card-preview-shade" aria-hidden="true" />
+            <button className="movie-card-preview-sound" type="button" onClick={togglePreviewSound} aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} title={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"}>{previewMuted ? <MutedIcon /> : <VolumeIcon />}</button>
+            <div className="movie-card-preview-info">
+              <strong>{movie.title}</strong>
+              <span><StarIcon /> {movie.vote_average.toFixed(1)} · {releaseYear(movie)} · {movie.media_type === "tv" ? "TV Show" : "Movie"}</span>
+              <div className="movie-card-preview-actions"><Link className="movie-card-preview-play" href={href} aria-label={"Play " + movie.title}><PlayIcon /></Link><WishlistButton movie={movie} icon="heart" className="movie-card-preview-wishlist" /></div>
+            </div>
+          </div>
+        ) : null}
         <div className="movie-card-copy">
           <Link href={href}>{movie.title}</Link>
-          <span className="movie-card-meta">
-            <span
-              className="movie-card-rating"
-              aria-label={`${movie.vote_average.toFixed(1)} rating out of 10`}
-            >
-              <StarIcon /> {movie.vote_average.toFixed(1)}
-            </span>
-            <span className="movie-card-year">{releaseYear(movie)}</span>
-            <span className="movie-card-type">{movie.media_type === "tv" ? "TV Show" : "Movie"}</span>
-          </span>
+          <span className="movie-card-meta"><span className="movie-card-rating" aria-label={movie.vote_average.toFixed(1) + " rating out of 10"}><StarIcon /> {movie.vote_average.toFixed(1)}</span><span className="movie-card-year">{releaseYear(movie)}</span><span className="movie-card-type">{movie.media_type === "tv" ? "TV Show" : "Movie"}</span></span>
         </div>
-        {onRemove ? (
-          <button className="remove-card" onClick={onRemove} aria-label={`Remove ${movie.title} from ${removeActionLabel}`}>
-            <CloseIcon />
-          </button>
-        ) : null}
+        {onRemove ? <button className="remove-card" onClick={onRemove} aria-label={"Remove " + movie.title + " from " + removeActionLabel}><CloseIcon /></button> : null}
       </div>
     </article>
   );
