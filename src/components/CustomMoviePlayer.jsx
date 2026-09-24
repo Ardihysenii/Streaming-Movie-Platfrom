@@ -253,7 +253,7 @@ export default function CustomMoviePlayer({
   const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleProvider, setSubtitleProvider] = useState(readSubtitleProviderPreference);
-  const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
+  const [subtitleFontSize, setSubtitleFontSize] = useState(1.3);
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
