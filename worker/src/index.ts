@@ -39,6 +39,10 @@ interface Env {
   SUBDL_API_KEY?: string;
   SUBDL_API_KEY_2?: string;
   SUBDL_API_KEY_3?: string;
+  OPEN_SUBTITLES_API_KEY?: string;
+  OPEN_SUBTITLES_USERNAME?: string;
+  OPEN_SUBTITLES_PASSWORD?: string;
+  OPEN_SUBTITLES_USER_AGENT?: string;
   ALLOWED_ORIGINS?: string;
 }
 
@@ -158,13 +162,10 @@ async function readAuthorizedUpstream(env: Env, movieId: string, imdbId: string 
 
 
 function toWebVtt(value: string) {
-  if (/^\uFEFF?WEBVTT/i.test(value.trim())) return value;
-  const normalized = value.replace(/\r\n?/g, "\n");
-  const converted = normalized.replace(
-    /(\d{2}:\d{2}:\d{2}),(\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}),(\d{3})/g,
-    "$1.$2 --> $3.$4",
-  );
-  return `WEBVTT\n\n${converted}`;
+  const normalized = value.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n").trim();
+  if (/^WEBVTT(?:\s|$)/i.test(normalized)) return normalized + "\n";
+  const converted = normalized.replace(/(^|\n)(\d{1,2}:\d{2}:\d{2}),([0-9]{3})\s+-->\s+(\d{1,2}:\d{2}:\d{2}),([0-9]{3})/g,"$1$2.$3 --> $4.$5");
+  return "WEBVTT\n\n" + converted + "\n";
 }
 
 
@@ -178,83 +179,59 @@ function subtitleDownloadUrl(value: unknown) {
 }
 
 
-async function readSubtitle(request: Request, env: Env) {
-  // Ordered runtime key pool: primary, then backups.
-  const apiKeys = [env.SUBDL_API_KEY, env.SUBDL_API_KEY_2, env.SUBDL_API_KEY_3]
-    .map((value) => value?.trim())
-    .filter((value): value is string => Boolean(value));
-  if (!apiKeys.length) return new Response("Subtitle service is not configured.", { status: 503 });
-  const requestUrl = new URL(request.url);
-  const tmdbId = requestUrl.searchParams.get("tmdbId")?.trim();
-  const imdbId = requestUrl.searchParams.get("imdbId")?.trim();
-  const type = requestUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
-  const language = (requestUrl.searchParams.get("language") || "en").trim().toUpperCase();
-  if (!tmdbId && !imdbId) return new Response("A title identifier is required.", { status: 400 });
+let openSubtitlesSession: { token: string; baseUrl: string; expiresAt: number } | null = null;
 
-  const endpoint = new URL("https://api.subdl.com/api/v1/subtitles");
-  if (tmdbId) endpoint.searchParams.set("tmdb_id", tmdbId);
-  if (imdbId) endpoint.searchParams.set("imdb_id", imdbId);
-  endpoint.searchParams.set("type", type);
-  endpoint.searchParams.set("languages", language);
-  endpoint.searchParams.set("subs_per_page", "30");
-  endpoint.searchParams.set("unpack", "1");
-  endpoint.searchParams.set("client", "custom_integration");
-  if (type === "tv") {
-    endpoint.searchParams.set("season_number", requestUrl.searchParams.get("season") || "1");
-    endpoint.searchParams.set("episode_number", requestUrl.searchParams.get("episode") || "1");
-  }
-
-  const season = Number(requestUrl.searchParams.get("season") || 1);
-  const episode = Number(requestUrl.searchParams.get("episode") || 1);
-  const quotaStatuses = new Set([401, 402, 403, 429]);
-  for (const apiKey of apiKeys) {
-    endpoint.searchParams.set("api_key", apiKey);
-    const searchResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
-    if (!searchResponse.ok) {
-      if (quotaStatuses.has(searchResponse.status)) continue;
-      return new Response("Subtitle search failed.", { status: 502 });
-    }
-    const payload = await searchResponse.json() as {
-      subtitles?: Array<Record<string, unknown>>;
-      status?: boolean;
-      message?: string;
-    };
-    const providerMessage = String(payload.message || "").toLowerCase();
-    if (payload.status === false && /(limit|quota|credit|rate)/i.test(providerMessage)) continue;
-    const candidates = (payload.subtitles || []).flatMap((subtitle) => {
-      const unpacked = Array.isArray(subtitle.unpack_files) ? subtitle.unpack_files : [];
-      return (unpacked.length ? unpacked : [subtitle]).map((file) => ({ ...subtitle, ...(file as Record<string, unknown>) }));
-    });
-    const selected = candidates.find((candidate) => {
-      const candidateLanguage = String(candidate.language || "").toUpperCase();
-      const candidateSeason = Number(candidate.season || 0);
-      const candidateEpisode = Number(candidate.episode || 0);
-      return candidateLanguage === language
-        && (type === "movie" || ((!candidateSeason || candidateSeason === season) && (!candidateEpisode || candidateEpisode === episode)));
-    });
-    const downloadUrl = subtitleDownloadUrl(selected?.url);
-    if (!downloadUrl) return new Response("No subtitle track is available.", { status: 404 });
-    let subtitleResponse = await fetch(downloadUrl);
-    if (!subtitleResponse.ok) {
-      subtitleResponse = await fetch(downloadUrl, { headers: { "x-api-key": apiKey } });
-    }
-    if (!subtitleResponse.ok) {
-      if (quotaStatuses.has(subtitleResponse.status)) continue;
-      return new Response("Subtitle download failed.", { status: 502 });
-    }
-    const text = await subtitleResponse.text();
-    if (/\.ass\b|\[Script Info\]/i.test(String(selected?.format || "") + text.slice(0, 200))) {
-      return new Response("This subtitle format is not supported.", { status: 415 });
-    }
-    return new Response(toWebVtt(text), {
-      headers: {
-        "Cache-Control": "public, max-age=300",
-        "Content-Type": "text/vtt; charset=utf-8",
-      },
-    });
-  }
-  return new Response("All configured subtitle API keys are exhausted.", { status: 503 });
+function openSubtitlesBaseUrl(value?: string) {
+  return (value || "https://api.opensubtitles.com/api/v1").replace(/\/+$/, "");
 }
+function openSubtitlesUserAgent(env: Env) {
+  return env.OPEN_SUBTITLES_USER_AGENT?.trim() || "MONTANA Subtitle Service/1.0 (https://streaming-movie-platfrom.vercel.app)";
+}
+function openSubtitlesHeaders(env: Env, token?: string) {
+  return { Accept: "application/json", "Api-Key": env.OPEN_SUBTITLES_API_KEY?.trim() || "", "User-Agent": openSubtitlesUserAgent(env), ...(token ? { Authorization: "Bearer " + token } : {}) };
+}
+async function openSubtitlesLogin(env: Env) {
+  const apiKey=env.OPEN_SUBTITLES_API_KEY?.trim(), username=env.OPEN_SUBTITLES_USERNAME?.trim(), password=env.OPEN_SUBTITLES_PASSWORD;
+  if(!apiKey||!username||!password)throw new Error("OpenSubtitles is not configured for downloads.");
+  if(openSubtitlesSession&&openSubtitlesSession.expiresAt>Date.now()+60000)return openSubtitlesSession;
+  const response=await fetch(openSubtitlesBaseUrl()+"/login",{method:"POST",headers:{...openSubtitlesHeaders(env),"Content-Type":"application/json"},body:JSON.stringify({username,password})});
+  if(!response.ok)throw new Error("OpenSubtitles login failed ("+response.status+").");
+  const payload=await response.json() as {token?:string;base_url?:string};
+  if(!payload.token)throw new Error("OpenSubtitles did not return a session token.");
+  openSubtitlesSession={token:payload.token,baseUrl:openSubtitlesBaseUrl(payload.base_url),expiresAt:Date.now()+25*60*1000};
+  return openSubtitlesSession;
+}
+function openSubtitleCandidates(payload: unknown,language:string,type:string,season:number,episode:number){
+  const rows=payload&&typeof payload==="object"&&Array.isArray((payload as Record<string,unknown>).data)?(payload as Record<string,unknown>).data as Array<Record<string,unknown>>:[];
+  return rows.flatMap(row=>{const a=row.attributes&&typeof row.attributes==="object"?row.attributes as Record<string,unknown>:{};const lang=String(a.language||"").trim().toLowerCase();const s=Number(a.season_number||0),e=Number(a.episode_number||0);if(lang&&lang!==language.toLowerCase())return [];if(type==="tv"&&((s&&s!==season)||(e&&e!==episode)))return [];const files=Array.isArray(a.files)?a.files:[];return files.flatMap(file=>{if(!file||typeof file!=="object")return [];const r=file as Record<string,unknown>;const fileId=Number(r.file_id||0),name=String(r.file_name||""),format=String(r.format||name.split(".").pop()||"srt").toLowerCase();if(!fileId||/^(ass|ssa)$/.test(format)||/\.(ass|ssa)$/i.test(name))return [];return [{fileId,language:lang||language.toLowerCase(),format}];});});
+}
+async function readOpenSubtitles(request:Request,env:Env){
+  const apiKey=env.OPEN_SUBTITLES_API_KEY?.trim();if(!apiKey)throw new Error("OpenSubtitles is not configured on the server.");
+  const u=new URL(request.url),tmdbId=u.searchParams.get("tmdbId")?.trim(),imdbId=u.searchParams.get("imdbId")?.trim(),type=u.searchParams.get("type")==="tv"?"tv":"movie",language=(u.searchParams.get("language")||"en").trim().toLowerCase(),season=Number(u.searchParams.get("season")||1),episode=Number(u.searchParams.get("episode")||1);
+  if(!tmdbId&&!imdbId)throw new Error("A title identifier is required.");
+  const endpoint=new URL(openSubtitlesBaseUrl()+"/subtitles");
+  if(type==="tv"){if(tmdbId)endpoint.searchParams.set("parent_tmdb_id",tmdbId);if(imdbId)endpoint.searchParams.set("parent_imdb_id",imdbId.replace(/^tt/i,""));endpoint.searchParams.set("season_number",String(season));endpoint.searchParams.set("episode_number",String(episode));}else{if(tmdbId)endpoint.searchParams.set("tmdb_id",tmdbId);if(imdbId)endpoint.searchParams.set("imdb_id",imdbId.replace(/^tt/i,""));}
+  endpoint.searchParams.set("languages",language);endpoint.searchParams.set("order_by","download_count");endpoint.searchParams.set("order_direction","desc");
+  const searchResponse=await fetch(endpoint,{headers:openSubtitlesHeaders(env)});if(!searchResponse.ok)throw new Error("OpenSubtitles search failed ("+searchResponse.status+").");
+  const selected=openSubtitleCandidates(await searchResponse.json(),language,type,season,episode)[0];if(!selected)throw new Error("No OpenSubtitles track is available.");
+  let session=await openSubtitlesLogin(env);const body=JSON.stringify({file_id:selected.fileId,sub_format:"srt"});
+  let downloadResponse=await fetch(session.baseUrl+"/download",{method:"POST",headers:{...openSubtitlesHeaders(env,session.token),"Content-Type":"application/json"},body});
+  if(downloadResponse.status===401){openSubtitlesSession=null;session=await openSubtitlesLogin(env);downloadResponse=await fetch(session.baseUrl+"/download",{method:"POST",headers:{...openSubtitlesHeaders(env,session.token),"Content-Type":"application/json"},body});}
+  if(!downloadResponse.ok)throw new Error("OpenSubtitles download failed ("+downloadResponse.status+").");
+  const downloaded=await downloadResponse.json() as {link?:string};if(!downloaded.link)throw new Error("OpenSubtitles did not return a subtitle link.");
+  const fileResponse=await fetch(downloaded.link,{headers:{"Api-Key":apiKey,"User-Agent":openSubtitlesUserAgent(env)} });if(!fileResponse.ok)throw new Error("OpenSubtitles file download failed ("+fileResponse.status+").");
+  const text=await fileResponse.text();if(/\[Script Info\]|^\s*\[V4 Styles\]/i.test(text.slice(0,500)))throw new Error("OpenSubtitles returned an unsupported subtitle format.");
+  return new Response(toWebVtt(text),{headers:{"Cache-Control":"public, max-age=300","Content-Type":"text/vtt; charset=utf-8","X-Subtitle-Source":"opensubtitles","Access-Control-Expose-Headers":"X-Subtitle-Source"}});
+}
+async function readSubdl(request:Request,env:Env){
+  const keys=[env.SUBDL_API_KEY,env.SUBDL_API_KEY_2,env.SUBDL_API_KEY_3].map(v=>v?.trim()).filter((v):v is string=>Boolean(v));if(!keys.length)throw new Error("SubDL is not configured on the server.");
+  const u=new URL(request.url),tmdbId=u.searchParams.get("tmdbId")?.trim(),imdbId=u.searchParams.get("imdbId")?.trim(),type=u.searchParams.get("type")==="tv"?"tv":"movie",language=(u.searchParams.get("language")||"en").trim().toUpperCase(),season=Number(u.searchParams.get("season")||1),episode=Number(u.searchParams.get("episode")||1);if(!tmdbId&&!imdbId)throw new Error("A title identifier is required.");
+  const endpoint=new URL("https://api.subdl.com/api/v1/subtitles");if(tmdbId)endpoint.searchParams.set("tmdb_id",tmdbId);if(imdbId)endpoint.searchParams.set("imdb_id",imdbId);endpoint.searchParams.set("type",type);endpoint.searchParams.set("languages",language);endpoint.searchParams.set("subs_per_page","30");endpoint.searchParams.set("unpack","1");endpoint.searchParams.set("client","custom_integration");if(type==="tv"){endpoint.searchParams.set("season_number",String(season));endpoint.searchParams.set("episode_number",String(episode));}
+  const quota=new Set([401,402,403,429]);
+  for(const apiKey of keys){endpoint.searchParams.set("api_key",apiKey);const searchResponse=await fetch(endpoint,{headers:{Accept:"application/json"}});if(!searchResponse.ok){if(quota.has(searchResponse.status))continue;throw new Error("SubDL search failed ("+searchResponse.status+").");}const payload=await searchResponse.json() as {subtitles?:Array<Record<string,unknown>>;status?:boolean;message?:string};const msg=String(payload.message||"").toLowerCase();if(payload.status===false&&/(limit|quota|credit|rate)/i.test(msg))continue;const candidates=(payload.subtitles||[]).flatMap(sub=>{const unpack=Array.isArray(sub.unpack_files)?sub.unpack_files:[];return(unpack.length?unpack:[sub]).map(file=>({...sub,...file as Record<string,unknown>}));});const selected=candidates.find(x=>{const lang=String(x.language||x.lang||"").toUpperCase().replace(/[-_].*$/,""),s=Number(x.season||0),e=Number(x.episode||0);return lang===language&&(type==="movie"||((!s||s===season)&&(!e||e===episode)));});const url=subtitleDownloadUrl(selected?.url);if(!url)throw new Error("No SubDL track is available.");let file=await fetch(url);if(!file.ok)file=await fetch(url,{headers:{"x-api-key":apiKey}});if(!file.ok){if(quota.has(file.status))continue;throw new Error("SubDL download failed ("+file.status+").");}const text=await file.text();if(/\.ass\b|\.ssa\b|\[Script Info\]/i.test(String(selected?.format||"")+text.slice(0,300)))throw new Error("SubDL returned an unsupported subtitle format.");return new Response(toWebVtt(text),{headers:{"Cache-Control":"public, max-age=300","Content-Type":"text/vtt; charset=utf-8","X-Subtitle-Source":"subdl","Access-Control-Expose-Headers":"X-Subtitle-Source"}});}
+  throw new Error("All configured SubDL API keys are exhausted.");
+}
+async function readSubtitle(request:Request,env:Env){const selected=(new URL(request.url).searchParams.get("provider")||"auto").trim().toLowerCase();const providers=selected==="subdl"?["subdl"]:selected==="opensubtitles"?["opensubtitles"]:["subdl","opensubtitles"];const errors:string[]=[];for(const provider of providers){try{return provider==="opensubtitles"?await readOpenSubtitles(request,env):await readSubdl(request,env);}catch(error){errors.push(error instanceof Error?error.message:provider+" subtitle provider failed.");}}throw new Error(errors.join(" "));}
 
 
 export default {
@@ -267,7 +244,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === "/health") {
-      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2) }, 200, origin);
+      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.OPEN_SUBTITLES_API_KEY), subtitleProviders: { subdl: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.SUBDL_API_KEY_3), opensubtitles: Boolean(env.OPEN_SUBTITLES_API_KEY && env.OPEN_SUBTITLES_USERNAME && env.OPEN_SUBTITLES_PASSWORD) } }, 200, origin);
     }
 
 
