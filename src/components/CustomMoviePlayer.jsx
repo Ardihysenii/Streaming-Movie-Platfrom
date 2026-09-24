@@ -50,6 +50,18 @@ const CINESRC_SERVER_OPTIONS = [
 ];
 
 const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
+const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
+
+function readSubtitleProviderPreference() {
+  if (typeof window === "undefined") return "auto";
+  try {
+    const value = window.localStorage.getItem("nova-subtitle-provider-v1");
+    return SUBTITLE_PROVIDER_OPTIONS.some(([id]) => id === value) ? value : "auto";
+  } catch { return "auto"; }
+}
+function subtitleProviderLabel(value) {
+  return SUBTITLE_PROVIDER_OPTIONS.find(([id]) => id === value)?.[1] || "Auto (SubDL first)";
+}
 const CINESRC_PREFERENCES_STORAGE_KEY = "nova-cinesrc-preferences-v1";
 
 function getCineSrcPreferenceKey(id, mediaType, seasonNumber, episodeNumber) {
@@ -240,6 +252,7 @@ export default function CustomMoviePlayer({
   const [subtitleStatus, setSubtitleStatus] = useState("idle");
   const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
+  const [subtitleProvider, setSubtitleProvider] = useState(readSubtitleProviderPreference);
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.1);
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
@@ -463,6 +476,7 @@ export default function CustomMoviePlayer({
       type: mediaType,
       language: subtitleLanguage || "en",
     });
+    query.set("provider", subtitleProvider);
     if (imdbId) query.set("imdbId", String(imdbId));
     if (title) query.set("title", String(title));
     if (releaseYear) query.set("year", String(releaseYear));
@@ -504,7 +518,7 @@ export default function CustomMoviePlayer({
         }
       });
     return () => controller.abort();
-  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage]);
+  }, [activeId, episodeNumber, imdbId, mediaType, seasonNumber, subtitleLanguage, subtitleProvider]);
 
 
 
@@ -520,6 +534,10 @@ export default function CustomMoviePlayer({
 
 
 
+
+  useEffect(() => {
+    try { window.localStorage.setItem("nova-subtitle-provider-v1", subtitleProvider); } catch {}
+  }, [subtitleProvider]);
 
   useEffect(() => {
     resumeAppliedRef.current = false;
@@ -1532,7 +1550,7 @@ export default function CustomMoviePlayer({
                       <div className="player-settings-body">
                         <div className="player-settings-card">
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{reportedQuality ? `${reportedQuality} actual` : cineSrcQualityLabel(quality)}<b>›</b></span></button>
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? "On" : "Off"}<b>›</b></span></button>
+                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? subtitleProviderLabel(subtitleProvider) : "Off"}<b>›</b></span></button>
                           <div className="player-settings-row is-disabled"><span>Audio</span><span>Original</span></div>
                           <button type="button" className="player-settings-row" onClick={() => setSettingsView("speed")}><span>Playback speed</span><span>{playbackRate}x<b>›</b></span></button>
                         </div>
@@ -1545,7 +1563,9 @@ export default function CustomMoviePlayer({
                     {settingsView === "subtitles" ? (
                       <div className="player-settings-body player-settings-subtitles">
                         <button type="button" className="player-settings-toggle" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span>Subtitles</span><strong>{subtitlesEnabled ? "On" : "Off"}</strong></button>
-                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
+                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? subtitleProviderLabel(subtitleProvider) + " • " + subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
+                        <span className="player-settings-label-block">Source</span>
+                        <div className="player-settings-language-grid">{SUBTITLE_PROVIDER_OPTIONS.map(([value, label]) => <button key={value} type="button" className={value === subtitleProvider ? "is-selected" : ""} onClick={() => setSubtitleProvider(value)}>{label}</button>)}</div>
                         <span className="player-settings-label-block">Language</span>
                         <div className="player-settings-language-grid">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>)}</div>
                         <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Customize subtitles <b>›</b></button>
