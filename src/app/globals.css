@@ -10087,3 +10087,22 @@ body:has(.watch-page) .bottom-dock {
   font-size: 0.72rem;
   margin-top: 6px;
 }
+
+/* Keep the full built-in title artwork visible in regular homepage cards.
+   Hero and Top 10 intentionally keep their existing image treatment. */
+.home-page .content-section:not(.top-ten-section) .poster-image img {
+  background: #101214;
+  object-fit: contain;
+  object-position: center;
+}
+
+.home-page .content-section:not(.top-ten-section) .poster-image {
+  transform: none;
+}
+
+@media (min-width: 1181px) {
+  .home-page .content-section:not(.top-ten-section) .poster-image img {
+    animation: none;
+    transform: none;
+  }
+}
