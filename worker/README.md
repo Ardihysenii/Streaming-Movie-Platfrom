@@ -37,3 +37,16 @@ npx wrangler secret put SOURCE_API_BASE_URL
 ```
 
 The upstream must return the same manifest shape and its media host must allow cross-origin playback. A Worker cannot create movie rights or turn a metadata catalog into video streams; movie coverage is exactly the coverage of the licensed source catalog connected here.
+
+## Subtitle providers
+
+The Worker exposes GET /v1/subtitles and accepts provider=auto, provider=subdl, or provider=opensubtitles. Automatic mode tries SubDL first and falls back to OpenSubtitles when SubDL has no usable track or returns an error. The player keeps this choice in its existing subtitle settings and sends it as a request parameter.
+
+Configure these Worker secrets for the OpenSubtitles fallback:
+
+- OPEN_SUBTITLES_API_KEY
+- OPEN_SUBTITLES_USERNAME
+- OPEN_SUBTITLES_PASSWORD
+- optional OPEN_SUBTITLES_USER_AGENT
+
+The OpenSubtitles credentials are used only server-side. The Worker logs in and caches a short-lived session token, searches by TMDB/IMDb and TV season/episode, downloads SRT, and converts it to the same WebVTT response consumed by NOVA.
