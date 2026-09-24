@@ -2928,39 +2928,37 @@ body:has(.hero) .header-actions {
 
 .person-back {
   align-items: center;
-  background: linear-gradient(135deg, rgba(25, 29, 35, 0.86), rgba(10, 13, 17, 0.78));
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 10px 26px rgba(0, 0, 0, 0.2);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   cursor: pointer;
-  gap: 9px;
+  height: 36px;
+  justify-content: center;
   margin-bottom: clamp(30px, 5vw, 68px);
-  padding: 10px 17px 10px 12px;
-  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+  padding: 0;
+  transition: color 180ms ease, transform 180ms ease;
+  width: 36px;
 }
 
 .person-back:hover {
-  background: linear-gradient(135deg, rgba(45, 48, 56, 0.94), rgba(17, 20, 26, 0.9));
-  border-color: rgba(var(--accent-rgb), 0.68);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 14px 30px rgba(0, 0, 0, 0.28), 0 0 0 4px rgba(var(--accent-rgb), 0.08);
+  background: transparent;
   color: #fff;
   transform: translateX(-3px);
 }
 
 .person-back svg {
-  height: 17px;
-  transition: transform 180ms ease;
-  width: 17px;
-}
-
-.person-back:hover svg {
-  transform: translateX(-3px);
+  height: 24px;
+  width: 24px;
 }
 
 .person-back:focus-visible {
-  border-color: var(--accent);
   outline: 2px solid var(--accent);
   outline-offset: 4px;
+}
+
+.person-back::before {
+  display: none;
 }
 
 .person-profile {
