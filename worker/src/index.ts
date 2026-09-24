@@ -262,11 +262,7 @@ export default {
         response.headers.set("Access-Control-Allow-Origin", origin || "*");
         response.headers.set("Vary", "Origin");
         return response;
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Subtitle provider failed.";
-        if (url.searchParams.get("debug") === "1") {
-          return json({ error: message }, 502, origin);
-        }
+      } catch {
         return new Response("Subtitle service unavailable.", {
           status: 502,
           headers: { "Access-Control-Allow-Origin": origin || "*", Vary: "Origin" },
