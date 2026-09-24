@@ -5,11 +5,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
-import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
+import { getMovie, getSeries, getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
+
+type CardLogo = { url: string; width?: number; height?: number };
+const cardLogoCache = new Map<string, CardLogo | null>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -80,10 +83,50 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const previewTimerRef = useRef<number | null>(null);
   const previewRequestRef = useRef(0);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
+  const [cardLogo, setCardLogo] = useState<CardLogo | null>(movie.logo_url ? { url: movie.logo_url, width: movie.logo_width, height: movie.logo_height } : null);
   const rankLabel = rank ? rank.toString() : null;
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
+
+  useEffect(() => {
+    if (movie.logo_url) {
+      setCardLogo({ url: movie.logo_url, width: movie.logo_width, height: movie.logo_height });
+      return;
+    }
+    const cachedLogo = cardLogoCache.get(previewIdentity);
+    if (cachedLogo !== undefined) {
+      setCardLogo(cachedLogo);
+      return;
+    }
+    const node = cardRef.current;
+    if (!node) return;
+    let cancelled = false;
+    const loadLogo = () => {
+      const detailsLoader = movie.media_type === "tv" ? getSeries(movie.tmdb_id ?? movie.id) : getMovie(movie.tmdb_id ?? movie.id);
+      void detailsLoader.then((details) => {
+        const logo = details.logo_url ? { url: details.logo_url, width: details.logo_width, height: details.logo_height } : null;
+        cardLogoCache.set(previewIdentity, logo);
+        if (!cancelled) setCardLogo(logo);
+      }).catch(() => {
+        cardLogoCache.set(previewIdentity, null);
+        if (!cancelled) setCardLogo(null);
+      });
+    };
+    if (typeof IntersectionObserver === "undefined") {
+      loadLogo();
+      return () => { cancelled = true; };
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        observer.disconnect();
+        loadLogo();
+      }
+    }, { rootMargin: "240px" });
+    observer.observe(node);
+    return () => { cancelled = true; observer.disconnect(); };
+  }, [movie.id, movie.logo_url, movie.logo_width, movie.logo_height, movie.media_type, movie.tmdb_id, previewIdentity]);
 
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
@@ -161,6 +204,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
 
   return (
     <article
+      ref={cardRef}
       className={"movie-card" + (rankLabel ? " is-ranked" : "") + (previewActive ? " is-preview-active" : "")}
       onMouseEnter={previewEnabled ? queuePreview : undefined}
       onMouseLeave={previewEnabled ? stopPreview : undefined}
@@ -180,8 +224,8 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           </span>
           <span className="poster-sheen" />
           <span className="poster-title-mark" aria-hidden="true">
-            {movie.logo_url ? (
-              <Image src={movie.logo_url} alt="" width={movie.logo_width ?? 900} height={movie.logo_height ?? 320} />
+            {cardLogo ? (
+              <Image src={cardLogo.url} alt="" width={cardLogo.width ?? 900} height={cardLogo.height ?? 320} />
             ) : (
               <strong>{movie.title}</strong>
             )}
