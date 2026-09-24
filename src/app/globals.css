@@ -9303,7 +9303,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .top-ten-title-row h2 {
-  font-family: var(--font-sans);
+  font-family: Verdana, Geneva, sans-serif;
   font-size: clamp(1.2rem, 1.7vw, 1.75rem);
   font-weight: 760;
   letter-spacing: -0.04em;
@@ -9451,6 +9451,18 @@ body:has(.watch-page) .bottom-dock {
   font-size: 0.68rem;
   margin: 5px 0 0;
   white-space: nowrap;
+}
+
+.top-ten-rating {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.top-ten-rating svg {
+  color: var(--accent);
+  height: 11px;
+  width: 11px;
 }
 
 .top-ten-meta p span {
