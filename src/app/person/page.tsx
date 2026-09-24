@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { BackIcon } from "@/components/Icons";
+import { ArrowLeftIcon } from "@/components/Icons";
 import { MovieGrid } from "@/components/MovieCard";
 import { PageLoader } from "@/components/Loading";
 import { getPerson, imageUrl } from "@/lib/tmdb";
@@ -79,11 +79,12 @@ function PersonPageContent() {
         <span className="person-orbit person-orbit-two" />
       </div>
       <button
+        aria-label="Back to actors"
         className="back-link person-back"
         type="button"
         onClick={() => window.history.length > 1 ? window.history.back() : router.push("/actors/")}
       >
-        <BackIcon /> Back to actors
+        <ArrowLeftIcon />
       </button>
 
       <section className="person-profile" aria-labelledby="person-name">
