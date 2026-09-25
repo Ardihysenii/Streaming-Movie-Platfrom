@@ -88,11 +88,15 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
   const artworkFallback = movie.backdrop_path ?? movie.poster_path;
-  const cardImagePath = artworkUrl ?? artworkFallback;
+  const cardImagePath = movie.backdrop_path ?? artworkUrl ?? movie.poster_path;
   const cardImageSrc = cardImagePath?.startsWith("http") ? cardImagePath : imageUrl(cardImagePath, "w780");
 
   useEffect(() => {
     let cancelled = false;
+    if (movie.backdrop_path) {
+      setArtworkUrl(null);
+      return () => { cancelled = true; };
+    }
     const cached = mediuxArtworkCache.get(previewIdentity);
     if (cached !== undefined) {
       setArtworkUrl(cached);
