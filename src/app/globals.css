@@ -10088,11 +10088,10 @@ body:has(.watch-page) .bottom-dock {
   margin-top: 6px;
 }
 
-/* Keep the full built-in title artwork visible in regular homepage cards.
+/* Regular rails use TMDB landscape artwork so it fills the existing 16:9 card.
    Hero and Top 10 intentionally keep their existing image treatment. */
 .home-page .content-section:not(.top-ten-section) .poster-image img {
-  background: #101214;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 
