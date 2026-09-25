@@ -43,15 +43,15 @@ function filesFromSection(section: string) {
 
 function chooseArtwork(page: string) {
   const currentSets = sectionBetween(page, '"sets":[', '],"collectionSets":[');
-  const collectionSets = sectionBetween(page, '"collectionSets":[');
-  const ownBackdrops = filesFromSection(currentSets).filter((file) => file.fileType === "backdrop");
-  const collectionBackdrops = filesFromSection(collectionSets).filter((file) => file.fileType === "backdrop");
-  const selected = ownBackdrops.find((file) => /-\s*backdrop$/i.test(file.title)) ?? ownBackdrops[0];
-  if (selected) {
-    return { id: selected.id, needsLogo: selected.textless || !/-\s*backdrop$/i.test(selected.title) };
-  }
-  const collectionFallback = collectionBackdrops[0];
-  return collectionFallback ? { id: collectionFallback.id, needsLogo: true } : null;
+  const ownWide = filesFromSection(currentSets).filter((file) =>
+    file.fileType === "backdrop" || (file.fileType === "misc" && /-\s*backdrop$/i.test(file.title)),
+  );
+  const selected = ownWide.find((file) => /-\s*backdrop$/i.test(file.title)) ?? ownWide[0];
+  if (!selected) return { id: null, needsLogo: true };
+  return {
+    id: selected.id,
+    needsLogo: selected.fileType !== "backdrop" || selected.textless || !/-\s*backdrop$/i.test(selected.title),
+  };
 }
 
 export async function GET(request: Request) {
@@ -72,8 +72,8 @@ export async function GET(request: Request) {
 
     const artwork = chooseArtwork(decodePage(await response.text()));
     return NextResponse.json({
-      image_url: artwork ? "https://api.mediux.pro/assets/" + artwork.id : null,
-      needs_logo: artwork?.needsLogo ?? false,
+      image_url: artwork?.id ? "https://api.mediux.pro/assets/" + artwork.id : null,
+      needs_logo: artwork?.needsLogo ?? true,
     });
   } catch {
     return NextResponse.json({ image_url: null, needs_logo: false });
