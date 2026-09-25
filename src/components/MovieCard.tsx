@@ -10,8 +10,6 @@ import { isInWishlist, toggleWishlist } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
-const mediuxArtworkCache = new Map<string, string | null>();
-const mediuxArtworkLogoCache = new Map<string, boolean>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -76,8 +74,7 @@ export function movieKey(movie: Movie, index: number) {
 
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
-  const [artworkUrl, setArtworkUrl] = useState<string | null>(null);
-  const [showArtworkLogo, setShowArtworkLogo] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
@@ -89,41 +86,16 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
-  const cardImagePath = artworkUrl ?? movie.backdrop_path ?? movie.poster_path;
+  // TMDB ID, artwork, and title must stay in the same record. Do not replace
+  // this verified backdrop with a third-party artwork URL: that can mismatch
+  // the movie while still looking like a valid image.
+  const cardImagePath = movie.backdrop_path ?? movie.poster_path;
   const cardImageSrc = cardImagePath?.startsWith("http") ? cardImagePath : imageUrl(cardImagePath, "w780");
 
   useEffect(() => {
-    let cancelled = false;
-    const cached = mediuxArtworkCache.get(previewIdentity);
-    if (cached !== undefined) {
-      setArtworkUrl(cached);
-      setShowArtworkLogo(mediuxArtworkLogoCache.get(previewIdentity) === true);
-      return () => { cancelled = true; };
-    }
-    setArtworkUrl(null);
-    setShowArtworkLogo(false);
-    const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie", version: "2" });
-    void fetch("/api/mediux-artwork?" + params.toString())
-      .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null; needs_logo?: boolean }> : { image_url: null, needs_logo: false })
-      .then((payload) => {
-        const next = typeof payload.image_url === "string" ? payload.image_url : null;
-        mediuxArtworkCache.set(previewIdentity, next);
-        if (!cancelled) {
-          setArtworkUrl(next);
-          mediuxArtworkLogoCache.set(previewIdentity, payload.needs_logo === true);
-          setShowArtworkLogo(payload.needs_logo === true);
-        }
-      })
-      .catch(() => {
-        mediuxArtworkCache.set(previewIdentity, null);
-        mediuxArtworkLogoCache.set(previewIdentity, false);
-        if (!cancelled) {
-          setArtworkUrl(null);
-          setShowArtworkLogo(false);
-        }
-      });
-    return () => { cancelled = true; };
-  }, [movie.id, movie.media_type, movie.tmdb_id, previewIdentity]);
+    // Keep the real title visible until the transparent logo finishes loading.
+    setLogoReady(false);
+  }, [movie.logo_url, previewIdentity]);
 
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
@@ -199,9 +171,10 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopPreview();
   };
 
-  // Always show a title treatment: prefer the transparent TMDB/Fanart logo,
-  // then fall back to the real title when a logo is unavailable.
-  const titleOverlayVisible = showArtworkLogo || Boolean(movie.logo_url) || movie.title.trim().length > 0;
+  // The fallback title is rendered immediately; the transparent logo replaces
+  // it only after its own image has loaded.
+  const titleOverlayVisible = movie.title.trim().length > 0;
+  const logoVisible = Boolean(movie.logo_url && logoReady);
 
   return (
     <article
@@ -226,8 +199,8 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           <span className="poster-sheen" />
           {titleOverlayVisible ? (
             <span className="poster-logo-overlay" aria-hidden="true">
-              {movie.logo_url ? (
-                <Image className="poster-logo-image" src={movie.logo_url} alt="" width={movie.logo_width ?? 780} height={movie.logo_height ?? 320} sizes="(max-width: 600px) 28vw, 150px" />
+              {logoVisible ? (
+                <Image className="poster-logo-image" src={movie.logo_url as string} alt="" width={movie.logo_width ?? 780} height={movie.logo_height ?? 320} sizes="(max-width: 600px) 28vw, 150px" priority={priority} onLoad={() => setLogoReady(true)} onError={() => setLogoReady(false)} />
               ) : (
                 <span className="poster-title-fallback">{movie.title}</span>
               )}
