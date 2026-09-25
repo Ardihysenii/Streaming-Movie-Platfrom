@@ -8,6 +8,8 @@ import { readContinueWatching } from "@/lib/storage";
 import { getHomeData } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
+// Homepage composition keeps the cinematic Hero and Top 10 experience intentionally unchanged.
+
 function uniqueMovies(...groups: HomeData["trending"][]) {
   const seen = new Set<string>();
   return groups.flat().filter((movie) => {
