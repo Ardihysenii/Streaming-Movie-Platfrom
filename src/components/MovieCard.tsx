@@ -11,6 +11,7 @@ import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
 const mediuxArtworkCache = new Map<string, string | null>();
+const mediuxLogoCache = new Map<string, boolean>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -76,6 +77,7 @@ export function movieKey(movie: Movie, index: number) {
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [artworkUrl, setArtworkUrl] = useState<string | null>(null);
+  const [showArtworkLogo, setShowArtworkLogo] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
@@ -96,20 +98,31 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     const cached = mediuxArtworkCache.get(previewIdentity);
     if (cached !== undefined) {
       setArtworkUrl(cached);
+      setShowArtworkLogo(mediuxLogoCache.get(previewIdentity) ?? false);
       return () => { cancelled = true; };
     }
     setArtworkUrl(null);
+    setShowArtworkLogo(false);
     const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie" });
     void fetch("/api/mediux-artwork?" + params.toString())
-      .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null }> : { image_url: null })
+      .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null; needs_logo?: boolean }> : { image_url: null, needs_logo: false })
       .then((payload) => {
         const next = typeof payload.image_url === "string" ? payload.image_url : null;
+        const needsLogo = payload.needs_logo === true;
         mediuxArtworkCache.set(previewIdentity, next);
-        if (!cancelled) setArtworkUrl(next);
+        mediuxLogoCache.set(previewIdentity, needsLogo);
+        if (!cancelled) {
+          setArtworkUrl(next);
+          setShowArtworkLogo(needsLogo);
+        }
       })
       .catch(() => {
         mediuxArtworkCache.set(previewIdentity, null);
-        if (!cancelled) setArtworkUrl(null);
+        mediuxLogoCache.set(previewIdentity, false);
+        if (!cancelled) {
+          setArtworkUrl(null);
+          setShowArtworkLogo(false);
+        }
       });
     return () => { cancelled = true; };
   }, [movie.id, movie.media_type, movie.tmdb_id, previewIdentity]);
@@ -208,6 +221,11 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
             <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
+          {showArtworkLogo && movie.logo_url ? (
+            <span className="poster-logo-overlay">
+              <Image src={movie.logo_url} alt="" width={movie.logo_width ?? 1200} height={movie.logo_height ?? 300} className="poster-logo-image" />
+            </span>
+          ) : null}
           <span className="poster-sheen" />
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
