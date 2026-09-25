@@ -87,7 +87,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
-  const artworkFallback = movie.backdrop_path ?? movie.poster_path;
   const cardImagePath = movie.backdrop_path ?? artworkUrl ?? movie.poster_path;
   const cardImageSrc = cardImagePath?.startsWith("http") ? cardImagePath : imageUrl(cardImagePath, "w780");
 
@@ -103,7 +102,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
       return () => { cancelled = true; };
     }
     setArtworkUrl(null);
-    setShowArtworkLogo(false);
     const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie" });
     void fetch("/api/mediux-artwork?" + params.toString())
       .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null }> : { image_url: null })
