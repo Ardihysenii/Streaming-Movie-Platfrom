@@ -447,6 +447,48 @@ async function withCatalogLogo(movie: Movie, signal?: AbortSignal) {
   return withFanartLogo(tmdbMovie, signal);
 }
 
+function homeItemKey(movie: Movie) {
+  return String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
+}
+
+async function addHomeLogos(data: HomeData, signal?: AbortSignal): Promise<HomeData> {
+  const groups = [
+    data.trending,
+    data.nowPlaying,
+    data.topRated,
+    data.action,
+    data.trendingSeries,
+    data.airingSeries,
+    data.topRatedSeries,
+  ];
+  const uniqueItems = Array.from(
+    new Map(groups.flat().map((movie) => [homeItemKey(movie), movie])).values(),
+  ).filter((movie) => !movie.logo_url);
+  const logos = new Map<string, Movie>();
+
+  for (let index = 0; index < uniqueItems.length; index += 8) {
+    const batch = await Promise.all(
+      uniqueItems.slice(index, index + 8).map(async (movie) => [
+        homeItemKey(movie),
+        await withTmdbLogo(movie, signal),
+      ] as const),
+    );
+    batch.forEach(([key, movie]) => logos.set(key, movie));
+  }
+
+  const applyLogos = (movies: Movie[]) => movies.map((movie) => logos.get(homeItemKey(movie)) ?? movie);
+  return {
+    ...data,
+    trending: applyLogos(data.trending),
+    nowPlaying: applyLogos(data.nowPlaying),
+    topRated: applyLogos(data.topRated),
+    action: applyLogos(data.action),
+    trendingSeries: applyLogos(data.trendingSeries),
+    airingSeries: applyLogos(data.airingSeries),
+    topRatedSeries: applyLogos(data.topRatedSeries),
+  };
+}
+
 export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
   if (!TMDB_API_KEY) return getCinemetaHomeData(signal);
   try {
@@ -469,7 +511,7 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
       .filter((movie) => movie.backdrop_path && movie.tmdb_id !== 1506560)
       .slice(0, 10);
     const heroMoviesWithLogos = await Promise.all(heroMovies.map((movie) => withTmdbLogo(movie, signal)));
-    return organizeHomeData({
+    const organized = organizeHomeData({
       trending: heroMoviesWithLogos.map(applyTitleLogoOverride),
       nowPlaying: nowPlaying.results.map(toMovie),
       topRated: topRated.results.map(toMovie),
@@ -479,6 +521,7 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
       topRatedSeries: topRatedSeries.results.map(toSeries).filter((series) => series.poster_path),
       usingFallback: false,
     });
+    return addHomeLogos(organized, signal);
   } catch (error) {
     if (isAbortError(error)) throw error;
     return getCinemetaHomeData(signal);
