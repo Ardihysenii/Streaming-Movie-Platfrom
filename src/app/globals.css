@@ -13,7 +13,7 @@
   --accent-rgb: 255, 0, 60;
   --page-gutter: clamp(20px, 4vw, 72px);
   --section-gap: clamp(44px, 4.5vw, 76px);
-  --card-width: clamp(360px, 23vw, 440px);
+  --card-width: clamp(200px, 16vw, 270px);
   --card-radius: 3px;
   --header-height: 86px;
   --font-sans: "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -34,7 +34,7 @@
 }
 
 :root[data-density="compact"] {
-  --card-width: clamp(360px, 23vw, 440px);
+  --card-width: clamp(200px, 16vw, 270px);
   --section-gap: clamp(34px, 3.6vw, 58px);
 }
 
@@ -1618,7 +1618,7 @@ body:has(.hero) .header-actions {
 .skeleton-grid {
   display: grid;
   gap: clamp(24px, 3vw, 46px) clamp(13px, 1.5vw, 24px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-width)), var(--card-width)));
 }
 
 .movie-grid .movie-card {
