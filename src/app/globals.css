@@ -10114,7 +10114,8 @@ body:has(.watch-page) .bottom-dock {
 /* Regular rails use the real title-bearing TMDB poster artwork.
    Hero and Top 10 intentionally keep their existing image treatment. */
 .home-page .content-section:not(.top-ten-section) .poster-link {
-  aspect-ratio: 16 / 9;
+  /* Larger portrait frame so each TMDB poster sits edge-to-edge. */
+  aspect-ratio: 2 / 3;
 }
 
 .home-page .content-section:not(.top-ten-section) .poster-image img {
