@@ -11,6 +11,7 @@ import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
 const mediuxArtworkCache = new Map<string, string | null>();
+const mediuxArtworkLogoCache = new Map<string, boolean>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -96,6 +97,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     const cached = mediuxArtworkCache.get(previewIdentity);
     if (cached !== undefined) {
       setArtworkUrl(cached);
+      setShowArtworkLogo(mediuxArtworkLogoCache.get(previewIdentity) === true);
       return () => { cancelled = true; };
     }
     setArtworkUrl(null);
@@ -108,11 +110,13 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
         mediuxArtworkCache.set(previewIdentity, next);
         if (!cancelled) {
           setArtworkUrl(next);
+          mediuxArtworkLogoCache.set(previewIdentity, payload.needs_logo === true);
           setShowArtworkLogo(payload.needs_logo === true);
         }
       })
       .catch(() => {
         mediuxArtworkCache.set(previewIdentity, null);
+        mediuxArtworkLogoCache.set(previewIdentity, false);
         if (!cancelled) {
           setArtworkUrl(null);
           setShowArtworkLogo(false);
