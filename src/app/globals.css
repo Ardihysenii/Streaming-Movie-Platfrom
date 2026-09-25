@@ -10091,6 +10091,7 @@ body:has(.watch-page) .bottom-dock {
 
 .home-page .content-section:not(.top-ten-section) .movie-card {
   contain-intrinsic-size: auto 300px;
+  flex-basis: clamp(220px, 18vw, 300px);
 }
 
 .home-page .content-section:not(.top-ten-section) .movie-card-copy {
