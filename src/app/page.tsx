@@ -81,7 +81,7 @@ export default function HomePage() {
         <ForYouRail movies={forYou} />
         <MovieRail
           title="Trending Now"
-          eyebrow="The weekly top ten"
+          eyebrow="Popular this week"
           movies={data.trending.slice(0, 10)}
           numbered
           href="/movies/?sort=popularity.desc"
