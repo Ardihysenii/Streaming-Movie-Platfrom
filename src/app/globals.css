@@ -10299,3 +10299,21 @@ body:has(.watch-page) .bottom-dock {
     transform: none;
   }
 }
+
+
+/* Standardize regular movie and TV cards everywhere. Hero and Top 10 use separate classes. */
+.movie-card .poster-link {
+    aspect-ratio: 2 / 3;
+}
+
+.movie-card .poster-image img {
+    object-fit: cover;
+    object-position: center;
+}
+
+.movie-grid,
+.skeleton-grid,
+.agent-panel-body .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-width)), var(--card-width)));
+    justify-content: start;
+}
