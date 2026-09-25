@@ -10317,38 +10317,3 @@ body:has(.watch-page) .bottom-dock {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-width)), var(--card-width)));
     justify-content: start;
 }
-
-
-/* Curated homepage rhythm: Hero and Top 10 remain untouched. */
-.home-page .content-section:not(.top-ten-section) {
-  margin-bottom: clamp(72px, 7vw, 112px);
-}
-
-.home-page .content-section:not(.top-ten-section) > .section-heading {
-  margin-bottom: clamp(28px, 2.4vw, 38px);
-}
-
-.home-page .content-section:not(.top-ten-section) > .section-heading h2 {
-  font-family: "Outfit", "Inter", system-ui, sans-serif;
-  font-size: clamp(2rem, 2.8vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1.02;
-}
-
-.home-page .content-section:not(.top-ten-section) > .section-heading .eyebrow {
-  font-family: "Inter", system-ui, sans-serif;
-  letter-spacing: 0.24em;
-  margin-bottom: 14px;
-}
-
-.home-page .content-section:not(.top-ten-section) > .section-heading > a {
-  font-family: "Inter", system-ui, sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-}
-
-.home-page .content-section:not(.top-ten-section) .rail-tabs {
-  gap: 26px;
-  margin-top: 22px;
-}
