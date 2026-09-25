@@ -1235,6 +1235,19 @@ body:has(.hero) .header-actions {
   width: auto;
 }
 
+.poster-title-mark strong {
+  color: #fff;
+  font-size: clamp(0.82rem, 1.2vw, 1.08rem);
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  max-width: 88%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.92);
+  white-space: nowrap;
+}
+
 .poster-sheen {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.42));
   inset: 0;
