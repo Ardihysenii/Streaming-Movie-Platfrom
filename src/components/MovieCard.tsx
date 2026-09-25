@@ -199,6 +199,10 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopPreview();
   };
 
+  // Always show a title treatment: prefer the transparent TMDB/Fanart logo,
+  // then fall back to the real title when a logo is unavailable.
+  const titleOverlayVisible = showArtworkLogo || Boolean(movie.logo_url) || movie.title.trim().length > 0;
+
   return (
     <article
       ref={cardRef}
@@ -220,7 +224,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
-          {showArtworkLogo ? (
+          {titleOverlayVisible ? (
             <span className="poster-logo-overlay" aria-hidden="true">
               {movie.logo_url ? (
                 <Image className="poster-logo-image" src={movie.logo_url} alt="" width={movie.logo_width ?? 780} height={movie.logo_height ?? 320} sizes="(max-width: 600px) 28vw, 150px" />
