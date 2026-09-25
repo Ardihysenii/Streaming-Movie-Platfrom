@@ -10,6 +10,7 @@ import { isInWishlist, toggleWishlist } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 const trailerPreviewCache = new Map<string, string | null>();
+const mediuxArtworkCache = new Map<string, string | null>();
 
 type MovieCardProps = {
   movie: Movie;
@@ -74,6 +75,7 @@ export function movieKey(movie: Movie, index: number) {
 
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
+  const [artworkUrl, setArtworkUrl] = useState<string | null>(null);
   const [previewActive, setPreviewActive] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
@@ -85,6 +87,32 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
+  const artworkFallback = movie.backdrop_path ?? movie.poster_path;
+  const cardImagePath = artworkUrl ?? artworkFallback;
+  const cardImageSrc = cardImagePath?.startsWith("http") ? cardImagePath : imageUrl(cardImagePath, "w780");
+
+  useEffect(() => {
+    let cancelled = false;
+    const cached = mediuxArtworkCache.get(previewIdentity);
+    if (cached !== undefined) {
+      setArtworkUrl(cached);
+      return () => { cancelled = true; };
+    }
+    setArtworkUrl(null);
+    const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie" });
+    void fetch("/api/mediux-artwork?" + params.toString())
+      .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null }> : { image_url: null })
+      .then((payload) => {
+        const next = typeof payload.image_url === "string" ? payload.image_url : null;
+        mediuxArtworkCache.set(previewIdentity, next);
+        if (!cancelled) setArtworkUrl(next);
+      })
+      .catch(() => {
+        mediuxArtworkCache.set(previewIdentity, null);
+        if (!cancelled) setArtworkUrl(null);
+      });
+    return () => { cancelled = true; };
+  }, [movie.id, movie.media_type, movie.tmdb_id, previewIdentity]);
 
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
@@ -178,7 +206,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             </span>
           ) : null}
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
-            <Image src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w780")} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
+            <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
@@ -188,7 +216,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             <div className="movie-card-preview-media">
               {previewTrailerKey ? (
                 <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media; picture-in-picture" onLoad={() => { sendTrailerCommand("playVideo"); window.setTimeout(() => sendTrailerCommand("playVideo"), 350); }} />
-              ) : <Image src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w780")} alt="" fill sizes="440px" />}
+              ) : <Image src={cardImageSrc} alt="" fill sizes="440px" />}
             </div>
             <span className="movie-card-preview-shade" aria-hidden="true" />
             <button className="movie-card-preview-sound" type="button" onClick={togglePreviewSound} aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} title={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"}>{previewMuted ? <MutedIcon /> : <VolumeIcon />}</button>
