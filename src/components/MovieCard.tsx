@@ -102,7 +102,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     }
     setArtworkUrl(null);
     setShowArtworkLogo(false);
-    const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie" });
+    const params = new URLSearchParams({ tmdb_id: String(movie.tmdb_id ?? movie.id), type: movie.media_type === "tv" ? "tv" : "movie", version: "2" });
     void fetch("/api/mediux-artwork?" + params.toString())
       .then((response) => response.ok ? response.json() as Promise<{ image_url?: string | null; needs_logo?: boolean }> : { image_url: null, needs_logo: false })
       .then((payload) => {
