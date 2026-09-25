@@ -1189,7 +1189,7 @@ body:has(.hero) .header-actions {
   inset: 0;
   opacity: 0;
   position: absolute;
-  transform: scale(1.025);
+  transform: scale(1);
   transition: opacity 450ms ease, transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
