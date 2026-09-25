@@ -447,6 +447,19 @@ async function withCatalogLogo(movie: Movie, signal?: AbortSignal) {
   return withFanartLogo(tmdbMovie, signal);
 }
 
+async function addCatalogLogos(movies: Movie[], signal?: AbortSignal) {
+  const enriched = [...movies];
+  for (let index = 0; index < enriched.length; index += 8) {
+    const batch = await Promise.all(
+      enriched.slice(index, index + 8).map((movie) => withCatalogLogo(movie, signal)),
+    );
+    batch.forEach((movie, offset) => {
+      enriched[index + offset] = movie;
+    });
+  }
+  return enriched;
+}
+
 function homeItemKey(movie: Movie) {
   return String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
 }
@@ -610,14 +623,12 @@ export async function getSimilarMoviesPage(
         .map(toMovie)
         .filter((movie) => movie.tmdb_id !== tmdbId && movie.poster_path && !movie.adult),
     );
-    const featured = await Promise.all(
-      results.slice(0, 10).map((movie) => withCatalogLogo(movie, signal)),
-    );
+    const enrichedResults = await addCatalogLogos(results, signal);
     return {
       page: currentPage,
       total_pages: Math.max(recommended.total_pages, similar.total_pages),
       total_results: recommended.total_results + similar.total_results,
-      results: [...featured, ...results.slice(10)],
+      results: enrichedResults,
     };
   } catch (error) {
     if (isAbortError(error)) throw error;
@@ -678,14 +689,12 @@ export async function getSimilarSeriesPage(
         .map(toSeries)
         .filter((series) => series.tmdb_id !== tmdbId && series.poster_path && !series.adult),
     );
-    const featured = await Promise.all(
-      results.slice(0, 10).map((series) => withCatalogLogo(series, signal)),
-    );
+    const enrichedResults = await addCatalogLogos(results, signal);
     return {
       page: currentPage,
       total_pages: Math.max(recommended.total_pages, similar.total_pages),
       total_results: recommended.total_results + similar.total_results,
-      results: [...featured, ...results.slice(10)],
+      results: enrichedResults,
     };
   } catch (error) {
     if (isAbortError(error)) throw error;
@@ -1002,7 +1011,8 @@ export async function searchMovies(query: string, signal?: AbortSignal): Promise
       { query: cleanQuery, page: 1, include_adult: false },
       signal,
     );
-    return response.results.map(toMovie).filter((movie) => movie.poster_path);
+    const results = response.results.map(toMovie).filter((movie) => movie.poster_path);
+    return addCatalogLogos(results, signal);
   } catch (error) {
     if (isAbortError(error)) throw error;
     return searchCinemetaMovies(cleanQuery, signal);
