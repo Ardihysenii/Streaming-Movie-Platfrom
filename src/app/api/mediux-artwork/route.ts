@@ -50,7 +50,9 @@ function chooseArtwork(page: string) {
   if (!selected) return { id: null, needsLogo: true };
   return {
     id: selected.id,
-    needsLogo: selected.fileType !== "backdrop" || selected.textless || !/-\s*backdrop$/i.test(selected.title),
+    // MediUX wide variants are frequently clean backdrops. Let the card use
+    // its real title logo or title fallback inside the artwork for every one.
+    needsLogo: true,
   };
 }
 
