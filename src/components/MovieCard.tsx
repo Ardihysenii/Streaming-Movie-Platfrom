@@ -74,7 +74,6 @@ export function movieKey(movie: Movie, index: number) {
 
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
-  const [logoReady, setLogoReady] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
@@ -86,16 +85,8 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
   const previewIdentity = String(movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id);
-  // TMDB ID, artwork, and title must stay in the same record. Do not replace
-  // this verified backdrop with a third-party artwork URL: that can mismatch
-  // the movie while still looking like a valid image.
-  const cardImagePath = movie.backdrop_path ?? movie.poster_path;
+  const cardImagePath = movie.poster_path;
   const cardImageSrc = cardImagePath?.startsWith("http") ? cardImagePath : imageUrl(cardImagePath, "w780");
-
-  useEffect(() => {
-    // Keep the real title visible until the transparent logo finishes loading.
-    setLogoReady(false);
-  }, [movie.logo_url, previewIdentity]);
 
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
@@ -171,11 +162,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopPreview();
   };
 
-  // The fallback title is rendered immediately; the transparent logo replaces
-  // it only after its own image has loaded.
-  const titleOverlayVisible = movie.title.trim().length > 0;
-  const logoVisible = Boolean(movie.logo_url && logoReady);
-
   return (
     <article
       ref={cardRef}
@@ -197,15 +183,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
-          {titleOverlayVisible ? (
-            <span className="poster-logo-overlay" aria-hidden="true">
-              {logoVisible ? (
-                <Image className="poster-logo-image" src={movie.logo_url as string} alt="" width={movie.logo_width ?? 780} height={movie.logo_height ?? 320} sizes="(max-width: 600px) 28vw, 150px" priority={priority} onLoad={() => setLogoReady(true)} onError={() => setLogoReady(false)} />
-              ) : (
-                <span className="poster-title-fallback">{movie.title}</span>
-              )}
-            </span>
-          ) : null}
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
         {previewActive ? (
