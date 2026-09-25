@@ -75,9 +75,11 @@ export function movieKey(movie: Movie, index: number) {
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
+  const [previewClosing, setPreviewClosing] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
   const previewTimerRef = useRef<number | null>(null);
+  const previewHideTimerRef = useRef<number | null>(null);
   const previewRequestRef = useRef(0);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
   const cardRef = useRef<HTMLElement>(null);
@@ -92,11 +94,13 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   useEffect(() => {
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
     setPreviewActive(false);
+    setPreviewClosing(false);
     setPreviewMuted(true);
   }, [movie.trailer_key, previewIdentity]);
 
   useEffect(() => () => {
     if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current);
+    if (previewHideTimerRef.current !== null) window.clearTimeout(previewHideTimerRef.current);
     previewRequestRef.current += 1;
   }, [previewIdentity]);
 
@@ -106,12 +110,27 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
       previewTimerRef.current = null;
     }
     previewRequestRef.current += 1;
-    setPreviewActive(false);
     setPreviewMuted(true);
+    if (!previewActive) {
+      setPreviewClosing(false);
+      return;
+    }
+    setPreviewClosing(true);
+    if (previewHideTimerRef.current !== null) window.clearTimeout(previewHideTimerRef.current);
+    previewHideTimerRef.current = window.setTimeout(() => {
+      previewHideTimerRef.current = null;
+      setPreviewActive(false);
+      setPreviewClosing(false);
+    }, 180);
   };
 
   const startPreview = () => {
     if (!previewEnabled) return;
+    if (previewHideTimerRef.current !== null) {
+      window.clearTimeout(previewHideTimerRef.current);
+      previewHideTimerRef.current = null;
+    }
+    setPreviewClosing(false);
     setPreviewActive(true);
     setPreviewMuted(true);
     if (movie.trailer_key) {
@@ -142,7 +161,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     previewTimerRef.current = window.setTimeout(() => {
       previewTimerRef.current = null;
       startPreview();
-    }, 2000);
+    }, 650);
   };
 
   const sendTrailerCommand = (command: string) => {
@@ -166,7 +185,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   return (
     <article
       ref={cardRef}
-      className={"movie-card" + (rankLabel ? " is-ranked" : "") + (previewActive ? " is-preview-active" : "")}
+      className={"movie-card" + (rankLabel ? " is-ranked" : "") + (previewActive ? " is-preview-active" : "") + (previewClosing ? " is-preview-closing" : "")}
       onMouseEnter={previewEnabled ? queuePreview : undefined}
       onMouseLeave={previewEnabled ? stopPreview : undefined}
       onFocusCapture={previewEnabled ? queuePreview : undefined}
@@ -189,6 +208,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
         {previewActive ? (
           <div className="movie-card-preview" aria-label={movie.title + " trailer preview"}>
             <div className="movie-card-preview-media">
+              <span className="movie-card-preview-label">QUICK LOOK</span>
               {previewTrailerKey ? (
                 <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media; picture-in-picture" onLoad={() => { sendTrailerCommand("playVideo"); window.setTimeout(() => sendTrailerCommand("playVideo"), 350); }} />
               ) : <Image src={cardImageSrc} alt="" fill sizes="440px" />}
