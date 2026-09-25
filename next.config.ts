@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.mediux.pro",
+      },
+      {
+        protocol: "https",
         hostname: "assets.fanart.tv",
       },
       {
