@@ -10088,8 +10088,12 @@ body:has(.watch-page) .bottom-dock {
   margin-top: 6px;
 }
 
-/* Regular rails use TMDB landscape artwork so it fills the existing 16:9 card.
+/* Regular rails use the real title-bearing TMDB poster artwork.
    Hero and Top 10 intentionally keep their existing image treatment. */
+.home-page .content-section:not(.top-ten-section) .poster-link {
+  aspect-ratio: 2 / 3;
+}
+
 .home-page .content-section:not(.top-ten-section) .poster-image img {
   object-fit: cover;
   object-position: center;
