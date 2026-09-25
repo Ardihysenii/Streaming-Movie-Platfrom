@@ -92,8 +92,8 @@ export function ForYouRail({ movies }: { movies: Movie[] }) {
   return (
     <ChoiceRail
       className="for-you-rail"
-      eyebrow="A considered selection"
-      title="Recommended"
+      eyebrow="Made for your next watch"
+      title="For You"
       choices={[
         { label: "Movies", movies: movies.filter((movie) => movie.media_type !== "tv"), href: "/movies/" },
         { label: "TV Shows", movies: movies.filter((movie) => movie.media_type === "tv"), href: "/series/" },
