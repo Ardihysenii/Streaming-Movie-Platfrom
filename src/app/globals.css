@@ -10118,7 +10118,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .home-page .content-section:not(.top-ten-section) .poster-image img {
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 
