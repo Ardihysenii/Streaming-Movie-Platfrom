@@ -178,7 +178,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             </span>
           ) : null}
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
-            <Image src={imageUrl(movie.backdrop_path ?? movie.poster_path, "w780")} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
+            <Image src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w780")} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           <span className="poster-sheen" />
           {movie.logo_url ? (
@@ -201,7 +201,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             <div className="movie-card-preview-media">
               {previewTrailerKey ? (
                 <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media; picture-in-picture" onLoad={() => { sendTrailerCommand("playVideo"); window.setTimeout(() => sendTrailerCommand("playVideo"), 350); }} />
-              ) : <Image src={imageUrl(movie.backdrop_path ?? movie.poster_path, "w780")} alt="" fill sizes="440px" />}
+              ) : <Image src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w780")} alt="" fill sizes="440px" />}
             </div>
             <span className="movie-card-preview-shade" aria-hidden="true" />
             <button className="movie-card-preview-sound" type="button" onClick={togglePreviewSound} aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} title={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"}>{previewMuted ? <MutedIcon /> : <VolumeIcon />}</button>
