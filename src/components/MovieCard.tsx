@@ -180,17 +180,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
             <Image src={imageUrl(movie.backdrop_path ?? movie.poster_path, "w780")} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
-          {movie.logo_url ? (
-            <span className="poster-logo-mark" aria-hidden="true">
-              <Image
-                src={movie.logo_url}
-                alt=""
-                width={movie.logo_width ?? 900}
-                height={movie.logo_height ?? 320}
-                sizes="(max-width: 600px) 70vw, 260px"
-              />
-            </span>
-          ) : null}
           <span className="poster-sheen" />
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
