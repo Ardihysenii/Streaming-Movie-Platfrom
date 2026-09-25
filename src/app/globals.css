@@ -1214,6 +1214,9 @@ body:has(.hero) .header-actions {
   width: 100%;
 }
 
+
+
+
 .poster-sheen {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.42));
   inset: 0;
