@@ -1217,6 +1217,28 @@ body:has(.hero) .header-actions {
 
 
 
+.poster-logo-mark {
+  align-items: flex-end;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.76));
+  bottom: 0;
+  display: flex;
+  inset-inline: 0;
+  min-height: 44%;
+  padding: 14px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.poster-logo-mark img {
+  height: auto;
+  max-height: 58px;
+  max-width: 72%;
+  object-fit: contain;
+  object-position: left bottom;
+  width: auto;
+}
+
 .poster-sheen {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.42));
   inset: 0;
