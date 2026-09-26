@@ -87,6 +87,9 @@ export default function HomePage() {
     data.airingSeries,
     data.topRatedSeries,
   ).slice(0, 50);
+  const currentUpcomingSeries = uniqueMovies(data.airingSeries, data.trendingSeries, data.topRatedSeries).slice(0, 14);
+  const firstEpisodes = uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries).slice(0, 14);
+  const crimeSeries = uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries).filter((movie) => movie.genre_ids.includes(80)).slice(0, 14);
 
   return (
     <main className="home-page">
@@ -95,17 +98,33 @@ export default function HomePage() {
         <TopTenRail movies={topTenMovies} />
         <ContinueRail items={continueWatching} onChange={refreshContinue} />
         <ForYouRail movies={forYou} />
-        <MoodRail movies={discoveryPool} />
         <MovieRail
-          title="Trending Now"
-          eyebrow="The weekly top ten"
-          movies={data.trending.slice(0, 10)}
-          numbered
+          title="Current & Upcoming TV Shows"
+          eyebrow="Fresh episodes and returning favorites"
+          movies={currentUpcomingSeries}
+          href="/series/?sort=first_air_date.desc"
+        />
+        <MovieRail
+          title="First Episodes You Can't Miss"
+          eyebrow="Start a new story tonight"
+          movies={firstEpisodes}
+          href="/series/?sort=popularity.desc"
+        />
+        {crimeSeries.length ? (
+          <MovieRail
+            title="Crime Series"
+            eyebrow="Cases, crews, and consequences"
+            movies={crimeSeries}
+            href="/series/?genre=80&sort=popularity.desc"
+          />
+        ) : null}
+        <MovieRail
+          title="Trending Today"
+          eyebrow="What everyone is watching now"
+          movies={data.trending.slice(0, 14)}
           href="/movies/?sort=popularity.desc"
         />
-        <MovieRail title="New Releases" eyebrow="Now playing" movies={data.nowPlaying.slice(0, 14)} href="/movies/?sort=primary_release_date.desc" />
-        <MovieRail title="Critically Acclaimed" eyebrow="Highly rated" movies={data.topRated.slice(0, 14)} href="/movies/?sort=vote_average.desc" />
-        <MovieRail title="High Velocity" eyebrow="Action selection" movies={data.action.slice(0, 14)} href="/movies/?genre=28&sort=popularity.desc" />
+        <MoodRail movies={discoveryPool} />
         <MovieRail
           title="Series"
           eyebrow="Stories worth staying for"
@@ -121,14 +140,16 @@ export default function HomePage() {
           />
         ) : null}
         <GenreRail movies={discoveryPool} />
+        <MovieRail title="New Releases" eyebrow="Now playing" movies={data.nowPlaying.slice(0, 14)} href="/movies/?sort=primary_release_date.desc" />
+        <MovieRail title="High Velocity" eyebrow="Action selection" movies={data.action.slice(0, 14)} href="/movies/?genre=28&sort=popularity.desc" />
         <MovieRail
-          title="Airing Now"
-          eyebrow="New episodes"
-          movies={data.airingSeries.slice(0, 14)}
-          href="/series/?sort=first_air_date.desc"
+          title="Award-Worthy Movies"
+          eyebrow="Highly rated films"
+          movies={data.topRated.slice(0, 14)}
+          href="/movies/?sort=vote_average.desc"
         />
         <MovieRail
-          title="Essential Television"
+          title="Award-Worthy TV Shows"
           eyebrow="Top rated series"
           movies={data.topRatedSeries.slice(0, 14)}
           href="/series/?sort=vote_average.desc"
