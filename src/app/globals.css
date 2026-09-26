@@ -10664,3 +10664,35 @@ body:has(.watch-page) .bottom-dock {
     width: 138%;
   }
 }
+
+
+/* The only interactive trailer control is our own quiet volume toggle. */
+.movie-card-preview-sound {
+  align-items: center;
+  background: rgba(8, 9, 10, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  bottom: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  pointer-events: auto;
+  right: 14px;
+  top: auto;
+  width: 36px;
+  z-index: 5;
+}
+
+.movie-card-preview-sound:hover,
+.movie-card-preview-sound:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+  transform: scale(1.06);
+}
+
+.movie-card-preview-sound svg {
+  height: 16px;
+  width: 16px;
+}
