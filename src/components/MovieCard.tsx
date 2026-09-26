@@ -244,11 +244,11 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
                 {previewTrailerKey ? (
                   <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media" onLoad={playTrailerPreview} />
                 ) : <Image src={cardImageSrc} alt="" fill sizes="560px" />}
+                <span className="movie-card-preview-shade" aria-hidden="true" />
+                <button className="movie-card-preview-sound" type="button" aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} onClick={togglePreviewSound}>
+                  {previewMuted ? <MutedIcon /> : <VolumeIcon />}
+                </button>
               </div>
-              <span className="movie-card-preview-shade" aria-hidden="true" />
-              <button className="movie-card-preview-sound" type="button" aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} onClick={togglePreviewSound}>
-                {previewMuted ? <MutedIcon /> : <VolumeIcon />}
-              </button>
               <div className="movie-card-preview-info">
                 <strong>{movie.title}</strong>
                 <span className="movie-card-preview-meta">
