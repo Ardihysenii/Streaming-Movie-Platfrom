@@ -10942,3 +10942,41 @@ body {
     font-size: 1.15rem;
   }
 }
+
+
+/* Shahflix rail spacing alignment. */
+/* Shahflix uses a tight 20px rhythm between homepage rows and 12px rail gaps.
+   This changes spacing only; poster/card sizing stays on the existing tokens. */
+.home-page .content-section:not(.top-ten-section) {
+  margin-bottom: 20px;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading {
+  margin-bottom: 12px;
+}
+
+.home-page .content-section:not(.top-ten-section) .movie-rail {
+  gap: 12px;
+}
+
+.home-page .top-ten-section {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .home-page .content-section:not(.top-ten-section) {
+    margin-bottom: 8px;
+  }
+
+  .home-page .content-section:not(.top-ten-section) .section-heading {
+    margin-bottom: 8px;
+  }
+
+  .home-page .content-section:not(.top-ten-section) .movie-rail {
+    gap: 10px;
+  }
+
+  .home-page .top-ten-section {
+    margin-bottom: 4px;
+  }
+}
