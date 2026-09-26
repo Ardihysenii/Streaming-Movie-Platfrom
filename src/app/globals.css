@@ -11231,27 +11231,3 @@ body {
 @media (max-width: 768px) {
   .movie-card-inline-trailer { display: none; }
 }
-
-
-/* Attached trailer expansion: widen only the active regular card and let the info panel share its widened footprint. */
-@media (hover: hover) and (min-width: 769px) {
-    .movie-card.is-preview-active .poster-link {
-          margin-left: -12px;
-          width: calc(100% + 24px);
-    }
-
-  .movie-card.is-preview-active .card-hover-info {
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .card-hover-info.is-open {
-        transform: translateY(-1px) scale(1);
-  }
-}
-
-@media (max-width: 768px) {
-    .movie-card.is-preview-active .poster-link {
-          margin-left: 0;
-          width: 100%;
-    }
-}
