@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { BookmarkIcon, CloseIcon, HeartIcon, StarIcon } from "./Icons";
+import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
 import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
@@ -79,6 +79,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const [previewActive, setPreviewActive] = useState(false);
   const [previewClosing, setPreviewClosing] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
+  const [previewMuted, setPreviewMuted] = useState(true);
   const previewTimerRef = useRef<number | null>(null);
   const previewHideTimerRef = useRef<number | null>(null);
   const previewRequestRef = useRef(0);
@@ -97,6 +98,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     setPreviewTrailerKey(movie.trailer_key ?? trailerPreviewCache.get(previewIdentity) ?? null);
     setPreviewActive(false);
     setPreviewClosing(false);
+    setPreviewMuted(true);
   }, [movie.trailer_key, previewIdentity]);
 
   useEffect(() => () => {
@@ -171,7 +173,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     previewTimerRef.current = window.setTimeout(() => {
       previewTimerRef.current = null;
       startPreview();
-    }, 4000);
+    }, 3000);
   };
 
   const playTrailerPreview = () => {
@@ -180,6 +182,14 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     const playMessage = JSON.stringify({ event: "command", func: "playVideo", args: [] });
     frame.postMessage(playMessage, "https://www.youtube-nocookie.com");
     window.setTimeout(() => frame.postMessage(playMessage, "https://www.youtube-nocookie.com"), 350);
+  };
+
+  const togglePreviewSound = () => {
+    const nextMuted = !previewMuted;
+    setPreviewMuted(nextMuted);
+    const frame = previewFrameRef.current?.contentWindow;
+    if (!frame) return;
+    frame.postMessage(JSON.stringify({ event: "command", func: nextMuted ? "mute" : "unMute", args: [] }), "https://www.youtube-nocookie.com");
   };
 
   const handleCardBlur = (event: any) => {
@@ -235,6 +245,9 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
                 ) : <Image src={cardImageSrc} alt="" fill sizes="560px" />}
               </div>
               <span className="movie-card-preview-shade" aria-hidden="true" />
+              <button className="movie-card-preview-sound" type="button" aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} onClick={togglePreviewSound}>
+                {previewMuted ? <MutedIcon /> : <VolumeIcon />}
+              </button>
               <div className="movie-card-preview-info">
                 <strong>{movie.title}</strong>
                 <span className="movie-card-preview-meta">
