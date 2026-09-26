@@ -221,7 +221,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
         </Link>
         {previewActive && typeof document !== "undefined" ? createPortal(
           <>
-            <span className={"movie-card-preview-backdrop" + (previewClosing ? " is-closing" : "")} aria-hidden="true" />
+            <button className={"movie-card-preview-backdrop" + (previewClosing ? " is-closing" : "")} type="button" aria-label="Close trailer preview" onClick={stopPreview} />
             <div
               className={"movie-card-preview" + (previewClosing ? " is-closing" : "")}
               aria-label={movie.title + " trailer preview"}
@@ -239,6 +239,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
               }}
               onMouseLeave={stopPreview}
             >
+              <button className="movie-card-preview-close" type="button" aria-label="Close trailer preview" onClick={stopPreview}>×</button>
               <div className="movie-card-preview-media">
                 {previewTrailerKey ? (
                   <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media" onLoad={playTrailerPreview} />
