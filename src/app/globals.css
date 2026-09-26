@@ -10334,3 +10334,163 @@ body:has(.watch-page) .bottom-dock {
 .movie-card-preview-shade {
   background: linear-gradient(180deg, rgba(5, 6, 7, 0.02) 52%, rgba(5, 6, 7, 0.5) 100%);
 }
+
+
+/* Centered hover trailer: the existing poster/card frame stays unchanged while the
+   preview travels smoothly from its source card into a cinematic overlay. */
+@media (hover: hover) {
+  .movie-card.is-preview-active {
+    filter: brightness(0.54) saturate(0.82);
+    transform: translateY(-4px);
+    z-index: 1;
+  }
+
+  .movie-card.is-preview-active .movie-card-copy {
+    opacity: 0.16;
+  }
+}
+
+.movie-card-preview-backdrop {
+  animation: movieCardPreviewBackdropIn 360ms ease both;
+  background: rgba(2, 3, 4, 0.56);
+  backdrop-filter: blur(5px);
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 90;
+}
+
+.movie-card-preview {
+  animation: movieCardPreviewTravel 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: #111315;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  bottom: auto;
+  box-shadow: 0 36px 90px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 0, 60, 0.1);
+  height: auto;
+  inset-inline: auto;
+  left: 50%;
+  max-height: calc(100vh - 34px);
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--preview-from-x), var(--preview-from-y)) scale(var(--preview-from-scale));
+  transform-origin: center center;
+  width: min(560px, calc(100vw - 32px));
+  z-index: 91;
+}
+
+.movie-card.is-preview-closing + .movie-card-preview-backdrop,
+.movie-card-preview-backdrop:has(+ .movie-card.is-preview-closing) {
+  animation: movieCardPreviewBackdropOut 180ms ease both;
+}
+
+.movie-card-preview-media {
+  aspect-ratio: 16 / 9;
+  background: #050607;
+  position: relative;
+}
+
+.movie-card-preview-media iframe {
+  border: 0;
+  pointer-events: none;
+}
+
+.movie-card-preview-shade {
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0.03) 42%, rgba(8, 9, 10, 0.72) 100%);
+}
+
+.movie-card-preview-info {
+  background: linear-gradient(180deg, #16181a 0%, #111315 100%);
+  gap: 9px;
+  padding: 17px 19px 19px;
+}
+
+.movie-card-preview-info > strong {
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  letter-spacing: -0.025em;
+}
+
+.movie-card-preview-meta {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.66);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  gap: 10px;
+}
+
+.movie-card-preview-meta > span + span::before {
+  color: rgba(255, 255, 255, 0.28);
+  content: "•";
+  margin-right: 10px;
+}
+
+.movie-card-preview-meta .movie-card-preview-rating {
+  align-items: center;
+  color: #ffd84d;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 4px;
+}
+
+.movie-card-preview-meta .movie-card-preview-rating::before {
+  display: none;
+}
+
+.movie-card-preview-rating svg {
+  height: 13px;
+  width: 13px;
+}
+
+.movie-card-preview-info > p {
+  color: rgba(255, 255, 255, 0.68);
+  display: -webkit-box;
+  font-size: 0.76rem;
+  line-height: 1.48;
+  margin: 1px 0 0;
+  max-height: 2.96em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@keyframes movieCardPreviewTravel {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--preview-from-x), var(--preview-from-y)) scale(var(--preview-from-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes movieCardPreviewBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes movieCardPreviewBackdropOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .movie-card-preview {
+    border-radius: 13px;
+    width: min(560px, calc(100vw - 20px));
+  }
+
+  .movie-card-preview-info {
+    padding: 14px 15px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-card-preview,
+  .movie-card-preview-backdrop {
+    animation: none;
+  }
+}
