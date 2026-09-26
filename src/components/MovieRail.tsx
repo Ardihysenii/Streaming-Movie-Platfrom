@@ -362,9 +362,8 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                 className="top-ten-hover-stage"
                 onMouseEnter={(event) => openTopTenHover(index, event.currentTarget)}
                 onMouseLeave={queueCloseTopTenHover}
-                onFocus={() => {
-                  const element = event.currentTarget;
-                  openTopTenHover(index, element);
+                onFocus={(event) => {
+                  openTopTenHover(index, event.currentTarget);
                 }}
               >
               {trailerActive ? (
