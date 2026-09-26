@@ -10696,3 +10696,55 @@ body:has(.watch-page) .bottom-dock {
   height: 16px;
   width: 16px;
 }
+
+
+/* Trailer overlay controls: click the dimmed page or X to close; volume stays on the frame. */
+.movie-card-preview-backdrop {
+  appearance: none;
+  background: rgba(2, 3, 4, 0.56);
+  border: 0;
+  cursor: default;
+  pointer-events: auto;
+}
+
+.movie-card-preview {
+  pointer-events: auto;
+}
+
+.movie-card-preview-close {
+  align-items: center;
+  appearance: none;
+  background: rgba(8, 9, 10, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  font-weight: 300;
+  height: 36px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 0 2px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+  width: 36px;
+  z-index: 7;
+}
+
+.movie-card-preview-close:hover,
+.movie-card-preview-close:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+  transform: scale(1.06);
+}
+
+.movie-card-preview-sound {
+  bottom: 14px;
+  pointer-events: auto;
+  top: auto;
+  z-index: 7;
+}
