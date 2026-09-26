@@ -10317,3 +10317,20 @@ body:has(.watch-page) .bottom-dock {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-width)), var(--card-width)));
     justify-content: start;
 }
+
+
+/* Trailer-only hover preview: keep the artwork cinematic and remove the empty control panel. */
+.movie-card-preview {
+  bottom: auto;
+  height: auto;
+  pointer-events: none;
+  top: -14px;
+}
+
+.movie-card-preview-media {
+  aspect-ratio: 16 / 9;
+}
+
+.movie-card-preview-shade {
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0.02) 52%, rgba(5, 6, 7, 0.5) 100%);
+}
