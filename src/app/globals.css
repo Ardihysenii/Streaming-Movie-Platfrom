@@ -10980,3 +10980,186 @@ body {
     margin-bottom: 4px;
   }
 }
+
+
+/* Shahflix-style card hover motion: the poster remains the same size at rest,
+   while the reveal panel floats directly below it without changing the rail layout. */
+.card-hover-info {
+  background: #141414;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  padding: 12px 14px 14px;
+  pointer-events: none;
+  position: fixed;
+  transform: translateY(-6px) scale(0.985);
+  transform-origin: center top;
+  transition: opacity 350ms cubic-bezier(0.33, 0, 0.2, 1), transform 350ms cubic-bezier(0.33, 0, 0.2, 1);
+  visibility: hidden;
+  z-index: 1000;
+}
+
+.card-hover-info.is-open {
+  animation: montanaHoverInfoIn 350ms cubic-bezier(0.33, 0, 0.2, 1) 40ms both;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+.card-hover-info > strong {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-hover-actions,
+.card-hover-actions-left {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.card-hover-actions {
+  justify-content: space-between;
+}
+
+.card-hover-btn {
+  align-items: center;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 12px;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease;
+  width: 34px;
+}
+
+.card-hover-btn:hover,
+.card-hover-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.85);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.card-hover-btn--play {
+  background: #fff;
+  border-color: #fff;
+  color: #111;
+}
+
+.card-hover-btn--play:hover,
+.card-hover-btn--play:focus-visible {
+  background: #fff;
+  border-color: #fff;
+  color: #111;
+  transform: none;
+}
+
+.card-hover-btn--more {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-left: auto;
+}
+
+.card-hover-btn svg {
+  height: 14px;
+  width: 14px;
+}
+
+.card-hover-meta {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.76);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.card-hover-match {
+  color: #83d883;
+  font-weight: 700;
+}
+
+.card-hover-pill {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  padding: 1px 5px;
+}
+
+.card-hover-rating {
+  align-items: center;
+  color: #ffd84d;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.card-hover-rating svg {
+  height: 12px;
+  width: 12px;
+}
+
+.card-hover-overview {
+  color: rgba(255, 255, 255, 0.66);
+  display: -webkit-box;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin: 0;
+  max-height: 2.9em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@keyframes montanaHoverInfoIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (hover: hover) {
+  .movie-card.is-hover-open {
+    filter: brightness(1.04);
+    transform: translateY(-4px) scale(1.035);
+    z-index: 60;
+  }
+
+  .movie-card.is-hover-open .poster-link {
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.48);
+  }
+}
+
+/* A small regular-card reduction only; Top 10 keeps its independent sizing rules. */
+:root,
+:root[data-density="compact"] {
+  --card-width: clamp(190px, 15vw, 250px);
+}
+
+.top-ten-hover-info {
+  max-width: min(270px, calc(100vw - 24px));
+}
+
+@media (max-width: 768px) {
+  .card-hover-info { display: none; }
+  .movie-card.is-hover-open { filter: none; transform: none; }
+}
