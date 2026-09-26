@@ -92,8 +92,8 @@ export function ForYouRail({ movies }: { movies: Movie[] }) {
   return (
     <ChoiceRail
       className="for-you-rail"
-      eyebrow="Made for your next watch"
-      title="For You"
+      eyebrow="Recommended from your watch history"
+      title="Because You Watched"
       choices={[
         { label: "Movies", movies: movies.filter((movie) => movie.media_type !== "tv"), href: "/movies/" },
         { label: "TV Shows", movies: movies.filter((movie) => movie.media_type === "tv"), href: "/series/" },
@@ -107,7 +107,7 @@ export function MoodRail({ movies }: { movies: Movie[] }) {
     <ChoiceRail
       className="mood-rail"
       eyebrow="Find the feeling"
-      title="What’s Your Mood"
+      title="What's Your Mood"
       choices={MOOD_GENRES.map((mood) => ({
         label: mood.label,
         movies: movies.filter((movie) => mood.ids.some((id) => movie.genre_ids.includes(id))),
