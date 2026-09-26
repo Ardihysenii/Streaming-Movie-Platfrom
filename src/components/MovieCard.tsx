@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, StarIcon, VolumeIcon } from "./Icons";
+import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
 import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
@@ -80,6 +80,12 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const [previewClosing, setPreviewClosing] = useState(false);
   const [previewTrailerKey, setPreviewTrailerKey] = useState<string | null>(movie.trailer_key ?? null);
   const [previewMuted, setPreviewMuted] = useState(true);
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const [hoverOrigin, setHoverOrigin] = useState({ left: 0, top: 0, width: 0 });
+  const hoverTimerRef = useRef<number | null>(null);
+  const hoverHideTimerRef = useRef<number | null>(null);
+  const hoverPanelRef = useRef<HTMLDivElement>(null);
+  const posterRef = useRef<HTMLAnchorElement>(null);
   const previewTimerRef = useRef<number | null>(null);
   const previewHideTimerRef = useRef<number | null>(null);
   const previewRequestRef = useRef(0);
@@ -104,8 +110,52 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   useEffect(() => () => {
     if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current);
     if (previewHideTimerRef.current !== null) window.clearTimeout(previewHideTimerRef.current);
+    if (hoverTimerRef.current !== null) window.clearTimeout(hoverTimerRef.current);
+    if (hoverHideTimerRef.current !== null) window.clearTimeout(hoverHideTimerRef.current);
     previewRequestRef.current += 1;
   }, [previewIdentity]);
+
+  const cancelHoverClose = () => {
+    if (hoverHideTimerRef.current !== null) {
+      window.clearTimeout(hoverHideTimerRef.current);
+      hoverHideTimerRef.current = null;
+    }
+  };
+
+  const openHoverPanel = () => {
+    const rect = posterRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    cancelHoverClose();
+    setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+    setHoverOpen(true);
+  };
+
+  const queueHoverOpen = () => {
+    if (hoverOpen) return;
+    if (hoverTimerRef.current !== null) window.clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = window.setTimeout(() => {
+      hoverTimerRef.current = null;
+      openHoverPanel();
+    }, 160);
+  };
+
+  const queueHoverClose = () => {
+    if (hoverTimerRef.current !== null) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    if (hoverHideTimerRef.current !== null) window.clearTimeout(hoverHideTimerRef.current);
+    hoverHideTimerRef.current = window.setTimeout(() => {
+      hoverHideTimerRef.current = null;
+      setHoverOpen(false);
+    }, 180);
+  };
+
+  const updateHoverPanelPosition = () => {
+    if (!hoverOpen) return;
+    const rect = posterRef.current?.getBoundingClientRect();
+    if (rect) setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+  };
 
   const stopPreview = () => {
     if (previewTimerRef.current !== null) {
@@ -192,22 +242,42 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     frame.postMessage(JSON.stringify({ event: "command", func: nextMuted ? "mute" : "unMute", args: [] }), "https://www.youtube-nocookie.com");
   };
 
+  useEffect(() => {
+    if (!hoverOpen) return;
+    const update = () => updateHoverPanelPosition();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [hoverOpen]);
+
   const handleCardBlur = (event: any) => {
-    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopPreview();
+    const nextTarget = event.relatedTarget as Node | null;
+    if (!event.currentTarget.contains(nextTarget) && !hoverPanelRef.current?.contains(nextTarget)) {
+      queueHoverClose();
+      stopPreview();
+    }
+  };
+
+  const handleCardMouseLeave = () => {
+    queueHoverClose();
+    stopPreview();
   };
 
   return (
     <article
       ref={cardRef}
-      className={"movie-card" + (rankLabel ? " is-ranked" : "") + (previewActive ? " is-preview-active" : "") + (previewClosing ? " is-preview-closing" : "")}
-      onMouseEnter={previewEnabled ? queuePreview : undefined}
-      onMouseLeave={previewEnabled ? stopPreview : undefined}
-      onFocusCapture={previewEnabled ? queuePreview : undefined}
+      className={"movie-card" + (rankLabel ? " is-ranked" : "") + (hoverOpen ? " is-hover-open" : "") + (previewActive ? " is-preview-active" : "") + (previewClosing ? " is-preview-closing" : "")}
+      onMouseEnter={queueHoverOpen}
+      onMouseLeave={handleCardMouseLeave}
+      onFocusCapture={queueHoverOpen}
       onBlurCapture={previewEnabled ? handleCardBlur : undefined}
     >
       {rankLabel ? <span className="rank-number">{rankLabel}</span> : null}
       <div className="movie-card-body">
-        <Link href={href} aria-label={"View " + movie.title} className="poster-link">
+        <Link ref={posterRef} href={href} aria-label={"View " + movie.title} className="poster-link">
           {!loaded ? (
             <span className="poster-loader">
               <LoadingSpinner label={"Loading " + movie.title + " artwork"} />
@@ -219,6 +289,32 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           <span className="poster-sheen" />
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
+        {hoverOpen && typeof document !== "undefined" ? createPortal(
+          <div
+            ref={hoverPanelRef}
+            className="card-hover-info is-open"
+            style={{ left: hoverOrigin.left, top: hoverOrigin.top, width: hoverOrigin.width }}
+            onMouseEnter={cancelHoverClose}
+            onMouseLeave={queueHoverClose}
+          >
+            <strong>{movie.title}</strong>
+            <div className="card-hover-actions">
+              <div className="card-hover-actions-left">
+                <Link className="card-hover-btn card-hover-btn--play" href={href} aria-label={"Play " + movie.title} title="Play"><PlayIcon /></Link>
+                <WishlistButton movie={movie} className="card-hover-btn--list" />
+              </div>
+              <Link className="card-hover-btn card-hover-btn--more" href={href} aria-label={"More info about " + movie.title} title="More info">•••</Link>
+            </div>
+            <div className="card-hover-meta">
+              <span className="card-hover-match">{Math.round(Math.min(99, Math.max(72, movie.vote_average * 10)))}% Match</span>
+              <span className="card-hover-pill">{releaseYear(movie)}</span>
+              <span>{movie.media_type === "tv" ? "TV Show" : "Movie"}</span>
+              <span className="card-hover-rating"><StarIcon /> {movie.vote_average.toFixed(1)}</span>
+            </div>
+            {movie.overview ? <p className="card-hover-overview">{movie.overview}</p> : null}
+          </div>,
+          document.body,
+        ) : null}
         {previewActive && typeof document !== "undefined" ? createPortal(
           <>
             <button className={"movie-card-preview-backdrop" + (previewClosing ? " is-closing" : "")} type="button" aria-label="Close trailer preview" onClick={stopPreview} />
