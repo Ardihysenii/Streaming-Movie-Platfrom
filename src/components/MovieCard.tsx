@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
@@ -91,7 +90,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const previewRequestRef = useRef(0);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
   const cardRef = useRef<HTMLElement>(null);
-  const [previewOrigin, setPreviewOrigin] = useState({ x: 0, y: 0, scale: 0.42 });
   const rankLabel = rank ? rank.toString() : null;
   const href = mediaHref(movie, continueWatching);
   const previewEnabled = !continueWatching;
@@ -148,6 +146,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     hoverHideTimerRef.current = window.setTimeout(() => {
       hoverHideTimerRef.current = null;
       setHoverOpen(false);
+      stopPreview();
     }, 180);
   };
 
@@ -176,16 +175,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     }, 520);
   };
 
-  const preparePreviewMotion = () => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setPreviewOrigin({
-      x: rect.left + rect.width / 2 - window.innerWidth / 2,
-      y: rect.top + rect.height / 2 - window.innerHeight / 2,
-      scale: Math.max(0.34, Math.min(0.58, rect.width / 560)),
-    });
-  };
-
   const startPreview = () => {
     if (!previewEnabled) return;
     if (previewHideTimerRef.current !== null) {
@@ -193,7 +182,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
       previewHideTimerRef.current = null;
     }
     setPreviewClosing(false);
-    preparePreviewMotion();
     setPreviewActive(true);
     if (movie.trailer_key) {
       setPreviewTrailerKey(movie.trailer_key);
@@ -263,16 +251,21 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
 
   const handleCardMouseLeave = () => {
     queueHoverClose();
-    stopPreview();
   };
 
   return (
     <article
       ref={cardRef}
       className={"movie-card" + (rankLabel ? " is-ranked" : "") + (hoverOpen ? " is-hover-open" : "") + (previewActive ? " is-preview-active" : "") + (previewClosing ? " is-preview-closing" : "")}
-      onMouseEnter={queueHoverOpen}
+      onMouseEnter={() => {
+        queueHoverOpen();
+        queuePreview();
+      }}
       onMouseLeave={handleCardMouseLeave}
-      onFocusCapture={queueHoverOpen}
+      onFocusCapture={() => {
+        queueHoverOpen();
+        queuePreview();
+      }}
       onBlurCapture={previewEnabled ? handleCardBlur : undefined}
     >
       {rankLabel ? <span className="rank-number">{rankLabel}</span> : null}
@@ -286,6 +279,18 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
           <span className={"poster-image" + (loaded ? " is-loaded" : "")}>
             <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
+          {previewActive && previewTrailerKey ? (
+            <span className="movie-card-inline-trailer" aria-hidden="true">
+              <iframe
+                ref={previewFrameRef}
+                key={previewTrailerKey}
+                src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"}
+                title={movie.title + " trailer preview"}
+                allow="autoplay; encrypted-media"
+                onLoad={playTrailerPreview}
+              />
+            </span>
+          ) : null}
           <span className="poster-sheen" />
           {typeof progress === "number" ? <span className="watch-progress" aria-label={Math.round(progress) + " percent watched"}><i style={{ width: String(Math.min(100, Math.max(2, progress))) + "%" }} /></span> : null}
         </Link>
@@ -313,49 +318,6 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             </div>
             {movie.overview ? <p className="card-hover-overview">{movie.overview}</p> : null}
           </div>,
-          document.body,
-        ) : null}
-        {previewActive && typeof document !== "undefined" ? createPortal(
-          <>
-            <button className={"movie-card-preview-backdrop" + (previewClosing ? " is-closing" : "")} type="button" aria-label="Close trailer preview" onClick={stopPreview} />
-            <div
-              className={"movie-card-preview" + (previewClosing ? " is-closing" : "")}
-              aria-label={movie.title + " trailer preview"}
-              style={{
-                "--preview-from-x": previewOrigin.x + "px",
-                "--preview-from-y": previewOrigin.y + "px",
-                "--preview-from-scale": String(previewOrigin.scale),
-              } as CSSProperties}
-              onMouseEnter={() => {
-                if (previewHideTimerRef.current !== null) {
-                  window.clearTimeout(previewHideTimerRef.current);
-                  previewHideTimerRef.current = null;
-                }
-                setPreviewClosing(false);
-              }}
-              onMouseLeave={stopPreview}
-            >
-              <button className="movie-card-preview-close" type="button" aria-label="Close trailer preview" onClick={stopPreview}>×</button>
-              <div className="movie-card-preview-media">
-                {previewTrailerKey ? (
-                  <iframe ref={previewFrameRef} key={previewTrailerKey} src={"https://www.youtube-nocookie.com/embed/" + encodeURIComponent(previewTrailerKey) + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&enablejsapi=1"} title={movie.title + " trailer preview"} allow="autoplay; encrypted-media" onLoad={playTrailerPreview} />
-                ) : <Image src={cardImageSrc} alt="" fill sizes="560px" />}
-                <span className="movie-card-preview-shade" aria-hidden="true" />
-                <button className="movie-card-preview-sound" type="button" aria-label={previewMuted ? "Unmute trailer preview" : "Mute trailer preview"} onClick={togglePreviewSound}>
-                  {previewMuted ? <MutedIcon /> : <VolumeIcon />}
-                </button>
-              </div>
-              <div className="movie-card-preview-info">
-                <strong>{movie.title}</strong>
-                <span className="movie-card-preview-meta">
-                  <span>{movie.media_type === "tv" ? "TV Show" : "Movie"}</span>
-                  <span>{releaseYear(movie)}</span>
-                  <span className="movie-card-preview-rating"><StarIcon /> {movie.vote_average.toFixed(1)}</span>
-                </span>
-                {movie.overview ? <p>{movie.overview}</p> : null}
-              </div>
-            </div>
-          </>,
           document.body,
         ) : null}
         <div className="movie-card-copy">
