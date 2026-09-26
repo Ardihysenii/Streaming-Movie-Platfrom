@@ -4,7 +4,6 @@ import { BottomDock, Header } from "@/components/AppChrome";
 import { Footer } from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 import { SettingsPanel } from "@/components/SettingsPanel";
-import { SplashScreen } from "@/components/SplashScreen";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,7 +29,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body>
         <Providers>
-          <SplashScreen />
           <Header />
           {children}
           <Footer />
