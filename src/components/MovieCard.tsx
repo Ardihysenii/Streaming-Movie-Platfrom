@@ -211,9 +211,9 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
         </Link>
         {previewActive && typeof document !== "undefined" ? createPortal(
           <>
-            <span className="movie-card-preview-backdrop" aria-hidden="true" />
+            <span className={"movie-card-preview-backdrop" + (previewClosing ? " is-closing" : "")} aria-hidden="true" />
             <div
-              className="movie-card-preview"
+              className={"movie-card-preview" + (previewClosing ? " is-closing" : "")}
               aria-label={movie.title + " trailer preview"}
               style={{
                 "--preview-from-x": previewOrigin.x + "px",
