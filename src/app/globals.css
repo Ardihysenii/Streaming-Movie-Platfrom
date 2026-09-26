@@ -10572,3 +10572,41 @@ body:has(.watch-page) .bottom-dock {
     transform: none;
   }
 }
+
+
+/* Final Netflix-style hover polish: the preview stays cinematic and the embedded
+   YouTube chrome/branding is cropped outside the visible frame. */
+.movie-card-preview {
+  animation-duration: 440ms;
+  border-radius: 16px;
+  width: min(560px, calc(100vw - 32px));
+}
+
+.movie-card-preview-media {
+  isolation: isolate;
+}
+
+.movie-card-preview-media iframe {
+  height: 122%;
+  left: -11%;
+  max-width: none;
+  top: -11%;
+  width: 122%;
+}
+
+.movie-card-preview-shade {
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0) 45%, rgba(8, 9, 10, 0.36) 100%);
+}
+
+.movie-card-preview-label {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .movie-card-preview-media iframe {
+    height: 116%;
+    left: -8%;
+    top: -8%;
+    width: 116%;
+  }
+}
