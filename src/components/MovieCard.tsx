@@ -171,7 +171,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     previewTimerRef.current = window.setTimeout(() => {
       previewTimerRef.current = null;
       startPreview();
-    }, 650);
+    }, 4000);
   };
 
   const playTrailerPreview = () => {
