@@ -10610,3 +10610,38 @@ body:has(.watch-page) .bottom-dock {
     width: 116%;
   }
 }
+
+
+/* Cinematic interaction motion pass. */
+@media (hover: hover) {
+  .movie-card, .top-ten-card-shell, .actor-card, .episode-card, .catalog-pagination button, .recent-search-chip, .detail-wishlist-button, .season-option, .rail-tabs button, .bottom-dock a, .bottom-dock > button, .icon-button, .back-link { will-change: transform; }
+  .movie-card { transition-duration: 360ms; }
+  .movie-card:hover { transform: translateY(-6px); }
+  .poster-link { box-shadow: 0 0 0 rgba(0,0,0,0); transform: translateZ(0); transition: border-color 260ms ease, box-shadow 360ms cubic-bezier(0.2,0.8,0.2,1), transform 360ms cubic-bezier(0.2,0.8,0.2,1); }
+  .poster-link:hover { box-shadow: 0 18px 36px rgba(0,0,0,0.28), 0 0 0 1px rgba(var(--accent-rgb),0.16); transform: translateY(-2px); }
+  .top-ten-card-shell { transition-duration: 340ms; }
+  .top-ten-card-shell:hover { transform: translateY(-7px); }
+  .top-ten-card-shell:hover .top-ten-image img { transform: scale(1.075); }
+  .actor-card { transition-duration: 300ms; }
+  .actor-card:hover { transform: translateY(-6px) scale(1.012); box-shadow: 0 16px 30px rgba(0,0,0,0.2); }
+  .episode-card { transition-duration: 300ms; }
+  .episode-card:hover, .episode-card:focus-visible { transform: translateX(6px); box-shadow: 0 14px 28px rgba(0,0,0,0.18); }
+  .catalog-pagination button:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+  .catalog-pagination button:active:not(:disabled) { transform: translateY(0) scale(0.96); }
+  .detail-wishlist-button:hover { transform: scale(1.08) rotate(-4deg); }
+  .icon-button:hover { transform: translateY(-2px) rotate(-3deg); }
+  .bottom-dock a:hover, .bottom-dock > button:hover { transform: translateY(-4px); }
+  .rail-arrow-left:hover svg { transform: translateX(-4px) scale(1.12); }
+  .rail-arrow-right:hover svg { transform: translateX(4px) scale(1.12); }
+}
+.settings-panel { will-change: transform; transition-duration: 520ms; }
+.settings-backdrop, .agent-backdrop { transition: opacity 360ms ease, backdrop-filter 360ms ease; }
+.browse-popover, .agent-panel { animation: montanaPopoverIn 360ms cubic-bezier(0.2,0.8,0.2,1) both; transform-origin: bottom right; }
+.season-menu { animation: montanaDropdownIn 240ms cubic-bezier(0.2,0.8,0.2,1) both; transform-origin: top center; }
+@keyframes montanaPopoverIn { from { opacity:0; transform: translateY(12px) scale(0.94); } to { opacity:1; transform: translateY(0) scale(1); } }
+@keyframes montanaDropdownIn { from { opacity:0; transform: translateY(-6px) scaleY(0.94); } to { opacity:1; transform: translateY(0) scaleY(1); } }
+:root[data-motion="reduced"] .browse-popover, :root[data-motion="reduced"] .agent-panel, :root[data-motion="reduced"] .season-menu { animation:none; }
+@media (prefers-reduced-motion: reduce) {
+  .browse-popover, .agent-panel, .season-menu { animation:none; }
+  .poster-link:hover, .movie-card:hover, .top-ten-card-shell:hover, .actor-card:hover, .episode-card:hover, .episode-card:focus-visible, .catalog-pagination button:hover:not(:disabled), .detail-wishlist-button:hover, .icon-button:hover, .bottom-dock a:hover, .bottom-dock > button:hover { transform:none; }
+}
