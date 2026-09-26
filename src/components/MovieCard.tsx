@@ -121,7 +121,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
       previewHideTimerRef.current = null;
       setPreviewActive(false);
       setPreviewClosing(false);
-    }, 180);
+    }, 520);
   };
 
   const preparePreviewMotion = () => {
