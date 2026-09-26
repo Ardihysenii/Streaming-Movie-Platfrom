@@ -11163,3 +11163,71 @@ body {
   .card-hover-info { display: none; }
   .movie-card.is-hover-open { filter: none; transform: none; }
 }
+
+
+/* Final card alignment pass: the hover surface and trailer share the poster's exact bounds. */
+@media (hover: hover) {
+  .movie-card.is-hover-open {
+    filter: brightness(1.04);
+    transform: none;
+    z-index: 60;
+  }
+
+  .movie-card.is-hover-open .poster-link {
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.48);
+  }
+}
+
+.movie-card-inline-trailer {
+  background: #050607;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.movie-card-inline-trailer iframe {
+  border: 0;
+  height: 200%;
+  left: 50%;
+  min-height: 100%;
+  min-width: 100%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+}
+
+.movie-card-inline-trailer::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 35%, rgba(0, 0, 0, 0.58));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.movie-card.is-preview-active .movie-card-inline-trailer {
+  animation: montanaInlineTrailerIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.movie-card.is-preview-active {
+  filter: brightness(1.04);
+  transform: none;
+  z-index: 60;
+}
+
+.movie-card.is-preview-active .movie-card-copy {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes montanaInlineTrailerIn {
+  from { opacity: 0; transform: scale(1.025); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .movie-card-inline-trailer { display: none; }
+}
