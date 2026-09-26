@@ -10443,7 +10443,10 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .movie-card-preview-rating svg {
+  color: #ffd84d;
+  fill: #ffd84d;
   height: 13px;
+  stroke: #ffd84d;
   width: 13px;
 }
 
@@ -10578,8 +10581,8 @@ body:has(.watch-page) .bottom-dock {
    YouTube chrome/branding is cropped outside the visible frame. */
 .movie-card-preview {
   animation-duration: 440ms;
-  border-radius: 16px;
-  width: min(560px, calc(100vw - 32px));
+  border-radius: 0;
+  width: min(640px, calc(100vw - 28px));
 }
 
 .movie-card-preview-media {
@@ -10587,11 +10590,11 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .movie-card-preview-media iframe {
-  height: 122%;
-  left: -11%;
+  height: 150%;
+  left: -25%;
   max-width: none;
-  top: -11%;
-  width: 122%;
+  top: -25%;
+  width: 150%;
 }
 
 .movie-card-preview-shade {
@@ -10644,4 +10647,20 @@ body:has(.watch-page) .bottom-dock {
 @media (prefers-reduced-motion: reduce) {
   .browse-popover, .agent-panel, .season-menu { animation:none; }
   .poster-link:hover, .movie-card:hover, .top-ten-card-shell:hover, .actor-card:hover, .episode-card:hover, .episode-card:focus-visible, .catalog-pagination button:hover:not(:disabled), .detail-wishlist-button:hover, .icon-button:hover, .bottom-dock a:hover, .bottom-dock > button:hover { transform:none; }
+}
+
+
+/* Keep the larger square-corner preview and branding crop on narrow screens too. */
+@media (max-width: 640px) {
+  .movie-card-preview {
+    border-radius: 0;
+    width: min(640px, calc(100vw - 16px));
+  }
+
+  .movie-card-preview-media iframe {
+    height: 138%;
+    left: -19%;
+    top: -19%;
+    width: 138%;
+  }
 }
