@@ -47,7 +47,7 @@ export function WishlistButton({ movie, className = "", icon = "bookmark" }: { m
                 onClick={() => setSaved(toggleWishlist(movie))}
               >
           {icon === "heart" ? <HeartIcon /> : <BookmarkIcon />}
-        </button>button>
+        </button>
       );
 }
 
