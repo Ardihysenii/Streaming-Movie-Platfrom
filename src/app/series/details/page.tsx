@@ -247,13 +247,7 @@ function SeriesDetailsContent() {
       </section>
       <div className="inner-page-content">
         <EpisodeBrowser series={series} />
-        <Credits
-          cast={series.cast}
-          directors={series.creators}
-          heading="Cast & Creators"
-          primaryLabel={series.creators.length === 1 ? "Creator" : "Creators"}
-          primaryRole="Creator"
-        />
+<Credits cast={series.cast} directors={series.creators} variant="shahflix" />
         <MovieRail
           title="Series You May Like"
           eyebrow="Selected for you"
