@@ -13,8 +13,8 @@
   --accent-rgb: 255, 0, 60;
   --page-gutter: clamp(20px, 4vw, 72px);
   --section-gap: clamp(44px, 4.5vw, 76px);
-  --card-width: clamp(196px, 15.4vw, 260px);
-  --card-radius: 3px;
+  --card-width: clamp(184px, 14.6vw, 244px);
+  --card-radius: 10px;
   --header-height: 86px;
   --font-sans: "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   /* Keep display typography consistent with the regular Continue Watching face.
@@ -1329,7 +1329,7 @@ body:has(.hero) .header-actions {
   aspect-ratio: 16 / 9;
   background: var(--surface-raised);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  border-radius: 10px;
   display: block;
   overflow: hidden;
   position: relative;
@@ -10433,7 +10433,7 @@ body:has(.watch-page) .bottom-dock {
 
 .home-page .content-section:not(.top-ten-section) .movie-card {
   contain-intrinsic-size: auto 300px;
-  flex-basis: clamp(200px, 16vw, 270px);
+  flex-basis: clamp(184px, 14.6vw, 244px);
 }
 
 .home-page .content-section:not(.top-ten-section) .movie-card-copy {
@@ -11197,7 +11197,7 @@ body {
   :root {
     --page-gutter: 16px;
     --section-gap: 34px;
-    --card-width: clamp(164px, 48vw, 220px);
+    --card-width: clamp(156px, 46vw, 210px);
   }
 
   html,
@@ -11436,7 +11436,7 @@ body {
 @media (max-width: 420px) {
   :root {
     --page-gutter: 14px;
-    --card-width: min(44vw, 190px);
+    --card-width: min(42vw, 180px);
   }
 
   .movie-grid,
