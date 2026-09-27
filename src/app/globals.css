@@ -1822,7 +1822,8 @@ body:has(.hero) .header-actions {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.bottom-dock .browse-popover-grid a {
+.bottom-dock .browse-popover-grid a,
+.bottom-dock .browse-popover-grid button {
   align-items: center;
   background: rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1831,6 +1832,7 @@ body:has(.hero) .header-actions {
   display: flex;
   gap: 10px;
   height: 64px;
+  cursor: pointer;
   justify-content: flex-start;
   padding: 0 14px;
   position: static;
@@ -1838,7 +1840,8 @@ body:has(.hero) .header-actions {
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.bottom-dock .browse-popover-grid a:hover {
+.bottom-dock .browse-popover-grid a:hover,
+.bottom-dock .browse-popover-grid button:hover {
   background: rgba(var(--accent-rgb), 0.14);
   border-color: rgba(var(--accent-rgb), 0.6);
   color: white;
@@ -1846,13 +1849,15 @@ body:has(.hero) .header-actions {
   transform: translateY(-2px);
 }
 
-.bottom-dock .browse-popover-grid a svg {
+.bottom-dock .browse-popover-grid a svg,
+.bottom-dock .browse-popover-grid button svg {
   color: var(--accent);
   height: 20px;
   width: 20px;
 }
 
-.bottom-dock .browse-popover-grid a span {
+.bottom-dock .browse-popover-grid a span,
+.bottom-dock .browse-popover-grid button span {
   clip: auto;
   clip-path: none;
   color: inherit;
@@ -1906,7 +1911,8 @@ body:has(.hero) .header-actions {
     display: none;
   }
 
-  .bottom-dock .browse-popover-grid a {
+  .bottom-dock .browse-popover-grid a,
+  .bottom-dock .browse-popover-grid button {
     flex: none;
     height: 58px;
     max-width: none;
