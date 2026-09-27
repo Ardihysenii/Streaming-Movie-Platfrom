@@ -187,7 +187,7 @@ export default function HomePage() {
     <main className="home-page">
       <Hero movies={heroMovies} />
       <div className="home-content">
-        <TopTenRail movies={topTenMovies} />
+        <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
         {isFilteredHome ? (
           <MovieRail
@@ -250,7 +250,7 @@ export default function HomePage() {
         />
         <MovieRail
           title={isFilteredHome ? `More ${categoryLabel}` : "Award-Worthy TV Shows"}
-          eyebrow="Top rated series"
+          eyebrow={isFilteredHome ? `Top rated ${categoryLabel.toLowerCase()}` : "Top rated series"}
           movies={isFilteredHome ? filteredSections.awardSeries : data.topRatedSeries.slice(0, 14)}
           href="/series/?sort=vote_average.desc"
         />
