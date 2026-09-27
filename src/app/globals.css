@@ -4093,11 +4093,9 @@ body:has(.hero) .header-actions {
   display: block;
 }
 
-.credits-layout--shahflix .credit-group {
-  min-width: 0;
-}
-
+.credits-layout--shahflix .credit-group,
 .credits-layout--shahflix .credit-rail {
+  min-width: 0;
   position: relative;
 }
 
@@ -4106,7 +4104,7 @@ body:has(.hero) .header-actions {
   gap: 16px;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 0 2px 8px;
+  padding: 0 3px 8px;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -4121,7 +4119,7 @@ body:has(.hero) .header-actions {
   border: 0;
   border-radius: 0;
   display: block;
-  flex: 0 0 clamp(136px, 11.2vw, 168px);
+  flex: 0 0 clamp(128px, 8vw, 152px);
   min-width: 0;
   padding: 0;
   transform: none;
@@ -4142,7 +4140,7 @@ body:has(.hero) .header-actions {
 }
 
 .credits-layout--shahflix .credit-portrait {
-  aspect-ratio: 0.75;
+  aspect-ratio: 3 / 4;
   background: #171a1f;
   border: 0;
   border-radius: 5px;
@@ -4179,37 +4177,59 @@ body:has(.hero) .header-actions {
 
 .credit-rail-arrow {
   align-items: center;
-  background: rgba(7, 8, 9, 0.72);
+  background: transparent;
   border: 0;
-  border-radius: 50%;
-  color: var(--text);
+  color: rgba(255, 255, 255, 0.94);
   cursor: pointer;
   display: flex;
-  font-size: 2rem;
-  height: 42px;
+  height: 58px;
   justify-content: center;
-  line-height: 1;
-  opacity: 0;
+  opacity: 0.92;
+  padding: 0;
   position: absolute;
-  top: 41%;
+  top: 38%;
   transform: translateY(-50%);
-  transition: opacity 180ms ease, background 180ms ease, transform 180ms ease;
-  width: 42px;
+  transition: opacity 180ms ease, transform 180ms ease;
+  width: 28px;
   z-index: 2;
 }
 
-.credit-rail:hover .credit-rail-arrow,
+.credit-rail-arrow::before {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  content: "";
+  display: block;
+  height: 11px;
+  width: 11px;
+}
+
+.credit-rail-arrow:hover,
 .credit-rail-arrow:focus-visible {
+  color: #fff;
   opacity: 1;
+  outline: 0;
 }
 
-.credit-rail-arrow:hover {
-  background: var(--accent);
-  transform: translateY(-50%) scale(1.05);
+.credit-rail-arrow:hover::before,
+.credit-rail-arrow:focus-visible::before {
+  transform: scale(1.12);
 }
 
-.credit-rail-arrow--left { left: -14px; }
-.credit-rail-arrow--right { right: -14px; }
+.credit-rail-arrow--left {
+  left: 1px;
+}
+
+.credit-rail-arrow--left::before {
+  transform: rotate(135deg);
+}
+
+.credit-rail-arrow--right {
+  right: 1px;
+}
+
+.credit-rail-arrow--right::before {
+  transform: rotate(-45deg);
+}
 
 .catalog-page,
 .search-page {
