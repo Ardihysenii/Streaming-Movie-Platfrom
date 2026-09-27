@@ -133,7 +133,13 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     const rect = posterRef.current?.getBoundingClientRect();
     if (!rect) return;
     cancelHoverClose();
-    setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+    const scale = previewActive ? 1.12 : 1;
+    const width = rect.width * scale;
+    setHoverOrigin({
+      left: rect.left - (width - rect.width) / 2,
+      top: rect.top + rect.height * scale - 1,
+      width,
+    });
     setHoverOpen(true);
   };
 
@@ -143,7 +149,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     hoverTimerRef.current = window.setTimeout(() => {
       hoverTimerRef.current = null;
       openHoverPanel();
-    }, 160);
+    }, 300);
   };
 
   const queueHoverClose = () => {
@@ -162,7 +168,15 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const updateHoverPanelPosition = () => {
     if (!hoverOpen) return;
     const rect = posterRef.current?.getBoundingClientRect();
-    if (rect) setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+    if (rect) {
+      const scale = previewActive ? 1.12 : 1;
+      const width = rect.width * scale;
+      setHoverOrigin({
+        left: rect.left - (width - rect.width) / 2,
+        top: rect.top + rect.height * scale - 1,
+        width,
+      });
+    }
   };
 
   const stopPreview = () => {
@@ -220,7 +234,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     previewTimerRef.current = window.setTimeout(() => {
       previewTimerRef.current = null;
       startPreview();
-    }, 3000);
+    }, 300);
   };
 
   const playTrailerPreview = () => {
@@ -248,7 +262,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
       window.removeEventListener("scroll", update, true);
       window.removeEventListener("resize", update);
     };
-  }, [hoverOpen]);
+  }, [hoverOpen, previewActive]);
 
   const handleCardBlur = (event: any) => {
     const nextTarget = event.relatedTarget as Node | null;
