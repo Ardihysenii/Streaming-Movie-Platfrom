@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
 import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
 import { MovieCard, movieKey, progressPercentage, WishlistButton } from "./MovieCard";
 import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
@@ -239,8 +238,6 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
   const [trailerLoading, setTrailerLoading] = useState(false);
   const [trailerError, setTrailerError] = useState(false);
   const [trailerMuted, setTrailerMuted] = useState(true);
-  const [topTenHover, setTopTenHover] = useState<{ index: number; left: number; top: number; width: number } | null>(null);
-  const topTenHoverHideTimerRef = useRef<number | null>(null);
   const trailerRef = useRef<HTMLIFrameElement>(null);
   const trailerRequestRef = useRef(0);
 
@@ -252,27 +249,6 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
     setTrailerError(false);
     setTrailerMuted(true);
   };
-
-  const openTopTenHover = (index: number, element: HTMLDivElement) => {
-    if (topTenHoverHideTimerRef.current !== null) {
-      window.clearTimeout(topTenHoverHideTimerRef.current);
-      topTenHoverHideTimerRef.current = null;
-    }
-    const rect = element.getBoundingClientRect();
-    setTopTenHover({ index, left: rect.left, top: rect.bottom - 1, width: rect.width });
-  };
-
-  const queueCloseTopTenHover = () => {
-    if (topTenHoverHideTimerRef.current !== null) window.clearTimeout(topTenHoverHideTimerRef.current);
-    topTenHoverHideTimerRef.current = window.setTimeout(() => {
-      topTenHoverHideTimerRef.current = null;
-      setTopTenHover(null);
-    }, 180);
-  };
-
-  useEffect(() => () => {
-    if (topTenHoverHideTimerRef.current !== null) window.clearTimeout(topTenHoverHideTimerRef.current);
-  }, []);
 
   useEffect(() => {
     if (!trailerMovie) return;
@@ -360,11 +336,6 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
             <article className={"top-ten-card-shell" + (isFeatured ? " is-featured" : "")} key={movieKey(movie, index)}>
               <div
                 className="top-ten-hover-stage"
-                onMouseEnter={(event) => openTopTenHover(index, event.currentTarget)}
-                onMouseLeave={queueCloseTopTenHover}
-                onFocus={(event) => {
-                  openTopTenHover(index, event.currentTarget);
-                }}
               >
               {trailerActive ? (
                 <div className="top-ten-card top-ten-card-trailer" aria-label={movie.title + " trailer"}>
@@ -435,24 +406,7 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                   </span>
                 </Link>
               )}
-              {topTenHover?.index === index && !trailerActive && typeof document !== "undefined" ? createPortal(
-                <div
-                  className="card-hover-info top-ten-hover-info is-open"
-                  style={{ left: topTenHover.left, top: topTenHover.top, width: topTenHover.width }}
-                  onMouseEnter={() => {
-                    if (topTenHoverHideTimerRef.current !== null) {
-                      window.clearTimeout(topTenHoverHideTimerRef.current);
-                      topTenHoverHideTimerRef.current = null;
-                    }
-                  }}
-                  onMouseLeave={queueCloseTopTenHover}
-                >
-                  <strong>{movie.title}</strong>
-                  <div className="card-hover-actions">
-                    <div className="card-hover-actions-left">
-                      <Link className="card-hover-btn card-hover-btn--play" href={href} aria-label={"Play " + movie.title} title="Play"><PlayIcon /></Link>
-                      <WishlistButton movie={movie} className="card-hover-btn--list" />
-                    </div>
+              </div>
                     <Link className="card-hover-btn card-hover-btn--more" href={href} aria-label={"More info about " + movie.title} title="More info">•••</Link>
                   </div>
                   <div className="card-hover-meta">
