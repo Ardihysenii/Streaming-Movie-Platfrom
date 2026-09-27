@@ -4060,6 +4060,157 @@ body:has(.hero) .header-actions {
   margin: 0;
 }
 
+
+/* ShahFlix-style detail-page cast rail */
+.credits-section--shahflix {
+  margin-bottom: clamp(42px, 4.5vw, 76px);
+  padding: 0;
+}
+
+.credits-section--shahflix .credits-heading {
+  border-bottom: 0;
+  margin-bottom: 22px;
+  padding-bottom: 0;
+}
+
+.credits-section--shahflix .credits-heading h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.65rem, 2.2vw, 2.15rem);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-transform: none;
+}
+
+.credits-section--shahflix .credits-subtitle {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  margin: 8px 0 0;
+}
+
+.credits-layout--shahflix {
+  display: block;
+}
+
+.credits-layout--shahflix .credit-group {
+  min-width: 0;
+}
+
+.credits-layout--shahflix .credit-rail {
+  position: relative;
+}
+
+.credits-layout--shahflix .credit-cast {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 0 2px 8px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.credits-layout--shahflix .credit-cast::-webkit-scrollbar {
+  display: none;
+}
+
+.credits-layout--shahflix .credit-person {
+  align-items: stretch;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: block;
+  flex: 0 0 clamp(136px, 11.2vw, 168px);
+  min-width: 0;
+  padding: 0;
+  transform: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.credits-layout--shahflix .credit-person:hover {
+  background: transparent;
+  border-color: transparent;
+  opacity: 0.92;
+  transform: translateY(-3px);
+}
+
+.credits-layout--shahflix .credit-person:focus-visible {
+  border: 0;
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+
+.credits-layout--shahflix .credit-portrait {
+  aspect-ratio: 0.75;
+  background: #171a1f;
+  border: 0;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.78);
+  width: 100%;
+}
+
+.credits-layout--shahflix .credit-person:hover .credit-portrait {
+  border-color: transparent;
+}
+
+.credits-layout--shahflix .credit-person h3 {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 10px 0 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.credits-layout--shahflix .credit-person p {
+  color: var(--muted);
+  display: -webkit-box;
+  font-size: 0.76rem;
+  line-height: 1.3;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.credit-rail-arrow {
+  align-items: center;
+  background: rgba(7, 8, 9, 0.72);
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  font-size: 2rem;
+  height: 42px;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0;
+  position: absolute;
+  top: 41%;
+  transform: translateY(-50%);
+  transition: opacity 180ms ease, background 180ms ease, transform 180ms ease;
+  width: 42px;
+  z-index: 2;
+}
+
+.credit-rail:hover .credit-rail-arrow,
+.credit-rail-arrow:focus-visible {
+  opacity: 1;
+}
+
+.credit-rail-arrow:hover {
+  background: var(--accent);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.credit-rail-arrow--left { left: -14px; }
+.credit-rail-arrow--right { right: -14px; }
+
 .catalog-page,
 .search-page {
   isolation: isolate;
