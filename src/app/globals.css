@@ -4223,12 +4223,12 @@ body:has(.hero) .header-actions {
 
 .credit-rail-arrow--left {
   background: linear-gradient(to right, #0b0b0b 0%, rgba(11, 11, 11, 0.85) 35%, rgba(0, 0, 0, 0) 100%);
-  left: 37px;
+  left: -12px;
 }
 
 .credit-rail-arrow--right {
   background: linear-gradient(to left, #0b0b0b 0%, rgba(11, 11, 11, 0.85) 35%, rgba(0, 0, 0, 0) 100%);
-  right: 13px;
+  right: -12px;
 }
 
 .catalog-page,
