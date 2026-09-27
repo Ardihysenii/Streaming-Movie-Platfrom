@@ -11487,3 +11487,31 @@ body {
   animation: none;
   transform: translateY(0);
 }
+
+
+/* Final connected hover surface: scale the complete media frame, not only the panel. */
+@media (hover: hover) {
+  .movie-card .poster-link {
+    overflow: visible;
+    transform-origin: center top;
+    transition: transform 450ms cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .movie-card.is-preview-active .poster-link {
+    transform: scale(1.12);
+    z-index: 2;
+  }
+
+  .movie-card.is-preview-active .movie-card-inline-trailer {
+    animation: montanaTrailerOpacityIn 350ms cubic-bezier(0.33, 0, 0.2, 1) both;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+@keyframes montanaTrailerOpacityIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
