@@ -11515,3 +11515,27 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+
+/* Keep the connected hover surface above neighboring cards while it eases outward. */
+@media (hover: hover) {
+  .movie-rail-shell:has(.movie-card.is-preview-active),
+  .movie-rail:has(.movie-card.is-preview-active) {
+    overflow: visible !important;
+  }
+
+  .movie-card.is-preview-active {
+    isolation: isolate;
+    z-index: 120;
+  }
+
+  .movie-card .poster-link {
+    will-change: transform;
+    transition-duration: 560ms;
+  }
+
+  .movie-card.is-preview-active .poster-link {
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65);
+    z-index: 120;
+  }
+}
