@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { imageUrl } from "@/lib/tmdb";
@@ -43,23 +46,57 @@ export function Credits({
   heading = "Cast & Direction",
   primaryLabel,
   primaryRole = "Director",
+  variant = "default",
 }: {
   cast: PersonCredit[];
   directors: PersonCredit[];
   heading?: string;
   primaryLabel?: string;
   primaryRole?: string;
+  variant?: "default" | "shahflix";
 }) {
   if (!cast.length && !directors.length) return null;
 
+  const isShahflix = variant === "shahflix";
+  const castRailRef = useRef<HTMLDivElement>(null);
+  const scrollCast = (direction: number) => {
+    castRailRef.current?.scrollBy({ left: direction * Math.max(260, castRailRef.current.clientWidth * 0.72), behavior: "smooth" });
+  };
+
   return (
-    <section className="credits-section" aria-labelledby="credits-title">
+    <section className={`credits-section${isShahflix ? " credits-section--shahflix" : ""}`} aria-labelledby="credits-title">
       <header className="credits-heading">
-        <p className="eyebrow">Behind the frame</p>
-        <h2 id="credits-title">{heading}</h2>
+        {isShahflix ? (
+          <>
+            <h2 id="credits-title">Cast</h2>
+            <p className="credits-subtitle">The cast behind this title</p>
+          </>
+        ) : (
+          <>
+            <p className="eyebrow">Behind the frame</p>
+            <h2 id="credits-title">{heading}</h2>
+          </>
+        )}
       </header>
-      <div className="credits-layout">
-        {directors.length ? (
+      <div className={`credits-layout${isShahflix ? " credits-layout--shahflix" : ""}`}>
+        {isShahflix ? (
+          <div className="credit-group">
+            <div className="credit-rail">
+              <button className="credit-rail-arrow credit-rail-arrow--left" type="button" onClick={() => scrollCast(-1)} aria-label="Scroll cast left">‹</button>
+              <div ref={castRailRef} className="credit-people credit-cast">
+                {cast.map((actor) => (
+                  <Person
+                    key={`cast-${actor.id}-${actor.name}`}
+                    person={actor}
+                    role={actor.character ? `as ${actor.character}` : "Cast"}
+                  />
+                ))}
+              </div>
+              <button className="credit-rail-arrow credit-rail-arrow--right" type="button" onClick={() => scrollCast(1)} aria-label="Scroll cast right">›</button>
+            </div>
+          </div>
+        ) : null}
+        {!isShahflix && directors.length ? (
           <div className="credit-group credit-directors">
             <p className="credit-label">
               {primaryLabel ?? (directors.length === 1 ? "Director" : "Directors")}
@@ -71,7 +108,7 @@ export function Credits({
             </div>
           </div>
         ) : null}
-        {cast.length ? (
+        {!isShahflix && cast.length ? (
           <div className="credit-group">
             <p className="credit-label">Principal cast</p>
             <div className="credit-people credit-cast">
