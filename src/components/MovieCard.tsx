@@ -129,12 +129,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     }
   };
 
-  const getHoverSurfaceRect = () => {
-    const previewSurface = previewActive
-      ? posterRef.current?.querySelector<HTMLElement>(".movie-card-inline-trailer")
-      : null;
-    return previewSurface?.getBoundingClientRect() ?? posterRef.current?.getBoundingClientRect() ?? null;
-  };
+  const getHoverSurfaceRect = () => posterRef.current?.getBoundingClientRect() ?? null;
 
   const openHoverPanel = () => {
     const rect = getHoverSurfaceRect();
