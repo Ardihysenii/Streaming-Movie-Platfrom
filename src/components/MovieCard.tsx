@@ -287,7 +287,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     >
       {rankLabel ? <span className="rank-number">{rankLabel}</span> : null}
       <div className="movie-card-body">
-        <Link ref={posterRef} href={href} aria-label={"View " + movie.title} className="poster-link">
+        <Link ref={posterRef} href={href} aria-label={"View " + movie.title} className="poster-link" onTransitionEnd={updateHoverPanelPosition}>
           {!loaded ? (
             <span className="poster-loader">
               <LoadingSpinner label={"Loading " + movie.title + " artwork"} />
