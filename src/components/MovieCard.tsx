@@ -25,6 +25,7 @@ type MovieCardProps = {
 export function WishlistButton({ movie, className = "", icon = "bookmark", label }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" | "plus"; label?: string }) {
   const [saved, setSaved] = useState(false);
   const identity = `${movie.media_type ?? "movie"}:${movie.tmdb_id ?? movie.id}`;
+  const listLabel = label ?? "Wishlist";
 
   useEffect(() => {
     const refresh = () => setSaved(isInWishlist(movie));
@@ -41,9 +42,9 @@ export function WishlistButton({ movie, className = "", icon = "bookmark", label
     <button
       className={`wishlist-toggle${saved ? " is-saved" : ""}${className ? ` ${className}` : ""}`}
       type="button"
-      aria-label={saved ? `Remove ${movie.title} from Wishlist` : `Add ${movie.title} to Wishlist`}
+      aria-label={saved ? `Remove ${movie.title} from ${listLabel}` : `Add ${movie.title} to ${listLabel}`}
       aria-pressed={saved}
-      title={saved ? "Remove from Wishlist" : "Add to Wishlist"}
+      title={saved ? `Remove from ${listLabel}` : `Add to ${listLabel}`}
       onClick={() => setSaved(toggleWishlist(movie))}
     >
       {icon === "heart" ? <HeartIcon /> : icon === "plus" ? <PlusIcon /> : <BookmarkIcon />}
