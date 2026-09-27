@@ -4136,7 +4136,7 @@ body:has(.hero) .header-actions {
   border: 0;
   border-radius: 0;
   display: block;
-  flex: 0 0 152px;
+  flex: 0 0 clamp(152px, 8.8vw, 168px);
   min-width: 0;
   padding: 0;
   transform: none;
