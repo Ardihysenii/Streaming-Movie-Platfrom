@@ -11402,3 +11402,20 @@ body {
 @media (max-width: 768px) {
   .movie-card-inline-trailer { display: none; }
 }
+
+
+/* ShahFlix-style movie detail actions. */
+.detail-actions { align-items: center; gap: 8px; }
+.detail-actions .detail-play-button, .detail-actions .detail-my-list-button { align-items: center; border-radius: 0; box-shadow: none; cursor: pointer; display: inline-flex; font-family: Montserrat, Outfit, Inter, system-ui, -apple-system, sans-serif; font-size: .95rem; font-weight: 400; gap: 8px; justify-content: center; line-height: 1.55; min-height: 34px; overflow: hidden; padding: 6px 12px; position: relative; text-transform: none; transition: background .3s cubic-bezier(.4,0,.2,1), border-color .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1), color .3s cubic-bezier(.4,0,.2,1), transform .3s cubic-bezier(.4,0,.2,1); white-space: nowrap; }
+.detail-actions .detail-play-button::before, .detail-actions .detail-my-list-button::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); content: ""; height: 100%; left: -100%; pointer-events: none; position: absolute; top: 0; transition: left .5s; width: 100%; }
+.detail-actions .detail-play-button:hover::before, .detail-actions .detail-my-list-button:hover::before { left: 100%; }
+.detail-actions .detail-play-button > *, .detail-actions .detail-my-list-button > * { position: relative; z-index: 1; }
+.detail-actions .detail-play-button { background: #fff; border: 1px solid #fff; color: #000; }
+.detail-actions .detail-my-list-button { background: transparent; border: 1px solid rgba(180,180,180,.5); color: rgba(220,220,220,.9); }
+.detail-actions .detail-play-button:hover, .detail-actions .detail-my-list-button:hover { background: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,255,255,.1)); border-color: rgba(255,255,255,.4); box-shadow: 0 8px 25px rgba(0,0,0,.3); color: #fff; transform: translateY(-2px); }
+.detail-actions .detail-my-list-button:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.8); box-shadow: none; }
+.detail-actions .detail-play-button:focus-visible, .detail-actions .detail-my-list-button:focus-visible { outline: rgba(255,255,255,.12) solid 2px; outline-offset: 2px; }
+.detail-actions .detail-play-button svg, .detail-actions .detail-my-list-button svg { height: .8em; width: .8em; }
+.detail-actions .detail-my-list-button.is-saved { background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.8); color: #fff; transform: none; }
+.wishlist-button__text { white-space: nowrap; }
+@media (max-width: 680px) { .detail-actions .detail-play-button, .detail-actions .detail-my-list-button { min-height: 42px; border-radius: 24px; } }
