@@ -251,7 +251,7 @@ function MoviePageContent() {
         </div>
       </section>
       <div className="inner-page-content">
-        <Credits cast={movie.cast} directors={movie.directors} />
+        <Credits cast={movie.cast} directors={movie.directors} variant="shahflix" />
         <MovieRail
           title="Movies You May Like"
           eyebrow="Selected for you"
