@@ -185,7 +185,6 @@ function MoviePageContent() {
             {trailerMuted ? <MutedIcon /> : <VolumeIcon />}
           </button>
         ) : null}
-        <WishlistButton movie={movie} className="detail-wishlist-button" icon="heart" />
         <div className="detail-content">
           <div className="detail-layout">
             <div className="detail-copy">
@@ -227,9 +226,10 @@ function MoviePageContent() {
               </div>
               <div className={`detail-actions${resumeCandidate && isReleased(movie) ? " has-resume" : ""}`}>
                 {isReleased(movie) ? (
-                  <Link className="primary-button" href={`/watch/?id=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}&imdbId=${encodeURIComponent(String(movie.id))}`}>
-                    <PlayIcon /> {resumeCandidate ? "Continue" : "Watch now"}
+                  <Link className="primary-button detail-play-button" href={`/watch/?id=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}&imdbId=${encodeURIComponent(String(movie.id))}`}>
+                    <PlayIcon /> Play
                   </Link>
+                  <WishlistButton movie={movie} className="detail-my-list-button" icon="plus" label="My List" />
                 ) : (
                   <button className="primary-button is-coming-soon" type="button" disabled>
                     Coming Soon
