@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AgentIcon, BookmarkIcon, CompassIcon, GridIcon, HistoryIcon, HomeIcon, InfoIcon, SearchIcon, SettingsIcon, StarIcon } from "./Icons";
 import { NovaAgentPanel } from "./NovaAgentPanel";
@@ -48,6 +48,7 @@ export function Header() {
 
 export function BottomDock() {
   const pathname = usePathname() ?? "";
+  const router = useRouter();
   const { setSettingsOpen } = useNovaSettings();
   const [browseOpen, setBrowseOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(false);
@@ -61,6 +62,17 @@ export function BottomDock() {
         : null;
     setSearchHref(type ? `/search/?type=${type}` : "/search/");
   }, [pathname]);
+  function selectHomeFilter(filter: "movies" | "series" | "anime") {
+    setBrowseOpen(false);
+    const target = filter === "movies" ? "/?type=movies" : filter === "series" ? "/?type=series" : "/?type=anime";
+    if (pathname === "/" || pathname === "") {
+      window.history.pushState({}, "", target);
+      window.dispatchEvent(new CustomEvent("nova:home-filter", { detail: filter }));
+    } else {
+      router.push(target);
+    }
+  }
+
   const items = [
     { href: "/", label: "Home", Icon: HomeIcon },
   ];
@@ -117,9 +129,9 @@ export function BottomDock() {
           <div className="browse-popover-group">
             <p className="browse-popover-label">Content</p>
             <div className="browse-popover-grid">
-              <a href="/movies/" onClick={() => setBrowseOpen(false)}><CompassIcon /><span>Movies</span></a>
-              <a href="/series/" onClick={() => setBrowseOpen(false)}><GridIcon /><span>TV Shows</span></a>
-              <a href="/movies/?type=anime" onClick={() => setBrowseOpen(false)}><StarIcon /><span>Anime</span></a>
+              <button type="button" onClick={() => selectHomeFilter("movies")}><CompassIcon /><span>Movies</span></button>
+              <button type="button" onClick={() => selectHomeFilter("series")}><GridIcon /><span>TV Shows</span></button>
+              <button type="button" onClick={() => selectHomeFilter("anime")}><StarIcon /><span>Anime</span></button>
               <a href="/actors/" onClick={() => setBrowseOpen(false)}><InfoIcon /><span>Actors</span></a>
             </div>
           </div>
