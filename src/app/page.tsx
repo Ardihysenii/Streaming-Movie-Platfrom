@@ -233,10 +233,10 @@ export default function HomePage() {
         />
         {visibleNetflixSeries.length ? (
           <MovieRail
-            title="Netflix"
-            eyebrow="Binge-worthy series"
+            title={isFilteredHome ? `Featured ${categoryLabel}` : "Netflix"}
+            eyebrow={isFilteredHome ? `More ${categoryLabel} picks` : "Binge-worthy series"}
             movies={visibleNetflixSeries}
-            href="/series/?network=213&sort=popularity.desc"
+            href={isFilteredHome ? homeFilter === "series" ? "/series/" : homeFilter === "anime" ? "/movies/?type=anime" : "/movies/" : "/series/?network=213&sort=popularity.desc"}
           />
         ) : null}
         <GenreRail movies={isFilteredHome ? filteredSections.genres : discoveryPool} />
