@@ -4070,7 +4070,19 @@ body:has(.hero) .header-actions {
 .credits-section--shahflix .credits-heading {
   border-bottom: 0;
   margin-bottom: 22px;
-  padding-bottom: 0;
+  padding: 0 0 0 16px;
+  position: relative;
+}
+
+.credits-section--shahflix .credits-heading::before,
+.detail-page .content-section .section-heading::before {
+  background: var(--accent);
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 4px;
 }
 
 .credits-section--shahflix .credits-heading h2 {
@@ -4080,6 +4092,11 @@ body:has(.hero) .header-actions {
   letter-spacing: -0.045em;
   line-height: 1.04;
   text-transform: none;
+}
+
+.detail-page .content-section .section-heading {
+  padding-left: 16px;
+  position: relative;
 }
 
 .credits-section--shahflix .credits-subtitle {
@@ -4119,7 +4136,7 @@ body:has(.hero) .header-actions {
   border: 0;
   border-radius: 0;
   display: block;
-  flex: 0 0 clamp(128px, 8vw, 152px);
+  flex: 0 0 152px;
   min-width: 0;
   padding: 0;
   transform: none;
