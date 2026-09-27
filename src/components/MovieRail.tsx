@@ -407,19 +407,6 @@ export function TopTenRail({ movies }: { movies: Movie[] }) {
                 </Link>
               )}
               </div>
-                    <Link className="card-hover-btn card-hover-btn--more" href={href} aria-label={"More info about " + movie.title} title="More info">•••</Link>
-                  </div>
-                  <div className="card-hover-meta">
-                    <span className="card-hover-match">{Math.round(Math.min(99, Math.max(72, movie.vote_average * 10)))}% Match</span>
-                    <span className="card-hover-pill">{releaseYear(movie)}</span>
-                    <span>{movie.media_type === "tv" ? "TV Show" : "Movie"}</span>
-                    <span className="card-hover-rating"><StarIcon /> {movie.vote_average.toFixed(1)}</span>
-                  </div>
-                  {movie.overview ? <p className="card-hover-overview">{movie.overview}</p> : null}
-                </div>,
-                document.body,
-              ) : null}
-              </div>
               {isFeatured && !trailerActive ? (
                 <button
                   className="top-ten-trailer-button"
