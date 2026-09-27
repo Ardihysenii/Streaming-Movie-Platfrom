@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, PlusIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
@@ -22,7 +23,8 @@ type MovieCardProps = {
   removeActionLabel?: string;
 };
 
-export function WishlistButton({ movie, className = "", icon = "bookmark", label }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" | "plus"; label?: string }) {
+export function WishlistButton({ movie, className = "", icon = "bookmark", label, redirectToWishlist = false }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" | "plus"; label?: string; redirectToWishlist?: boolean }) {
+  const router = useRouter();
   const [saved, setSaved] = useState(false);
   const identity = `${movie.media_type ?? "movie"}:${movie.tmdb_id ?? movie.id}`;
   const listLabel = label ?? "Wishlist";
@@ -38,6 +40,11 @@ export function WishlistButton({ movie, className = "", icon = "bookmark", label
     };
   }, [identity, movie]);
 
+  const handleClick = () => {
+    setSaved(toggleWishlist(movie));
+    if (redirectToWishlist) router.push("/wishlist/");
+  };
+
   return (
     <button
       className={`wishlist-toggle${saved ? " is-saved" : ""}${className ? ` ${className}` : ""}`}
@@ -45,7 +52,7 @@ export function WishlistButton({ movie, className = "", icon = "bookmark", label
       aria-label={saved ? `Remove ${movie.title} from ${listLabel}` : `Add ${movie.title} to ${listLabel}`}
       aria-pressed={saved}
       title={saved ? `Remove from ${listLabel}` : `Add to ${listLabel}`}
-      onClick={() => setSaved(toggleWishlist(movie))}
+      onClick={handleClick}
     >
       {icon === "heart" ? <HeartIcon /> : icon === "plus" ? <PlusIcon /> : <BookmarkIcon />}
       {label ? <span className="wishlist-button__text">{label}</span> : null}
