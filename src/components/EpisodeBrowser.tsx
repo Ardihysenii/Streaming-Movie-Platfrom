@@ -93,7 +93,7 @@ export function EpisodeBrowser({
   };
 
   return (
-    <section className="episodes-section" aria-labelledby="episodes-title">
+    <section id="episodes-section" className="episodes-section" aria-labelledby="episodes-title">
       <header className="episodes-heading">
         <span aria-hidden="true" />
         <div>
