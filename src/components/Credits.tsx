@@ -82,7 +82,7 @@ export function Credits({
         {isShahflix ? (
           <div className="credit-group">
             <div className="credit-rail">
-              <button className="credit-rail-arrow credit-rail-arrow--left" type="button" onClick={() => scrollCast(-1)} aria-label="Scroll cast left" />
+              <button className="credit-rail-arrow credit-rail-arrow--left" type="button" onClick={() => scrollCast(-1)} aria-label="Scroll cast left">‹</button>
               <div ref={castRailRef} className="credit-people credit-cast">
                 {cast.map((actor) => (
                   <Person
@@ -92,7 +92,7 @@ export function Credits({
                   />
                 ))}
               </div>
-              <button className="credit-rail-arrow credit-rail-arrow--right" type="button" onClick={() => scrollCast(1)} aria-label="Scroll cast right" />
+              <button className="credit-rail-arrow credit-rail-arrow--right" type="button" onClick={() => scrollCast(1)} aria-label="Scroll cast right">›</button>
             </div>
           </div>
         ) : null}
