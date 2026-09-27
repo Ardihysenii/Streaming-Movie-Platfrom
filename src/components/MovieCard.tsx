@@ -297,7 +297,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
             <Image src={cardImageSrc} alt={movie.title + " artwork"} fill sizes="(max-width: 600px) 42vw, (max-width: 1100px) 25vw, 220px" priority={priority} onLoad={() => setLoaded(true)} />
           </span>
           {previewActive && previewTrailerKey ? (
-            <span className="movie-card-inline-trailer" aria-hidden="true">
+            <span className="movie-card-inline-trailer" aria-hidden="true" onAnimationEnd={updateHoverPanelPosition}>
               <iframe
                 ref={previewFrameRef}
                 key={previewTrailerKey}
