@@ -353,7 +353,7 @@ async function loadDetails(id: string | number, signal?: AbortSignal): Promise<M
   const directors = (details.credits?.crew ?? [])
     .filter((person) => person.job === "Director")
     .map(toPerson);
-  const cast = (details.credits?.cast ?? []).slice(0, 8).map(toPerson);
+  const cast = (details.credits?.cast ?? []).slice(0, 20).map(toPerson);
   return {
     ...movieWithLogo,
     runtime: details.runtime || 0,
@@ -409,7 +409,7 @@ async function loadSeriesDetails(
       || 0,
     genres: details.genres ?? [],
     creators: (details.created_by ?? []).map(toPerson),
-    cast: (details.credits?.cast ?? []).slice(0, 8).map(toPerson),
+    cast: (details.credits?.cast ?? []).slice(0, 20).map(toPerson),
     seasons,
     number_of_seasons: Number(details.number_of_seasons) || seasons.filter((season) => season.season_number > 0).length,
     number_of_episodes: Number(details.number_of_episodes)
