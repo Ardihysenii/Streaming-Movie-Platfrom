@@ -11419,3 +11419,8 @@ body {
 .detail-actions .detail-my-list-button.is-saved { background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.8); color: #fff; transform: none; }
 .wishlist-button__text { white-space: nowrap; }
 @media (max-width: 680px) { .detail-actions .detail-play-button, .detail-actions .detail-my-list-button { min-height: 42px; border-radius: 24px; } }
+
+
+/* Detail My List is a labeled action, not the circular card toggle. */
+.detail-actions .detail-my-list-button { height: auto; min-width: 0; width: auto; }
+.detail-actions .detail-my-list-button svg { display: block; flex: 0 0 auto; width: .8em; }
