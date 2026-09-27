@@ -11435,3 +11435,55 @@ body {
 .episodes-section {
   scroll-margin-top: calc(var(--header-height) + 28px);
 }
+
+
+/* Final ShahFlix hover parity: delayed preview, 1.12x media lift, and an attached info surface. */
+@media (hover: hover) {
+  .movie-card:hover,
+  .movie-card.is-hover-open,
+  .movie-card.is-preview-active {
+    filter: none;
+    transform: none;
+  }
+
+  .movie-card.is-preview-active {
+    z-index: 60;
+  }
+
+  .movie-card.is-preview-active .poster-link {
+    overflow: visible;
+    z-index: 2;
+  }
+
+  .movie-card.is-preview-active .movie-card-inline-trailer {
+    border-radius: 8px 8px 0 0;
+    height: 112%;
+    left: -6%;
+    top: 0;
+    width: 112%;
+  }
+
+  .movie-card.is-preview-active .movie-card-inline-trailer iframe {
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: none;
+    width: 100%;
+  }
+
+  .movie-card.is-preview-active .movie-card-copy {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.card-hover-info {
+  border-radius: 0 0 8px 8px;
+  transition: opacity 350ms cubic-bezier(0.33, 0, 0.2, 1) 40ms, transform 350ms cubic-bezier(0.33, 0, 0.2, 1) 40ms, visibility 350ms cubic-bezier(0.33, 0, 0.2, 1);
+  transform: translateY(-6px);
+}
+
+.card-hover-info.is-open {
+  animation: none;
+  transform: translateY(0);
+}
