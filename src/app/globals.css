@@ -11424,3 +11424,14 @@ body {
 /* Detail My List is a labeled action, not the circular card toggle. */
 .detail-actions .detail-my-list-button { height: auto; min-width: 0; width: auto; }
 .detail-actions .detail-my-list-button svg { display: block; flex: 0 0 auto; width: .8em; }
+
+
+/* Detail actions keep their ShahFlix sizing while supporting smooth series navigation. */
+.detail-actions .detail-play-button,
+.detail-actions .detail-my-list-button {
+  letter-spacing: normal;
+}
+
+.episodes-section {
+  scroll-margin-top: calc(var(--header-height) + 28px);
+}
