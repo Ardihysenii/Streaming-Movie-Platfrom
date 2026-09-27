@@ -107,37 +107,52 @@ export default function HomePage() {
     topTen: [] as HomeData["trending"],
     recommendations: [] as HomeData["trending"],
     current: [] as HomeData["trending"],
-    more: [] as HomeData["trending"],
-    action: [] as HomeData["trending"],
+    firstEpisodes: [] as HomeData["trending"],
+    crime: [] as HomeData["trending"],
     trending: [] as HomeData["trending"],
+    mood: [] as HomeData["trending"],
+    series: [] as HomeData["trending"],
+    netflix: [] as HomeData["trending"],
+    genres: [] as HomeData["trending"],
     newReleases: [] as HomeData["trending"],
+    action: [] as HomeData["trending"],
     topRated: [] as HomeData["trending"],
+    awardSeries: [] as HomeData["trending"],
   };
   if (isFilteredHome) {
     let cursor = 0;
     const take = (count: number) => {
-      const result = categoryPool.slice(cursor, cursor + count);
+      if (!categoryPool.length) return [];
+      const result = Array.from({ length: count }, (_, index) => categoryPool[(cursor + index) % categoryPool.length]);
       cursor += count;
-      return result;
+      return uniqueMovies(result);
     };
     filteredSections.hero = take(10);
     filteredSections.topTen = take(10);
     filteredSections.recommendations = take(14);
     filteredSections.current = take(14);
-    filteredSections.more = take(14);
-    filteredSections.action = take(14);
+    filteredSections.firstEpisodes = take(14);
+    filteredSections.crime = take(14);
     filteredSections.trending = take(14);
+    filteredSections.mood = take(14);
+    filteredSections.series = take(14);
+    filteredSections.netflix = take(14);
+    filteredSections.genres = take(14);
     filteredSections.newReleases = take(14);
+    filteredSections.action = take(14);
     filteredSections.topRated = take(14);
+    filteredSections.awardSeries = take(14);
   }
   const forYou = isFilteredHome
     ? filteredSections.recommendations
     : uniqueMovies(data.topRated, data.trending, data.nowPlaying, data.trendingSeries, data.topRatedSeries);
   const seriesPool = uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries);
   const mobLand = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "mobland");
-  const series = mobLand
-    ? [mobLand, ...seriesPool.filter((movie) => movie !== mobLand)].slice(0, 14)
-    : seriesPool.slice(0, 14);
+  const series = isFilteredHome
+    ? filteredSections.series
+    : mobLand
+      ? [mobLand, ...seriesPool.filter((movie) => movie !== mobLand)].slice(0, 14)
+      : seriesPool.slice(0, 14);
   const topTenMovies = isFilteredHome
     ? filteredSections.topTen
     : mobLand
@@ -151,26 +166,29 @@ export default function HomePage() {
     : mobLand
       ? [mobLand, ...data.trending.filter((movie) => movie.title.trim().toLowerCase() !== "mobland")].slice(0, 10)
       : data.trending;
-  const discoveryPool = isFilteredHome ? [] : allHomeMovies.slice(0, 50);
+  const discoveryPool = isFilteredHome ? filteredSections.mood : allHomeMovies.slice(0, 50);
   const currentUpcomingSeries = isFilteredHome
     ? filteredSections.current
     : uniqueMovies(data.airingSeries, data.trendingSeries, data.topRatedSeries).slice(0, 14);
   const firstEpisodes = isFilteredHome
-    ? filteredSections.more
+    ? filteredSections.firstEpisodes
     : uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries).slice(0, 14);
   const crimeSeries = isFilteredHome
-    ? []
+    ? filteredSections.crime
     : uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries)
         .filter((movie) => movie.genre_ids.includes(80))
         .slice(0, 14);
+  const visibleNetflixSeries = isFilteredHome ? filteredSections.netflix : netflixSeries;
+  const filteredContinue = isFilteredHome
+    ? continueWatching.filter((item) => filterForHome([item], homeFilter).length > 0)
+    : continueWatching;
   const categoryLabel = homeFilter === "series" ? "TV Shows" : homeFilter === "anime" ? "Anime" : "Movies";
-  const visibleNetflixSeries = isFilteredHome ? [] : netflixSeries;
   return (
     <main className="home-page">
       <Hero movies={heroMovies} />
       <div className="home-content">
         <TopTenRail movies={topTenMovies} />
-        {!isFilteredHome ? <ContinueRail items={continueWatching} onChange={refreshContinue} /> : null}
+        {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
         {isFilteredHome ? (
           <MovieRail
             title={`Because You Watched ${categoryLabel}`}
@@ -206,14 +224,14 @@ export default function HomePage() {
           movies={isFilteredHome ? filteredSections.trending : data.trending.slice(0, 14)}
           href="/movies/?sort=popularity.desc"
         />
-        {!isFilteredHome ? <MoodRail movies={discoveryPool} /> : null}
-        {!isFilteredHome ? <MovieRail
-          title="Series"
+        <MoodRail movies={discoveryPool} />
+        <MovieRail
+          title={isFilteredHome ? categoryLabel : "Series"}
           eyebrow="Stories worth staying for"
           movies={series}
           href="/series/?sort=popularity.desc"
-        /> : null}
-        {!isFilteredHome && visibleNetflixSeries.length ? (
+        />
+        {visibleNetflixSeries.length ? (
           <MovieRail
             title="Netflix"
             eyebrow="Binge-worthy series"
@@ -221,7 +239,7 @@ export default function HomePage() {
             href="/series/?network=213&sort=popularity.desc"
           />
         ) : null}
-        {!isFilteredHome ? <GenreRail movies={discoveryPool} /> : null}
+        <GenreRail movies={isFilteredHome ? filteredSections.genres : discoveryPool} />
         <MovieRail title={isFilteredHome ? `${categoryLabel} New Releases` : "New Releases"} eyebrow="Now playing" movies={isFilteredHome ? filteredSections.newReleases : data.nowPlaying.slice(0, 14)} href="/movies/?sort=primary_release_date.desc" />
         <MovieRail title={isFilteredHome ? `More ${categoryLabel}` : "High Velocity"} eyebrow={isFilteredHome ? `More ${categoryLabel.toLowerCase()} worth watching` : "Action selection"} movies={isFilteredHome ? filteredSections.action : data.action.slice(0, 14)} href="/movies/?genre=28&sort=popularity.desc" />
         <MovieRail
@@ -230,14 +248,12 @@ export default function HomePage() {
           movies={isFilteredHome ? filteredSections.topRated : data.topRated.slice(0, 14)}
           href="/movies/?sort=vote_average.desc"
         />
-        {!isFilteredHome ? (
         <MovieRail
           title={isFilteredHome ? `More ${categoryLabel}` : "Award-Worthy TV Shows"}
           eyebrow="Top rated series"
-          movies={data.topRatedSeries.slice(0, 14)}
+          movies={isFilteredHome ? filteredSections.awardSeries : data.topRatedSeries.slice(0, 14)}
           href="/series/?sort=vote_average.desc"
         />
-        ) : null}
       </div>
     </main>
   );
