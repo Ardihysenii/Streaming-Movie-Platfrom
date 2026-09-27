@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Credits } from "@/components/Credits";
 import { EpisodeBrowser } from "@/components/EpisodeBrowser";
-import { MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
+import { MutedIcon, PlayIcon, PlusIcon, StarIcon, VolumeIcon } from "@/components/Icons";
 import { PageLoader } from "@/components/Loading";
 import { WishlistButton } from "@/components/MovieCard";
 import { readContinueWatching } from "@/lib/storage";
@@ -38,6 +38,9 @@ function SeriesDetailsContent() {
   const [trailerMuted, setTrailerMuted] = useState(true);
   const [trailerVisible, setTrailerVisible] = useState(false);
   const trailerRef = useRef<HTMLIFrameElement>(null);
+  const scrollToEpisodes = () => {
+    document.getElementById("episodes-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const trailerSetupTimers = useRef<number[]>([]);
 
   useEffect(() => {
@@ -186,7 +189,6 @@ function SeriesDetailsContent() {
             {trailerMuted ? <MutedIcon /> : <VolumeIcon />}
           </button>
         ) : null}
-        <WishlistButton movie={series} className="detail-wishlist-button" icon="heart" />
         <div className="detail-content">
           <div className="detail-layout">
             <div className="detail-copy">
@@ -222,14 +224,18 @@ function SeriesDetailsContent() {
               </div>
               <div className={`detail-actions${resumeCandidate && resumeEpisodeUrl ? " has-resume" : ""}`}>
                 {resumeEpisodeUrl ? (
-                  <Link className="primary-button" href={resumeEpisodeUrl}>
+                  <Link className="primary-button detail-play-button" href={resumeEpisodeUrl}>
                     <PlayIcon /> Continue
                   </Link>
                 ) : firstEpisodeUrl ? (
-                  <Link className="primary-button" href={firstEpisodeUrl}>
-                    <PlayIcon /> Start series
+                  <Link className="primary-button detail-play-button" href={firstEpisodeUrl}>
+                    <PlayIcon /> Play
                   </Link>
                 ) : null}
+                <WishlistButton movie={series} className="detail-my-list-button" icon="plus" label="My List" redirectToWishlist />
+                <button className="detail-my-list-button detail-episodes-button" type="button" onClick={scrollToEpisodes}>
+                  <PlusIcon /> Episodes
+                </button>
                 {resumeCandidate ? (
                   <div className="detail-resume-progress" aria-label={`${Math.round(resumePercent)} percent watched, ${formatWatchedMinutes(resumeCandidate.watchedSeconds)} in`}>
                     <div className="detail-resume-label-row">
