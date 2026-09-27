@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
+import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, PlusIcon, StarIcon, VolumeIcon } from "./Icons";
 import { LoadingSpinner } from "./Loading";
 import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
@@ -22,7 +22,7 @@ type MovieCardProps = {
   removeActionLabel?: string;
 };
 
-export function WishlistButton({ movie, className = "", icon = "bookmark" }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" }) {
+export function WishlistButton({ movie, className = "", icon = "bookmark", label }: { movie: Movie; className?: string; icon?: "bookmark" | "heart" | "plus"; label?: string }) {
   const [saved, setSaved] = useState(false);
   const identity = `${movie.media_type ?? "movie"}:${movie.tmdb_id ?? movie.id}`;
 
@@ -46,7 +46,8 @@ export function WishlistButton({ movie, className = "", icon = "bookmark" }: { m
       title={saved ? "Remove from Wishlist" : "Add to Wishlist"}
       onClick={() => setSaved(toggleWishlist(movie))}
     >
-      {icon === "heart" ? <HeartIcon /> : <BookmarkIcon />}
+      {icon === "heart" ? <HeartIcon /> : icon === "plus" ? <PlusIcon /> : <BookmarkIcon />}
+      {label ? <span className="wishlist-button__text">{label}</span> : null}
     </button>
   );
 }
