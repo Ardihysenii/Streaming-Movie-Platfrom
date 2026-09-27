@@ -129,17 +129,18 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     }
   };
 
+  const getHoverSurfaceRect = () => {
+    const previewSurface = previewActive
+      ? posterRef.current?.querySelector<HTMLElement>(".movie-card-inline-trailer")
+      : null;
+    return previewSurface?.getBoundingClientRect() ?? posterRef.current?.getBoundingClientRect() ?? null;
+  };
+
   const openHoverPanel = () => {
-    const rect = posterRef.current?.getBoundingClientRect();
+    const rect = getHoverSurfaceRect();
     if (!rect) return;
     cancelHoverClose();
-    const scale = previewActive ? 1.12 : 1;
-    const width = rect.width * scale;
-    setHoverOrigin({
-      left: rect.left - (width - rect.width) / 2,
-      top: rect.top + rect.height * scale - 1,
-      width,
-    });
+    setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
     setHoverOpen(true);
   };
 
@@ -167,16 +168,8 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
 
   const updateHoverPanelPosition = () => {
     if (!hoverOpen) return;
-    const rect = posterRef.current?.getBoundingClientRect();
-    if (rect) {
-      const scale = previewActive ? 1.12 : 1;
-      const width = rect.width * scale;
-      setHoverOrigin({
-        left: rect.left - (width - rect.width) / 2,
-        top: rect.top + rect.height * scale - 1,
-        width,
-      });
-    }
+    const rect = getHoverSurfaceRect();
+    if (rect) setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
   };
 
   const stopPreview = () => {
@@ -256,6 +249,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   useEffect(() => {
     if (!hoverOpen) return;
     const update = () => updateHoverPanelPosition();
+    update();
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
     return () => {
