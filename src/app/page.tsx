@@ -108,6 +108,7 @@ export default function HomePage() {
     recommendations: [] as HomeData["trending"],
     current: [] as HomeData["trending"],
     more: [] as HomeData["trending"],
+    action: [] as HomeData["trending"],
     trending: [] as HomeData["trending"],
     newReleases: [] as HomeData["trending"],
     topRated: [] as HomeData["trending"],
@@ -124,6 +125,7 @@ export default function HomePage() {
     filteredSections.recommendations = take(14);
     filteredSections.current = take(14);
     filteredSections.more = take(14);
+    filteredSections.action = take(14);
     filteredSections.trending = take(14);
     filteredSections.newReleases = take(14);
     filteredSections.topRated = take(14);
@@ -162,6 +164,7 @@ export default function HomePage() {
         .filter((movie) => movie.genre_ids.includes(80))
         .slice(0, 14);
   const categoryLabel = homeFilter === "series" ? "TV Shows" : homeFilter === "anime" ? "Anime" : "Movies";
+  const visibleNetflixSeries = isFilteredHome ? [] : netflixSeries;
   return (
     <main className="home-page">
       <Hero movies={heroMovies} />
@@ -220,7 +223,7 @@ export default function HomePage() {
         ) : null}
         {!isFilteredHome ? <GenreRail movies={discoveryPool} /> : null}
         <MovieRail title={isFilteredHome ? `${categoryLabel} New Releases` : "New Releases"} eyebrow="Now playing" movies={isFilteredHome ? filteredSections.newReleases : data.nowPlaying.slice(0, 14)} href="/movies/?sort=primary_release_date.desc" />
-        <MovieRail title={isFilteredHome ? `More ${categoryLabel}` : "High Velocity"} eyebrow={isFilteredHome ? `More ${categoryLabel.toLowerCase()} worth watching` : "Action selection"} movies={isFilteredHome ? filteredSections.more : data.action.slice(0, 14)} href="/movies/?genre=28&sort=popularity.desc" />
+        <MovieRail title={isFilteredHome ? `More ${categoryLabel}` : "High Velocity"} eyebrow={isFilteredHome ? `More ${categoryLabel.toLowerCase()} worth watching` : "Action selection"} movies={isFilteredHome ? filteredSections.action : data.action.slice(0, 14)} href="/movies/?genre=28&sort=popularity.desc" />
         <MovieRail
           title={isFilteredHome ? `Top Rated ${categoryLabel}` : "Award-Worthy Movies"}
           eyebrow="Highly rated films"
@@ -231,7 +234,7 @@ export default function HomePage() {
         <MovieRail
           title={isFilteredHome ? `More ${categoryLabel}` : "Award-Worthy TV Shows"}
           eyebrow="Top rated series"
-          movies={isFilteredHome ? categoryPool.slice(0, 14) : data.topRatedSeries.slice(0, 14)}
+          movies={data.topRatedSeries.slice(0, 14)}
           href="/series/?sort=vote_average.desc"
         />
         ) : null}
