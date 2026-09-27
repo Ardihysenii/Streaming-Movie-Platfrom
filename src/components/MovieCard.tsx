@@ -140,7 +140,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
     const rect = getHoverSurfaceRect();
     if (!rect) return;
     cancelHoverClose();
-    setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+    setHoverOrigin({ left: rect.left, top: rect.bottom, width: rect.width });
     setHoverOpen(true);
   };
 
@@ -169,7 +169,7 @@ export function MovieCard({ movie, rank, progress, onRemove, priority = false, c
   const updateHoverPanelPosition = () => {
     if (!hoverOpen) return;
     const rect = getHoverSurfaceRect();
-    if (rect) setHoverOrigin({ left: rect.left, top: rect.bottom - 1, width: rect.width });
+    if (rect) setHoverOrigin({ left: rect.left, top: rect.bottom, width: rect.width });
   };
 
   const stopPreview = () => {
