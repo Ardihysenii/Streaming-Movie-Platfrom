@@ -4076,7 +4076,8 @@ body:has(.hero) .header-actions {
 
 .credits-section--shahflix .credits-heading::before,
 .detail-page .content-section .section-heading::before {
-  background: var(--accent);
+  background: #e50914;
+  border-radius: 999px;
   content: "";
   height: 100%;
   left: 0;
@@ -4118,7 +4119,7 @@ body:has(.hero) .header-actions {
 
 .credits-layout--shahflix .credit-cast {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   padding: 0 3px 8px;
@@ -4136,7 +4137,7 @@ body:has(.hero) .header-actions {
   border: 0;
   border-radius: 0;
   display: block;
-  flex: 0 0 clamp(152px, 8.8vw, 168px);
+  flex: 0 0 clamp(160px, 9.4vw, 180px);
   min-width: 0;
   padding: 0;
   transform: none;
@@ -4160,7 +4161,7 @@ body:has(.hero) .header-actions {
   aspect-ratio: 3 / 4;
   background: #171a1f;
   border: 0;
-  border-radius: 5px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.78);
   width: 100%;
 }
