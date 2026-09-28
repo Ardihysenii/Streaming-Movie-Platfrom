@@ -11816,3 +11816,153 @@ body {
 .montana-player-intro-logo { animation: montana-player-intro-logo 980ms cubic-bezier(0.2, 0.75, 0.2, 1) both; display: block; height: auto; max-width: min(52vw, 720px); width: clamp(18rem, 42vw, 45rem); }
 @keyframes montana-player-intro-logo { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .nightowl-splash-logo { display: block; height: auto; max-width: min(78vw, 520px); width: clamp(15rem, 42vw, 32rem); }
+
+
+/* Floating artwork search portal */
+.search-page::before,
+.search-page::after,
+.search-field::before,
+.search-field::after {
+  animation: none;
+  display: none;
+}
+
+.search-header {
+  max-width: 1180px;
+}
+
+.search-portal {
+  margin: 0 auto;
+  max-width: 1080px;
+  min-height: clamp(330px, 34vw, 440px);
+  position: relative;
+}
+
+.search-floating-art {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.search-floating-card {
+  aspect-ratio: 2 / 3;
+  background: #101316;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.38);
+  display: block;
+  overflow: hidden;
+  pointer-events: auto;
+  position: absolute;
+  transition: filter 260ms ease, opacity 260ms ease, transform 420ms cubic-bezier(.2,.8,.2,1);
+  width: clamp(92px, 11vw, 150px);
+}
+
+.search-floating-card::after {
+  background: linear-gradient(180deg, transparent 48%, rgba(6, 7, 8, 0.9) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.search-floating-image,
+.search-floating-image img {
+  inset: 0;
+  position: absolute;
+}
+
+.search-floating-image img {
+  object-fit: cover;
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1);
+}
+
+.search-floating-card-title {
+  bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(0.58rem, 0.75vw, 0.72rem);
+  font-weight: 700;
+  left: 12px;
+  line-height: 1.1;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.search-floating-card:hover {
+  filter: brightness(1.1);
+  z-index: 3;
+}
+
+.search-floating-card:hover .search-floating-image img {
+  transform: scale(1.06);
+}
+
+.search-floating-card-0 { left: 2%; top: 17%; transform: rotate(-7deg); }
+.search-floating-card-1 { left: 14%; top: -2%; transform: rotate(5deg); }
+.search-floating-card-2 { left: 26%; top: 63%; transform: rotate(-4deg); }
+.search-floating-card-3 { right: 26%; top: 1%; transform: rotate(-5deg); }
+.search-floating-card-4 { right: 14%; top: 58%; transform: rotate(6deg); }
+.search-floating-card-5 { right: 2%; top: 14%; transform: rotate(7deg); }
+.search-floating-card-6 { left: 39%; top: 68%; transform: rotate(3deg); }
+.search-floating-card-7 { right: 38%; top: -7%; transform: rotate(4deg); }
+
+.search-portal .search-field {
+  background: rgba(16, 19, 22, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.58), 0 0 0 5px rgba(255, 255, 255, 0.025);
+  left: 50%;
+  margin: 0;
+  max-width: 650px;
+  min-height: 72px;
+  padding: 14px 24px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(74vw, 650px);
+  z-index: 2;
+}
+
+.search-portal .search-field:hover,
+.search-portal .search-field:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.62);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.64), 0 0 0 5px rgba(var(--accent-rgb), 0.07);
+  transform: translate(-50%, calc(-50% - 4px)) scale(1.012);
+}
+
+.search-portal .search-field > svg {
+  height: 22px;
+  width: 22px;
+}
+
+.search-portal .search-field input {
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+}
+
+.search-results {
+  margin: 0 auto;
+  max-width: 1180px;
+}
+
+.search-results .movie-grid {
+  justify-content: center;
+}
+
+@media (max-width: 760px) {
+  .search-portal { min-height: 390px; }
+  .search-floating-card { width: clamp(76px, 22vw, 112px); }
+  .search-floating-card-0 { left: 0; top: 19%; }
+  .search-floating-card-1 { left: 18%; top: 0; }
+  .search-floating-card-2 { left: 13%; top: 67%; }
+  .search-floating-card-3 { right: 18%; top: 2%; }
+  .search-floating-card-4 { right: 12%; top: 68%; }
+  .search-floating-card-5 { right: 0; top: 20%; }
+  .search-floating-card-6,
+  .search-floating-card-7 { display: none; }
+  .search-portal .search-field { width: min(80vw, 560px); }
+}
