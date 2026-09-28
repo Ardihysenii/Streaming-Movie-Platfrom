@@ -11571,3 +11571,52 @@ body {
   height: 0.8em;
   width: 0.8em;
 }
+
+/* Homepage rail headings match the detail-page Cast title/subtitle treatment. */
+.home-page .content-section:not(.top-ten-section) .section-heading {
+  align-items: flex-start;
+  margin-bottom: 22px;
+  padding-left: 16px;
+  position: relative;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading::before {
+  background: #e50914;
+  border-radius: 999px;
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 4px;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.65rem, 2.2vw, 2.15rem);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0;
+  order: 1;
+  text-transform: none;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading .eyebrow {
+  color: var(--muted);
+  font-size: 0.86rem;
+  letter-spacing: normal;
+  line-height: 1.35;
+  margin: 8px 0 0;
+  order: 2;
+  text-transform: none;
+}
+
+.home-page .content-section:not(.top-ten-section) .section-heading > a {
+  margin-top: 4px;
+}
