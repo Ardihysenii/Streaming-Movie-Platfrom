@@ -9551,11 +9551,11 @@ body:has(.watch-page) .bottom-dock {
 .detail-actions.has-resume > .primary-button {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  background: transparent !important;
-  border: 1px solid #e50914 !important;
+  background: #fff !important;
+  border: 1px solid #fff !important;
   border-radius: 0;
   box-shadow: none;
-  color: #fff !important;
+  color: #000 !important;
   font-size: 0.82rem;
   font-weight: 400;
   height: 36px;
@@ -9567,11 +9567,11 @@ body:has(.watch-page) .bottom-dock {
 }
 
 .detail-actions.has-resume > .primary-button:hover {
-  background: rgba(229, 9, 20, 0.15) !important;
-  border-color: #f40612 !important;
-  box-shadow: none;
-  color: #fff !important;
-  transform: none;
+  background: #fff !important;
+  border-color: #fff !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  color: #000 !important;
+  transform: translateY(-2px);
 }
 
 .detail-resume-progress {
