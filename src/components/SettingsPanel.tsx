@@ -21,10 +21,10 @@ export function SettingsPanel() {
         onClick={() => setSettingsOpen(false)}
         tabIndex={settingsOpen ? 0 : -1}
       />
-      <aside className="settings-panel" aria-label="MONTANA settings">
+      <aside className="settings-panel" aria-label="NIGHTOWL settings">
         <header>
           <div>
-            <p className="eyebrow">Personalize MONTANA</p>
+            <p className="eyebrow">Personalize NIGHTOWL</p>
             <h2>Settings</h2>
           </div>
           <button className="icon-button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">
@@ -136,7 +136,7 @@ export function SettingsPanel() {
         <section className="settings-note">
           <strong>About playback quality</strong>
           <p>
-            MONTANA cannot force a resolution from outside an embedded provider. Quality remains source-controlled;
+            NIGHTOWL cannot force a resolution from outside an embedded provider. Quality remains source-controlled;
             choose it inside the player whenever the source exposes that control.
           </p>
         </section>
