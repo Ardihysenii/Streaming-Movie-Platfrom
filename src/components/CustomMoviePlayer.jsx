@@ -27,24 +27,9 @@ import {
   VolumeIcon,
   PictureInPictureIcon,
   CastIcon,
-  CaptionsIcon,
   SettingsIcon,
-  BackIcon,
-  GridIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
-
-
-const VidstuckPlayIcon = (props) => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}><path d="M7 4.8c0-1.1 1.2-1.8 2.2-1.2l10.1 6.4c.9.6.9 1.9 0 2.5L9.2 18.9C8.2 19.5 7 18.8 7 17.7V4.8Z" /></svg>;
-const VidstuckPauseIcon = (props) => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}><rect x="5" y="3" width="5" height="18" rx=".8" /><rect x="14" y="3" width="5" height="18" rx=".8" /></svg>;
-const VidstuckSeekIcon = ({ forward = false, ...props }) => <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" {...props}><path d={forward ? "M18.5 7.2a9.8 9.8 0 1 1-5.1 1.4" : "M13.5 7.2a9.8 9.8 0 1 0 5.1 1.4"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d={forward ? "m18 4.8 1 4.2-4.2 1" : "m14 4.8-1 4.2 4.2 1"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><text x="16" y="19" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="currentColor">15</text></svg>;
-const VidstuckNextIcon = (props) => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}><path d="M4 5.1c0-.9 1-1.5 1.8-1l9.2 6c.7.5.7 1.5 0 1.9l-9.2 6C5 18.5 4 18 4 17V5.1Z" /><rect x="17" y="4" width="3" height="16" rx=".7" /></svg>;
-const VidstuckVolumeIcon = ({ muted = false, ...props }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><path d="M4 9H2v6h2l6 4V5L4 9Z" />{muted ? <><path d="m15 9 6 6M21 9l-6 6" /></> : <><path d="M14 9a4 4 0 0 1 0 6" /><path d="M17 6a8 8 0 0 1 0 12" /></>}</svg>;
-const VidstuckCaptionsIcon = (props) => <svg viewBox="0 0 28 22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><rect x="2" y="3" width="24" height="16" rx="1.5" /><path d="M7 9h5M7 13h4M16 9h5M16 13h4" /></svg>;
-const VidstuckGearIcon = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><circle cx="12" cy="12" r="3.1" /><path d="M19.2 15a1.8 1.8 0 0 0 .3 1.9l.1.1-2.6 2.6-.1-.1a1.8 1.8 0 0 0-1.9-.3 1.8 1.8 0 0 0-1 1.6v.2h-4v-.2a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-1.9.3l-.1.1-2.6-2.6.1-.1a1.8 1.8 0 0 0 .3-1.9 1.8 1.8 0 0 0-1.6-1H3v-4h.2a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.3-1.9l-.1-.1L7 4.4l.1.1a1.8 1.8 0 0 0 1.9.3 1.8 1.8 0 0 0 1-1.6V3h4v.2a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 1.9-.3l.1-.1 2.6 2.6-.1.1a1.8 1.8 0 0 0-.3 1.9 1.8 1.8 0 0 0 1.6 1h.2v4h-.2a1.8 1.8 0 0 0-1.6 1Z" /></svg>;
-const VidstuckFullscreenIcon = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" /></svg>;
-const VidstuckEpisodesIcon = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><rect x="5" y="3" width="14" height="18" rx="1" /><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none" /><path d="M19 7h2v10h-2" /></svg>;
-const VidstuckCloudIcon = (props) => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}><path d="M7.2 18.5h9.6a4.4 4.4 0 0 0 .7-8.7A6.1 6.1 0 0 0 6 8.5a5 5 0 0 0 1.2 10Z" /></svg>;
 
 const CINESRC_SERVER_OPTIONS = [
   { id: "auto", label: "Auto" },
@@ -272,9 +257,6 @@ export default function CustomMoviePlayer({
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
-  const playerDisplayTitle = mediaType === "tv" && seasonNumber && episodeNumber
-    ? `${title} S${String(seasonNumber).padStart(2, "0")}E${String(episodeNumber).padStart(2, "0")}`
-    : title;
 
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
@@ -1446,36 +1428,31 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc && isReady ? (
         <div className="custom-player-ui">
-          <div className="player-top-navigation" aria-label="Player navigation">
-            <button type="button" onClick={() => window.history.back()} aria-label="Back">
-              <BackIcon />
-            </button>
-          </div>
-          {isReady ? (
+          {!isPlaying && isReady ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
               <div className="player-paused-topline">
                 {logoUrl ? (
                   <img
                     className="player-paused-topline-logo"
                     src={logoUrl}
-                    alt={playerDisplayTitle}
+                    alt={title}
                     width={logoWidth}
                     height={logoHeight}
                   />
-                ) : <span>{playerDisplayTitle}</span>}
-                <span className="player-paused-topline-mark" aria-hidden="true" />
+                ) : <span>{title}</span>}
+                <span className="player-paused-topline-mark">NOVA</span>
               </div>
               <div className="player-paused-info">
-                <p className="player-paused-eyebrow">You're Watching</p>
+                <p className="player-paused-eyebrow">You are watching</p>
                 {logoUrl ? (
                   <img
                     className="player-paused-title-logo"
                     src={logoUrl}
-                    alt={playerDisplayTitle}
+                    alt={title}
                     width={logoWidth}
                     height={logoHeight}
                   />
-                ) : <h2>{playerDisplayTitle}</h2>}
+                ) : <h2>{title}</h2>}
                 <div className="player-paused-meta">
                   {releaseYear ? <span>{releaseYear}</span> : null}
                   {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
@@ -1486,11 +1463,7 @@ export default function CustomMoviePlayer({
             </div>
           ) : null}
               <div className="player-paused-actions">
-                {mediaType === "tv" ? (
-                  <button type="button" className="player-episodes-button" onClick={() => document.getElementById("episodes-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} aria-label="Episodes">
-                    <VidstuckEpisodesIcon />
-                  </button>
-                ) : null}
+                <PictureInPictureIcon />
                 <button
                   className="player-cast-button"
                   type="button"
@@ -1515,9 +1488,9 @@ export default function CustomMoviePlayer({
             {centerFeedback === "play" || centerFeedback === "pause" ? (
               <span className="nova-center-glyph" aria-hidden="true" />
             ) : centerFeedback === "forward" ? (
-              <VidstuckSeekIcon forward />
+              <ForwardIcon />
             ) : centerFeedback === "back" ? (
-              <VidstuckSeekIcon />
+              <RewindIcon />
             ) : null}
           </button>
           {seekFeedback ? (
@@ -1538,17 +1511,17 @@ export default function CustomMoviePlayer({
               onChange={handleSeek}
               aria-label="Seek"
             />
-            <span className="player-time player-current-time">{formatTime(currentTime)}</span><span className="player-time player-duration-time">{formatTime(duration)}</span>
+            <span className="player-time player-time-progress">{formatTime(currentTime)} / {formatTime(duration)}</span>
             </div>
             <div className="player-control-row">
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
-                {isPlaying ? <VidstuckPauseIcon /> : <VidstuckPlayIcon />}
+                {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>
-              <button type="button" onClick={() => seekBy(-15)} aria-label="Rewind 15 seconds"><RewindIcon /></button>
-              <button type="button" onClick={() => seekBy(15)} aria-label="Forward 15 seconds"><ForwardIcon /></button>
+              <button type="button" onClick={() => seekBy(-10)} aria-label="Rewind 10 seconds"><RewindIcon /></button>
+              <button type="button" onClick={() => seekBy(10)} aria-label="Forward 10 seconds"><ForwardIcon /></button>
               <div className="player-volume-control">
                 <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>
-                  {muted ? <VidstuckVolumeIcon muted /> : <VidstuckVolumeIcon />}
+                  {muted ? <MutedIcon /> : <VolumeIcon />}
                 </button>
                 <input
                   className="player-volume"
@@ -1562,14 +1535,9 @@ export default function CustomMoviePlayer({
                 />
               </div>
               <span className="player-control-spacer" />
-              <div className="player-subtitles-control">
-                <button type="button" className="player-subtitles-button" onClick={() => { setSettingsOpen(true); setSettingsView("subtitles"); }} aria-label="Subtitles" aria-expanded={settingsOpen}>
-                  <VidstuckCaptionsIcon />
-                </button>
-              </div>
               <div className="player-settings-control">
                 <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
-                  <VidstuckGearIcon className="player-setting-icon" />
+                  <SettingsIcon className="player-setting-icon" />
                 </button>
                 {settingsOpen ? (
                   <div className="player-settings-panel" role="dialog" aria-label="Player settings">
@@ -1643,7 +1611,7 @@ export default function CustomMoviePlayer({
                 ) : null}
               </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
-                <VidstuckFullscreenIcon />
+                <FullscreenIcon />
               </button>
             </div>
           </div>
