@@ -184,7 +184,7 @@ async function askGemini(prompt: string, history: AgentTurn[], signal: AbortSign
   const contents = conversation.length && conversation[0].role === "model" ? conversation.slice(1) : conversation;
   contents.push({ role: "user", parts: [{ text: prompt }] });
   const system = [
-    "You are Jarvis, the intelligent conversational assistant inside the MONTANA movie platform.",
+    "You are Jarvis, the intelligent conversational assistant inside the NIGHTOWL movie platform.",
     "Do not force every question into a movie recommendation.",
     "Answer normal questions naturally when they are not about finding catalog titles.",
     "For movie, series, anime, actor, genre, mood, plot, or recommendation requests, choose catalog mode.",
@@ -687,7 +687,7 @@ export async function POST(request: Request) {
       : [];
     if (isGreeting(prompt)) {
       return NextResponse.json({
-        message: "Hello! I’m Jarvis, MONTANA’s movie assistant. Ask me anything, or tell me what you feel like watching.",
+        message: "Hello! I’m Jarvis, NIGHTOWL’s movie assistant. Ask me anything, or tell me what you feel like watching.",
         results: [],
       });
     }
@@ -715,7 +715,7 @@ export async function POST(request: Request) {
     if (geminiIntent?.mode === "catalog") {
       const aiIntent: AgentIntent = { scope: geminiIntent.scope, query: geminiIntent.query, sortBy: geminiIntent.sortBy, limit: geminiIntent.limit, page: 1 };
       const keywordResults = await findKeywordMatches(aiIntent, prompt, request.signal);
-      if (keywordResults.length) return NextResponse.json({ message: geminiIntent.reply || "I matched your request against MONTANA’s catalog.", results: keywordResults });
+      if (keywordResults.length) return NextResponse.json({ message: geminiIntent.reply || "I matched your request against NIGHTOWL’s catalog.", results: keywordResults });
       const intelligentResults = await findMedia(aiIntent, request.signal);
       if (intelligentResults.length) return NextResponse.json({ message: await formatCatalogAnswer(prompt, intelligentResults, request.signal), results: intelligentResults });
       const closeMatches = await findClosestTitles(aiIntent, prompt, request.signal);
