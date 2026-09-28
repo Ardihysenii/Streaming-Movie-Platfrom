@@ -1037,8 +1037,8 @@ body:has(.hero) .header-actions {
 .rail-arrow {
   align-items: center;
   backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 28px rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 28px rgba(0, 0, 0, 0.44);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   display: flex;
@@ -1052,8 +1052,8 @@ body:has(.hero) .header-actions {
 }
 
 .rail-arrow:hover {
-  border-color: rgba(255, 255, 255, 0.34);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 12px 30px rgba(0, 0, 0, 0.42), 0 0 18px rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 30px rgba(0, 0, 0, 0.52), 0 0 14px rgba(255, 255, 255, 0.03);
   color: #ffffff;
 }
 
@@ -1074,14 +1074,14 @@ body:has(.hero) .header-actions {
 }
 
 .rail-arrow-left {
-  background: linear-gradient(90deg, rgba(28, 32, 38, 0.94) 0%, rgba(25, 29, 35, 0.84) 58%, rgba(20, 23, 28, 0.16) 100%);
+  background: linear-gradient(90deg, rgba(13, 16, 20, 0.98) 0%, rgba(15, 18, 22, 0.94) 58%, rgba(15, 18, 22, 0.22) 100%);
   border-radius: 0 14px 14px 0;
   bottom: 18px;
   left: 0;
 }
 
 .rail-arrow-right {
-  background: linear-gradient(270deg, rgba(28, 32, 38, 0.94) 0%, rgba(25, 29, 35, 0.84) 58%, rgba(20, 23, 28, 0.16) 100%);
+  background: linear-gradient(270deg, rgba(13, 16, 20, 0.98) 0%, rgba(15, 18, 22, 0.94) 58%, rgba(15, 18, 22, 0.22) 100%);
   border-radius: 14px 0 0 14px;
   bottom: 18px;
   right: 0;
@@ -1091,7 +1091,7 @@ body:has(.hero) .header-actions {
 @media (min-width: 769px) {
   .movie-rail-shell > .rail-arrow {
     bottom: auto;
-    height: clamp(306px, 24.75vw, 414px);
+    height: calc(clamp(204px, 16.5vw, 276px) * 1.5);
   }
 
   .top-ten-section .movie-rail-shell > .rail-arrow {
