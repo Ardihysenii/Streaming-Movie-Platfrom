@@ -11467,3 +11467,20 @@ body {
     font-size: 0.46rem;
   }
 }
+
+/* Wider regular cards: preserve the poster aspect ratio and leave Top 10 cards unchanged. */
+@media (min-width: 769px) {
+  .movie-rail .movie-card:not(.is-ranked) {
+    flex-basis: clamp(204px, 16.5vw, 276px);
+  }
+
+  .movie-grid,
+  .skeleton-grid,
+  .agent-panel-body .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, clamp(204px, 16.5vw, 276px)), clamp(204px, 16.5vw, 276px)));
+  }
+
+  .movie-card.is-ranked {
+    --card-width: clamp(184px, 14.6vw, 244px);
+  }
+}
