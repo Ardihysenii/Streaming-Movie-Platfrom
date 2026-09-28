@@ -231,7 +231,7 @@ function RailScroller({ children, label, itemCount }: { children: ReactNode; lab
 }
 
 
-export function TopTenRail({ movies }: { movies: Movie[] }) {
+export function TopTenRail({ movies, title = "Top 10 on" }: { movies: Movie[]; title?: string }) {
   const topTen = movies.slice(0, 10);
   const [trailerMovie, setTrailerMovie] = useState<Movie | null>(null);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
