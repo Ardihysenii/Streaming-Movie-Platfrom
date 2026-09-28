@@ -11,8 +11,8 @@ import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 type HomeFilter = "all" | "movies" | "series" | "anime";
 
 function filterForHome(movies: HomeData["trending"], filter: HomeFilter) {
-  if (filter === "movies") return movies.filter((movie) => movie.media_type !== "tv");
-  if (filter === "series") return movies.filter((movie) => movie.media_type === "tv");
+  if (filter === "movies") return movies.filter((movie) => movie.media_type !== "tv" && !movie.genre_ids.includes(16));
+  if (filter === "series") return movies.filter((movie) => movie.media_type === "tv" && !movie.genre_ids.includes(16));
   if (filter === "anime") return movies.filter((movie) => movie.genre_ids.includes(16));
   return movies;
 }
