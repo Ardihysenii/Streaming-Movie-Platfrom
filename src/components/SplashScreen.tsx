@@ -88,7 +88,7 @@ export function SplashScreen() {
   if (!visible) return null;
 
   return (
-    <div className={"splash-screen montana-intro montana-intro-" + stage + (leaving ? " is-leaving" : "")} aria-label="MONTANA introduction">
+    <div className={"splash-screen montana-intro montana-intro-" + stage + (leaving ? " is-leaving" : "")} aria-label="NIGHTOWL introduction">
       <div className="montana-intro-backdrop" aria-hidden="true">
         <div className="intro-grid" />
         <div className="intro-projector-beams">
@@ -120,10 +120,8 @@ export function SplashScreen() {
         <div className="montana-branding">
           <div className="montana-index">01 <span>/</span> 04</div>
           <p className="montana-intro-kicker">A new world of cinema</p>
-          <div className="splash-mark montana-logo" aria-label="MONTANA">
-            {[..."MONTANA"].map((letter, index) => (
-              <span key={letter + index} style={{ animationDelay: index * 110 + "ms" }}>{letter}</span>
-            ))}
+          <div className="splash-mark montana-logo" aria-label="NIGHTOWL">
+            <img className="nightowl-splash-logo" src="/nightowl-logo.png" alt="NIGHTOWL" width={420} height={105} />
           </div>
           <div className="montana-logo-rule"><span>EST. 2026</span><i /></div>
           {stage === "invite" ? (
@@ -171,7 +169,7 @@ export function SplashScreen() {
         <div className="montana-greeting montana-returning-greeting">
           <div className="montana-index">04 <span>/</span> 04</div>
           <p className="montana-intro-kicker">The screening continues</p>
-          <h1><span>{savedName}</span><small>Welcome back to MONTANA.</small></h1>
+          <h1><span>{savedName}</span><small>Welcome back to NIGHTOWL.</small></h1>
           <div className="greeting-rule"><span>ROLL CREDITS</span><i /></div>
         </div>
       ) : null}
