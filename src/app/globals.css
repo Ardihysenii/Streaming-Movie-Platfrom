@@ -11484,3 +11484,90 @@ body {
     --card-width: clamp(184px, 14.6vw, 244px);
   }
 }
+
+/* Hero actions match the existing detail-page Play and My List controls. */
+.hero-reference-actions {
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-reference-button {
+  align-items: center;
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: Montserrat, Outfit, Inter, system-ui, -apple-system, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  gap: 8px;
+  justify-content: center;
+  line-height: 1.55;
+  min-height: 34px;
+  overflow: hidden;
+  padding: 6px 12px;
+  position: relative;
+  text-transform: none;
+  transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.hero-reference-button::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  content: "";
+  height: 100%;
+  left: -100%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: left 0.5s;
+  width: 100%;
+}
+
+.hero-reference-button:hover::before {
+  left: 100%;
+}
+
+.hero-reference-button > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-play-button {
+  background: #fff;
+  border: 1px solid #fff;
+  color: #000;
+  min-width: 0;
+}
+
+.hero-info-button {
+  background: transparent;
+  border: 1px solid rgba(180, 180, 180, 0.5);
+  color: rgba(220, 220, 220, 0.9);
+  min-width: 0;
+}
+
+.hero-play-button:hover,
+.hero-info-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.hero-play-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  color: #fff;
+}
+
+.hero-info-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: none;
+}
+
+.hero-reference-button svg {
+  height: 0.8em;
+  width: 0.8em;
+}
