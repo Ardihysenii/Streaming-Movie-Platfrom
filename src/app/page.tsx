@@ -172,24 +172,24 @@ export default function HomePage() {
     return Number.isFinite(date) && date >= recentSeriesCutoff.getTime();
   });
   const currentSeriesPool = uniqueMovies(data.airingSeries, recentTrendingSeries);
-  const mobLand = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "mobland");
+  const americanHorrorStory = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "american horror story");
   const series = isFilteredHome
     ? filteredSections.series
-    : mobLand
-      ? [mobLand, ...excludeMovies(seriesPool.filter((movie) => movie !== mobLand), currentSeriesPool)].slice(0, 14)
+    : americanHorrorStory
+      ? [americanHorrorStory, ...excludeMovies(seriesPool.filter((movie) => movie !== americanHorrorStory), currentSeriesPool)].slice(0, 14)
       : excludeMovies(seriesPool, currentSeriesPool).slice(0, 14);
   const topTenMovies = isFilteredHome
     ? filteredSections.topTen
-    : mobLand
-      ? [mobLand, ...data.trending.filter((movie) => {
+    : americanHorrorStory
+      ? [americanHorrorStory, ...data.trending.filter((movie) => {
           const title = movie.title.trim().toLowerCase();
-          return title !== "forgotten island" && title !== "mobland";
+          return title !== "forgotten island" && title !== "american horror story";
         }).slice(0, 9)]
       : data.trending.slice(0, 10);
   const heroMovies = isFilteredHome
     ? filteredSections.hero
-    : mobLand
-      ? [mobLand, ...data.trending.filter((movie) => movie.title.trim().toLowerCase() !== "mobland")].slice(0, 10)
+    : americanHorrorStory
+      ? [americanHorrorStory, ...data.trending.filter((movie) => movie.title.trim().toLowerCase() !== "american horror story")].slice(0, 10)
       : data.trending;
   const discoveryPool = isFilteredHome ? filteredSections.mood : allHomeMovies.slice(0, 50);
   const currentUpcomingSeries = isFilteredHome
