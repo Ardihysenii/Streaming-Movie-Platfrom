@@ -143,6 +143,11 @@ function RailScroller({ children, label, itemCount }: { children: ReactNode; lab
     const rail = railRef.current;
     if (!rail) return;
 
+    const artwork = rail.querySelector<HTMLElement>(".movie-card .poster-link, .top-ten-card");
+    if (artwork) {
+      rail.parentElement?.style.setProperty("--rail-arrow-height", String(artwork.getBoundingClientRect().height) + "px");
+    }
+
     const maxScrollLeft = Math.max(0, rail.scrollWidth - rail.clientWidth);
     const nextCanScrollLeft = rail.scrollLeft > 4;
     const nextCanScrollRight = rail.scrollLeft < maxScrollLeft - 4;
