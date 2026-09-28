@@ -10252,7 +10252,7 @@ body:has(.watch-page) .bottom-dock {
 }
 
 
-/* Hard final: MONTANA watch-player seek bar */
+/* Hard final: NIGHTOWL watch-player seek bar */
 .custom-movie-player-cinesrc .player-progress {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -11101,7 +11101,7 @@ body {
 }
 
 /* Big page titles keep Shahflix’s weight and cinematic tracking while retaining
-   MONTANA’s existing page-specific scale. */
+   NIGHTOWL’s existing page-specific scale. */
 .catalog-header h1,
 .search-header h1,
 .people-heading h1,
@@ -11806,3 +11806,13 @@ body {
     width: 30px;
   }
 }
+
+
+/* NIGHTOWL visual wordmarks */
+.wordmark:has(.wordmark-image) { padding: 0; }
+.wordmark-image { display: block; height: auto; object-fit: contain; width: clamp(7.25rem, 10vw, 9rem); }
+.wordmark-image-small { width: 7.5rem; }
+.top-ten-brand-image { display: block; height: auto; object-fit: contain; width: clamp(7rem, 9vw, 9rem); }
+.montana-player-intro-logo { animation: montana-player-intro-logo 980ms cubic-bezier(0.2, 0.75, 0.2, 1) both; display: block; height: auto; max-width: min(52vw, 720px); width: clamp(18rem, 42vw, 45rem); }
+@keyframes montana-player-intro-logo { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.nightowl-splash-logo { display: block; height: auto; max-width: min(78vw, 520px); width: clamp(15rem, 42vw, 32rem); }
