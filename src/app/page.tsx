@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching } from "@/lib/storage";
-import { discoverAnime, getHomeData, getNetflixSeries } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getHomeData, getNetflixSeries } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
@@ -48,6 +48,7 @@ export default function HomePage() {
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
   const [homeFilter, setHomeFilter] = useState<HomeFilter>("all");
   const [animeItems, setAnimeItems] = useState<HomeData["trending"]>([]);
+  const [crimeSeriesItems, setCrimeSeriesItems] = useState<HomeData["trending"]>([]);
 
   const refreshContinue = useCallback(() => {
     setContinueWatching(
@@ -80,10 +81,15 @@ export default function HomePage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([getHomeData(controller.signal), getNetflixSeries(controller.signal)])
-      .then(([home, netflix]) => {
+    Promise.all([
+      getHomeData(controller.signal),
+      getNetflixSeries(controller.signal),
+      discoverSeries(1, 80, "popularity.desc", controller.signal).catch(() => ({ results: [] as HomeData["trending"] })),
+    ])
+      .then(([home, netflix, crime]) => {
         setData(home);
         setNetflixSeries(netflix);
+        setCrimeSeriesItems(crime.results);
       })
       .catch(() => undefined);
     refreshContinue();
@@ -195,8 +201,12 @@ export default function HomePage() {
   const crimeSeries = isFilteredHome
     ? filteredSections.crime
     : excludeMovies(
-        uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries)
-          .filter((movie) => movie.genre_ids.includes(80)),
+        uniqueMovies(
+          crimeSeriesItems,
+          data.trendingSeries,
+          data.topRatedSeries,
+          data.airingSeries,
+        ).filter((movie) => movie.media_type === "tv" && movie.genre_ids.includes(80)),
         [...currentUpcomingSeries, ...firstEpisodes],
       ).slice(0, 14);
   const visibleNetflixSeries = isFilteredHome ? filteredSections.netflix : netflixSeries;
