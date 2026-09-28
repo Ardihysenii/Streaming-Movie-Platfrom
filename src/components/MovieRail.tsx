@@ -317,20 +317,12 @@ export function TopTenRail({ movies, title = "Top 10 on" }: { movies: Movie[]; t
         <div className="top-ten-heading-text">
           <div className="top-ten-title-row">
             <h2 className="top-ten-section-title">Top 10 on</h2>
-            <span className="top-ten-brand wordmark-letters" aria-label="MONTANA">
-              <span className="wordmark-letter">M</span>
-              <span className="wordmark-letter">O</span>
-              <span className="wordmark-letter">N</span>
-              <span className="wordmark-letter">T</span>
-              <span className="wordmark-letter">A</span>
-              <span className="wordmark-letter">N</span>
-              <span className="wordmark-letter">A</span>
-            </span>
+            <img className="top-ten-brand-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
           </div>
           <p>The most watched titles right now</p>
         </div>
       </header>
-      <RailScroller label="Top 10 on MONTANA" itemCount={topTen.length}>
+      <RailScroller label="Top 10 on NIGHTOWL" itemCount={topTen.length}>
         {topTen.map((movie, index) => {
           const isFeatured = index === 0;
           const trailerActive = isFeatured && trailerMovie?.id === movie.id;
