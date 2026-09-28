@@ -11636,3 +11636,92 @@ body {
 .home-page .content-section:not(.top-ten-section) .section-heading > a {
   margin-top: 4px;
 }
+
+
+/* Search page uses the same calm layout language as the homepage rails. */
+.search-page::before,
+.search-page::after,
+.search-page > .search-atmosphere {
+  animation: none !important;
+  display: none !important;
+}
+
+.search-results {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
+
+.search-results .section-heading {
+  align-items: flex-start;
+  margin-bottom: 22px;
+  padding-left: 16px;
+  position: relative;
+}
+
+.search-results .section-heading::before {
+  background: #e50914;
+  border-radius: 999px;
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 4px;
+}
+
+.search-results .section-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-results .section-heading .eyebrow {
+  color: var(--accent);
+  font-size: 0.66rem;
+  letter-spacing: 0.32em;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  order: 0;
+  text-transform: uppercase;
+}
+
+.search-results .section-heading h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.65rem, 2.2vw, 2.15rem);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0;
+  order: 1;
+  text-transform: none;
+}
+
+.search-results .movie-grid {
+  justify-content: start;
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+.search-field {
+  background: rgba(13, 16, 19, 0.9);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.search-field:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.34), 0 0 0 3px rgba(var(--accent-rgb), 0.08);
+}
+
+@media (max-width: 680px) {
+  .search-results .section-heading {
+    margin-bottom: 18px;
+    padding-left: 13px;
+  }
+
+  .search-results .section-heading h1 {
+    font-size: clamp(1.45rem, 7vw, 2rem);
+  }
+}
