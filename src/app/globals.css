@@ -8980,7 +8980,7 @@ body:has(.watch-page) .bottom-dock {
 
 .hero-reference-button {
   align-items: center;
-  border-radius: 12px;
+  border-radius: 0;
   display: inline-flex;
   font-size: 1rem;
   font-weight: 400;
