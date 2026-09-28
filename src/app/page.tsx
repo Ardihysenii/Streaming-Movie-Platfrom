@@ -152,12 +152,11 @@ export default function HomePage() {
     filteredSections.topRated = take(14);
     filteredSections.awardSeries = take(14);
   }
-  const topTenSeed = isFilteredHome ? filteredSections.topTen : topTenMovies;
   const forYou = isFilteredHome
     ? filteredSections.recommendations
     : excludeMovies(
         uniqueMovies(data.topRated, data.trending, data.nowPlaying, data.trendingSeries, data.topRatedSeries),
-        topTenSeed,
+        isFilteredHome ? filteredSections.topTen : [],
       ).slice(0, 14);
   const seriesPool = uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries);
   const recentSeriesCutoff = new Date();
