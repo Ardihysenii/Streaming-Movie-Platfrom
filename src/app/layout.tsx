@@ -7,9 +7,9 @@ import { SettingsPanel } from "@/components/SettingsPanel";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MONTANA — Your cinema, uninterrupted",
+  title: "NIGHTOWL — Your cinema, uninterrupted",
   description: "A personal, cinematic movie discovery and viewing interface.",
-  applicationName: "MONTANA",
+  applicationName: "NIGHTOWL",
 };
 
 export const viewport: Viewport = {
