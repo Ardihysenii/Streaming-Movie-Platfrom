@@ -1,10 +1,10 @@
-# MONTANA
+# NIGHTOWL
 
-MONTANA is a modern movie and TV streaming platform designed to make discovering what to watch feel cinematic, simple, and personal.
+NIGHTOWL is a modern movie and TV streaming platform designed to make discovering what to watch feel cinematic, simple, and personal.
 
 ## What It Does
 
-MONTANA allows users to:
+NIGHTOWL allows users to:
 
 - Discover movies and TV shows through a cinematic browsing experience
 - Explore featured, trending, new, and critically acclaimed titles
@@ -17,4 +17,4 @@ MONTANA allows users to:
 - Browse both movies and television series in one unified platform
 - Access playback through the configured streaming sources
 
-MONTANA uses the TMDB API for movie and TV data, with Cinemeta available as a catalog fallback. Streaming availability and playback quality depend on the configured content source.
+NIGHTOWL uses the TMDB API for movie and TV data, with Cinemeta available as a catalog fallback. Streaming availability and playback quality depend on the configured content source.
