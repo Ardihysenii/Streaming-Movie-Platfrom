@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "@/components/Loading";
 import { MovieGrid } from "@/components/MovieCard";
 import { SearchIcon } from "@/components/Icons";
-import { searchCatalog } from "@/lib/tmdb";
+import { imageUrl, searchCatalog } from "@/lib/tmdb";
 import type { SearchScope } from "@/lib/tmdb";
 import type { Movie } from "@/lib/types";
 
@@ -90,7 +92,28 @@ export default function SearchPage() {
     <main className="search-page">
       <header className="search-header">
         <p className="eyebrow">Find your next frame</p>
-        <form className="search-field" onSubmit={submitSearch} role="search">
+        <div className="search-portal">
+          <div className="search-floating-art" aria-label="Featured titles">
+            {movies.slice(0, 8).map((movie, index) => (
+              <Link
+                className={"search-floating-card search-floating-card-" + index}
+                href={movie.media_type === "tv" ? "/series/details/?id=" + (movie.tmdb_id ?? movie.id) : "/movie/?id=" + (movie.tmdb_id ?? movie.id)}
+                key={movie.media_type + "-" + (movie.tmdb_id ?? movie.id) + "-floating"}
+                aria-label={"Open " + movie.title}
+              >
+                <span className="search-floating-image">
+                  <Image
+                    src={imageUrl(movie.poster_path ?? movie.backdrop_path, "w500")}
+                    alt=""
+                    fill
+                    sizes="(max-width: 700px) 26vw, 150px"
+                  />
+                </span>
+                <span className="search-floating-card-title">{movie.title}</span>
+              </Link>
+            ))}
+          </div>
+          <form className="search-field" onSubmit={submitSearch} role="search">
           <SearchIcon />
           <input
             ref={inputRef}
@@ -100,7 +123,8 @@ export default function SearchPage() {
             aria-label="Search movies and series"
           />
           {loading ? <LoadingSpinner label="Searching" /> : <span className="search-count">{movies.length}</span>}
-        </form>
+          </form>
+        </div>
         {!query && recentSearches.length ? (
           <div className="recent-searches" aria-label="Recent searches">
             <div className="recent-searches-heading">
