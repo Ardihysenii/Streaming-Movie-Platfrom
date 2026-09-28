@@ -27,6 +27,7 @@ import {
   VolumeIcon,
   PictureInPictureIcon,
   CastIcon,
+  CaptionsIcon,
   SettingsIcon,
   BackIcon,
   GridIcon,
@@ -259,6 +260,9 @@ export default function CustomMoviePlayer({
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
+  const playerDisplayTitle = mediaType === "tv" && seasonNumber && episodeNumber
+    ? `${title} S${String(seasonNumber).padStart(2, "0")}E${String(episodeNumber).padStart(2, "0")}`
+    : title;
 
   const [subtitleOffset, setSubtitleOffset] = useState(0);
   const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
@@ -1440,31 +1444,31 @@ export default function CustomMoviePlayer({
               </button>
             ) : null}
           </div>
-          {!isPlaying && isReady ? (
+          {isReady ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
               <div className="player-paused-topline">
                 {logoUrl ? (
                   <img
                     className="player-paused-topline-logo"
                     src={logoUrl}
-                    alt={title}
+                    alt={playerDisplayTitle}
                     width={logoWidth}
                     height={logoHeight}
                   />
-                ) : <span>{title}</span>}
-                <span className="player-paused-topline-mark">NOVA</span>
+                ) : <span>{playerDisplayTitle}</span>}
+                <span className="player-paused-topline-mark" aria-hidden="true" />
               </div>
               <div className="player-paused-info">
-                <p className="player-paused-eyebrow">You are watching</p>
+                <p className="player-paused-eyebrow">You're Watching</p>
                 {logoUrl ? (
                   <img
                     className="player-paused-title-logo"
                     src={logoUrl}
-                    alt={title}
+                    alt={playerDisplayTitle}
                     width={logoWidth}
                     height={logoHeight}
                   />
-                ) : <h2>{title}</h2>}
+                ) : <h2>{playerDisplayTitle}</h2>}
                 <div className="player-paused-meta">
                   {releaseYear ? <span>{releaseYear}</span> : null}
                   {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
@@ -1523,7 +1527,7 @@ export default function CustomMoviePlayer({
               onChange={handleSeek}
               aria-label="Seek"
             />
-            <span className="player-time player-time-progress">{formatTime(currentTime)} / {formatTime(duration)}</span>
+            <span className="player-time player-current-time">{formatTime(currentTime)}</span><span className="player-time player-duration-time">{formatTime(duration)}</span>
             </div>
             <div className="player-control-row">
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
@@ -1547,6 +1551,11 @@ export default function CustomMoviePlayer({
                 />
               </div>
               <span className="player-control-spacer" />
+              <div className="player-subtitles-control">
+                <button type="button" className="player-subtitles-button" onClick={() => { setSettingsOpen(true); setSettingsView("subtitles"); }} aria-label="Subtitles" aria-expanded={settingsOpen}>
+                  <CaptionsIcon />
+                </button>
+              </div>
               <div className="player-settings-control">
                 <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
                   <SettingsIcon className="player-setting-icon" />
