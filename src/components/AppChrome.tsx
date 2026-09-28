@@ -23,16 +23,8 @@ export function Header() {
 
   return (
     <header className="site-header">
-      <Link className="wordmark" href="/" aria-label="MONTANA home">
-        <span className="wordmark-letters" aria-hidden="true">
-          <span className="wordmark-letter">M</span>
-          <span className="wordmark-letter">O</span>
-          <span className="wordmark-letter">N</span>
-          <span className="wordmark-letter">T</span>
-          <span className="wordmark-letter">A</span>
-          <span className="wordmark-letter">N</span>
-          <span className="wordmark-letter">A</span>
-        </span>
+      <Link className="wordmark" href="/" aria-label="NIGHTOWL home">
+        <img className="wordmark-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
       </Link>
       <div className="header-actions">
         <Link className="icon-button" href={searchHref} aria-label="Search movies and series">
@@ -93,7 +85,7 @@ export function BottomDock() {
           onClick={() => {
             setAgentOpen(true);
           }}
-          aria-label="Open MONTANA Agent"
+          aria-label="Open NIGHTOWL Agent"
           aria-haspopup="dialog"
           aria-expanded={agentOpen}
         >
@@ -120,7 +112,7 @@ export function BottomDock() {
         <span>Settings</span>
       </button>
       {browseOpen ? (
-        <div className="browse-popover" role="dialog" aria-label="Browse MONTANA">
+        <div className="browse-popover" role="dialog" aria-label="Browse NIGHTOWL">
           <div className="browse-popover-heading">
             <p className="eyebrow">Quick access</p>
             <h2>Browse</h2>
