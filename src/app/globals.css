@@ -11725,3 +11725,84 @@ body {
     font-size: clamp(1.45rem, 7vw, 2rem);
   }
 }
+
+
+/* Search polish: center the catalog and give the input a calm command-bar finish. */
+.search-results .movie-grid {
+  justify-content: center;
+}
+
+.search-field {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(22, 25, 30, 0.96), rgba(10, 12, 15, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(var(--accent-rgb), 0.32);
+  gap: 14px;
+  max-width: 780px;
+  min-height: 72px;
+  padding: 0 16px;
+  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+}
+
+.search-field:hover,
+.search-field:focus-within {
+  background: linear-gradient(135deg, rgba(28, 32, 38, 0.98), rgba(12, 14, 18, 0.99));
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.42), 0 0 0 3px rgba(var(--accent-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -2px 0 rgba(var(--accent-rgb), 0.65);
+  transform: translateY(-2px);
+}
+
+.search-field > svg {
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.36);
+  border-radius: 50%;
+  color: var(--accent);
+  height: 34px;
+  padding: 8px;
+  width: 34px;
+}
+
+.search-field:hover > svg,
+.search-field:focus-within > svg {
+  filter: drop-shadow(0 0 9px rgba(var(--accent-rgb), 0.46));
+  transform: none;
+}
+
+.search-field input {
+  font-size: clamp(1rem, 1.45vw, 1.22rem);
+  font-weight: 500;
+}
+
+.search-count {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+.search-count::before {
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 9px rgba(var(--accent-rgb), 0.55);
+  height: 4px;
+  width: 4px;
+}
+
+@media (max-width: 680px) {
+  .search-field {
+    border-radius: 14px;
+    min-height: 60px;
+  }
+
+  .search-field > svg {
+    height: 30px;
+    padding: 7px;
+    width: 30px;
+  }
+}
