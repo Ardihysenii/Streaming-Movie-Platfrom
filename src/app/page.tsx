@@ -194,9 +194,12 @@ export default function HomePage() {
   const mixedHomepageFeatured = americanHorrorStory
     ? [americanHorrorStory, ...excludeMovies(releasedHomeItems, [americanHorrorStory])]
     : releasedHomeItems;
+  const mixedTopTenFeatured = mixedHomepageFeatured.filter(
+    (movie) => movie.title.trim().toLowerCase() !== "runner",
+  );
   const topTenMovies = isFilteredHome
     ? filteredSections.topTen
-    : mixedHomepageFeatured.slice(0, 10);
+    : mixedTopTenFeatured.slice(0, 10);
   const heroMovies = isFilteredHome
     ? filteredSections.hero
     : mixedHomepageFeatured.slice(0, 10);
