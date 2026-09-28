@@ -225,7 +225,7 @@ function SeriesDetailsContent() {
               <div className={`detail-actions${resumeCandidate && resumeEpisodeUrl ? " has-resume" : ""}`}>
                 {resumeEpisodeUrl ? (
                   <Link className="primary-button detail-play-button" href={resumeEpisodeUrl}>
-                    <PlayIcon /> Continue
+                    <PlayIcon /> Resume
                   </Link>
                 ) : firstEpisodeUrl ? (
                   <Link className="primary-button detail-play-button" href={firstEpisodeUrl}>
