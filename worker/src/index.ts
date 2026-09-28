@@ -193,7 +193,7 @@ function openSubtitlesBaseUrl(value?: string) {
   }
 }
 function openSubtitlesUserAgent(env: Env) {
-  return env.OPEN_SUBTITLES_USER_AGENT?.trim() || "MONTANA Subtitle Service/1.0 (https://streaming-movie-platfrom.vercel.app)";
+  return env.OPEN_SUBTITLES_USER_AGENT?.trim() || "NIGHTOWL Subtitle Service/1.0 (https://streaming-movie-platfrom.vercel.app)";
 }
 function openSubtitlesHeaders(env: Env, token?: string) {
   return { Accept: "application/json", "Api-Key": env.OPEN_SUBTITLES_API_KEY?.trim() || "", "User-Agent": openSubtitlesUserAgent(env), ...(token ? { Authorization: "Bearer " + token } : {}) };
