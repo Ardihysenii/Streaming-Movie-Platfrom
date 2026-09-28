@@ -88,12 +88,6 @@ export default function SearchPage() {
 
   return (
     <main className="search-page">
-      <div className="search-atmosphere" aria-hidden="true">
-        <span className="search-frame search-frame-one" />
-        <span className="search-frame search-frame-two" />
-        <span className="search-orbit search-orbit-one" />
-        <span className="search-orbit search-orbit-two" />
-      </div>
       <header className="search-header">
         <p className="eyebrow">Find your next frame</p>
         <form className="search-field" onSubmit={submitSearch} role="search">
