@@ -11863,7 +11863,7 @@ body {
   transition: filter 260ms ease, opacity 260ms ease;
   width: clamp(88px, 9.4vw, 132px);
   z-index: 1;
-  animation: searchCardOrbit 24s linear infinite;
+  animation: searchCardOrbit 42s ease-in-out infinite alternate;
 }
 
 .search-floating-card::after {
@@ -11918,16 +11918,24 @@ body {
 .search-floating-card-6 { animation-delay: -18s; }
 .search-floating-card-7 { animation-delay: -21s; }
 
+.search-floating-card-0 { --orbit-x: clamp(250px, 24vw, 370px); --orbit-y: clamp(125px, 14vw, 205px); animation-delay: -4s; animation-duration: 43s; }
+.search-floating-card-1 { --orbit-x: clamp(225px, 22vw, 345px); --orbit-y: clamp(145px, 16vw, 225px); animation-delay: -17s; animation-direction: alternate-reverse; animation-duration: 49s; }
+.search-floating-card-2 { --orbit-x: clamp(270px, 27vw, 405px); --orbit-y: clamp(115px, 13vw, 185px); animation-delay: -29s; animation-duration: 46s; }
+.search-floating-card-3 { --orbit-x: clamp(235px, 23vw, 355px); --orbit-y: clamp(155px, 17vw, 235px); animation-delay: -9s; animation-direction: alternate-reverse; animation-duration: 54s; }
+.search-floating-card-4 { --orbit-x: clamp(260px, 26vw, 395px); --orbit-y: clamp(135px, 15vw, 215px); animation-delay: -35s; animation-duration: 41s; }
+.search-floating-card-5 { --orbit-x: clamp(220px, 21vw, 330px); --orbit-y: clamp(120px, 14vw, 200px); animation-delay: -23s; animation-direction: alternate-reverse; animation-duration: 51s; }
+.search-floating-card-6 { --orbit-x: clamp(245px, 24vw, 375px); --orbit-y: clamp(145px, 16vw, 225px); animation-delay: -12s; animation-duration: 47s; }
+.search-floating-card-7 { --orbit-x: clamp(280px, 28vw, 420px); --orbit-y: clamp(110px, 12vw, 180px); animation-delay: -39s; animation-direction: alternate-reverse; animation-duration: 56s; }
+
 @keyframes searchCardOrbit {
-  0% { transform: translate(-50%, -50%) translateX(var(--orbit-x)) rotate(7deg); }
-  12.5% { transform: translate(-50%, -50%) translate(var(--orbit-x), var(--orbit-y)) rotate(4deg); }
-  25% { transform: translate(-50%, -50%) translateY(var(--orbit-y)) rotate(-2deg); }
-  37.5% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * -1), var(--orbit-y)) rotate(-6deg); }
-  50% { transform: translate(-50%, -50%) translateX(calc(var(--orbit-x) * -1)) rotate(-7deg); }
-  62.5% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * -1), calc(var(--orbit-y) * -1)) rotate(-4deg); }
-  75% { transform: translate(-50%, -50%) translateY(calc(var(--orbit-y) * -1)) rotate(2deg); }
-  87.5% { transform: translate(-50%, -50%) translate(var(--orbit-x), calc(var(--orbit-y) * -1)) rotate(6deg); }
-  100% { transform: translate(-50%, -50%) translateX(var(--orbit-x)) rotate(7deg); }
+  0% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * .88), calc(var(--orbit-y) * -.18)) rotate(7deg); }
+  13% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * .52), calc(var(--orbit-y) * .76)) rotate(-3deg); }
+  27% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * -.22), var(--orbit-y)) rotate(5deg); }
+  41% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * -.94), calc(var(--orbit-y) * .46)) rotate(-7deg); }
+  56% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * -.72), calc(var(--orbit-y) * -.68)) rotate(2deg); }
+  71% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * .08), calc(var(--orbit-y) * -1.02)) rotate(-5deg); }
+  86% { transform: translate(-50%, -50%) translate(calc(var(--orbit-x) * .76), calc(var(--orbit-y) * -.56)) rotate(6deg); }
+  100% { transform: translate(-50%, -50%) translate(var(--orbit-x), calc(var(--orbit-y) * .12)) rotate(-2deg); }
 }
 
 .search-portal .search-field {
