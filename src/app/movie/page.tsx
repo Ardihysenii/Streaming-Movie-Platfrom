@@ -228,7 +228,7 @@ function MoviePageContent() {
                 {isReleased(movie) ? (
                   <>
                     <Link className="primary-button detail-play-button" href={`/watch/?id=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}&imdbId=${encodeURIComponent(String(movie.id))}`}>
-                      <PlayIcon /> Play
+                      <PlayIcon /> {resumeCandidate ? "Resume" : "Play"}
                     </Link>
                     <WishlistButton movie={movie} className="detail-my-list-button" icon="plus" label="My List" redirectToWishlist />
                   </>
