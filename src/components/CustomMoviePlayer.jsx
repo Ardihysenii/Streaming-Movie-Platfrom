@@ -28,6 +28,8 @@ import {
   PictureInPictureIcon,
   CastIcon,
   SettingsIcon,
+  BackIcon,
+  GridIcon,
 } from "@/components/Icons";
 import { useNovaSettings } from "@/components/Providers";
 
@@ -1428,6 +1430,16 @@ export default function CustomMoviePlayer({
       ) : null}
       {isCineSrc && isReady ? (
         <div className="custom-player-ui">
+          <div className="player-top-navigation" aria-label="Player navigation">
+            <button type="button" onClick={() => window.history.back()} aria-label="Back">
+              <BackIcon />
+            </button>
+            {mediaType === "tv" ? (
+              <button type="button" onClick={() => document.getElementById("episodes-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} aria-label="Episodes">
+                <GridIcon />
+              </button>
+            ) : null}
+          </div>
           {!isPlaying && isReady ? (
             <div className="player-paused-overlay" aria-label="Paused movie information">
               <div className="player-paused-topline">
@@ -1517,8 +1529,8 @@ export default function CustomMoviePlayer({
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>
-              <button type="button" onClick={() => seekBy(-10)} aria-label="Rewind 10 seconds"><RewindIcon /></button>
-              <button type="button" onClick={() => seekBy(10)} aria-label="Forward 10 seconds"><ForwardIcon /></button>
+              <button type="button" onClick={() => seekBy(-15)} aria-label="Rewind 15 seconds"><RewindIcon /></button>
+              <button type="button" onClick={() => seekBy(15)} aria-label="Forward 15 seconds"><ForwardIcon /></button>
               <div className="player-volume-control">
                 <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>
                   {muted ? <MutedIcon /> : <VolumeIcon />}
