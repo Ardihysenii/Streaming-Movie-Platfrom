@@ -33,6 +33,15 @@ function uniqueMovies(...groups: HomeData["trending"][]) {
   });
 }
 
+function movieIdentity(movie: HomeData["trending"][number]) {
+  return `${movie.media_type ?? "movie"}:${movie.tmdb_id ?? movie.id}`;
+}
+
+function excludeMovies(movies: HomeData["trending"], excluded: HomeData["trending"]) {
+  const blocked = new Set(excluded.map(movieIdentity));
+  return movies.filter((movie) => !blocked.has(movieIdentity(movie)));
+}
+
 export default function HomePage() {
   const [data, setData] = useState<HomeData | null>(null);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
@@ -143,16 +152,27 @@ export default function HomePage() {
     filteredSections.topRated = take(14);
     filteredSections.awardSeries = take(14);
   }
+  const topTenSeed = isFilteredHome ? filteredSections.topTen : topTenMovies;
   const forYou = isFilteredHome
     ? filteredSections.recommendations
-    : uniqueMovies(data.topRated, data.trending, data.nowPlaying, data.trendingSeries, data.topRatedSeries);
-  const seriesPool = uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries);
+    : excludeMovies(
+        uniqueMovies(data.topRated, data.trending, data.nowPlaying, data.trendingSeries, data.topRatedSeries),
+        topTenSeed,
+      ).slice(0, 14);
+  const seriesPool = uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries);
+  const recentSeriesCutoff = new Date();
+  recentSeriesCutoff.setMonth(recentSeriesCutoff.getMonth() - 15);
+  const recentTrendingSeries = data.trendingSeries.filter((movie) => {
+    const date = Date.parse(movie.release_date);
+    return Number.isFinite(date) && date >= recentSeriesCutoff.getTime();
+  });
+  const currentSeriesPool = uniqueMovies(data.airingSeries, recentTrendingSeries);
   const mobLand = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "mobland");
   const series = isFilteredHome
     ? filteredSections.series
     : mobLand
-      ? [mobLand, ...seriesPool.filter((movie) => movie !== mobLand)].slice(0, 14)
-      : seriesPool.slice(0, 14);
+      ? [mobLand, ...excludeMovies(seriesPool.filter((movie) => movie !== mobLand), currentSeriesPool)].slice(0, 14)
+      : excludeMovies(seriesPool, currentSeriesPool).slice(0, 14);
   const topTenMovies = isFilteredHome
     ? filteredSections.topTen
     : mobLand
@@ -169,15 +189,17 @@ export default function HomePage() {
   const discoveryPool = isFilteredHome ? filteredSections.mood : allHomeMovies.slice(0, 50);
   const currentUpcomingSeries = isFilteredHome
     ? filteredSections.current
-    : uniqueMovies(data.airingSeries, data.trendingSeries, data.topRatedSeries).slice(0, 14);
+    : currentSeriesPool.slice(0, 14);
   const firstEpisodes = isFilteredHome
     ? filteredSections.firstEpisodes
-    : uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries).slice(0, 14);
+    : excludeMovies(uniqueMovies(data.trendingSeries, data.airingSeries), currentUpcomingSeries).slice(0, 14);
   const crimeSeries = isFilteredHome
     ? filteredSections.crime
-    : uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries)
-        .filter((movie) => movie.genre_ids.includes(80))
-        .slice(0, 14);
+    : excludeMovies(
+        uniqueMovies(data.trendingSeries, data.topRatedSeries, data.airingSeries)
+          .filter((movie) => movie.genre_ids.includes(80)),
+        [...currentUpcomingSeries, ...firstEpisodes],
+      ).slice(0, 14);
   const visibleNetflixSeries = isFilteredHome ? filteredSections.netflix : netflixSeries;
   const filteredContinue = isFilteredHome
     ? continueWatching.filter((item) => filterForHome([item], homeFilter).length > 0)
