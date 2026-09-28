@@ -1410,10 +1410,8 @@ export default function CustomMoviePlayer({
             <div className="montana-player-intro-sheen" aria-hidden="true" />
             <div className="montana-player-intro-content">
               <p className="montana-player-intro-kicker">Now screening</p>
-              <div className="montana-player-intro-brand" aria-label="MONTANA">
-                {[..."MONTANA"].map((letter, index) => (
-                  <span key={letter + index} style={{ animationDelay: index * 95 + "ms" }}>{letter}</span>
-                ))}
+              <div className="montana-player-intro-brand" aria-label="NIGHTOWL">
+                <img className="montana-player-intro-logo" src="/nightowl-logo.png" alt="NIGHTOWL" width="720" height="180" />
               </div>
               <div className="montana-player-intro-rule" aria-hidden="true"><span /> <i /></div>
               <strong>{mediaType === "tv" ? "Your episode is about to begin" : "Your movie is about to begin"}</strong>
