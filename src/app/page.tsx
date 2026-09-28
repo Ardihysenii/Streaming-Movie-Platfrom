@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching } from "@/lib/storage";
-import { discoverAnime, discoverSeries, getHomeData, getNetflixSeries } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getHomeData, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
@@ -40,6 +40,18 @@ function movieIdentity(movie: HomeData["trending"][number]) {
 function excludeMovies(movies: HomeData["trending"], excluded: HomeData["trending"]) {
   const blocked = new Set(excluded.map(movieIdentity));
   return movies.filter((movie) => !blocked.has(movieIdentity(movie)));
+}
+
+function releasedHomePool(data: HomeData) {
+  return uniqueMovies(
+    data.trending,
+    data.nowPlaying,
+    data.topRated,
+    data.action,
+    data.trendingSeries,
+    data.airingSeries,
+    data.topRatedSeries,
+  ).filter(isReleased);
 }
 
 export default function HomePage() {
@@ -178,19 +190,16 @@ export default function HomePage() {
     : americanHorrorStory
       ? [americanHorrorStory, ...excludeMovies(seriesPool.filter((movie) => movie !== americanHorrorStory), currentSeriesPool)].slice(0, 14)
       : excludeMovies(seriesPool, currentSeriesPool).slice(0, 14);
+  const releasedHomeItems = releasedHomePool(data);
+  const mixedHomepageFeatured = americanHorrorStory
+    ? [americanHorrorStory, ...excludeMovies(releasedHomeItems, [americanHorrorStory])]
+    : releasedHomeItems;
   const topTenMovies = isFilteredHome
     ? filteredSections.topTen
-    : americanHorrorStory
-      ? [americanHorrorStory, ...data.trending.filter((movie) => {
-          const title = movie.title.trim().toLowerCase();
-          return title !== "forgotten island" && title !== "american horror story";
-        }).slice(0, 9)]
-      : data.trending.slice(0, 10);
+    : mixedHomepageFeatured.slice(0, 10);
   const heroMovies = isFilteredHome
     ? filteredSections.hero
-    : americanHorrorStory
-      ? [americanHorrorStory, ...data.trending.filter((movie) => movie.title.trim().toLowerCase() !== "american horror story")].slice(0, 10)
-      : data.trending;
+    : mixedHomepageFeatured.slice(0, 10);
   const discoveryPool = isFilteredHome ? filteredSections.mood : allHomeMovies.slice(0, 50);
   const currentUpcomingSeries = isFilteredHome
     ? filteredSections.current
