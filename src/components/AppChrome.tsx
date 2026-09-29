@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { AgentIcon, SearchIcon, SettingsIcon } from "./Icons";
 import { NovaAgentPanel } from "./NovaAgentPanel";
 import { useNovaSettings } from "./Providers";
@@ -15,35 +15,33 @@ const navigation = [
   { href: "/wishlist/", label: "My List", key: "wishlist" },
 ] as const;
 
-export function Header() {
+function HeaderContent() {
   const pathname = usePathname() ?? "";
+  const searchParams = useSearchParams();
   const { setSettingsOpen } = useNovaSettings();
   const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
-  const [urlFilter, setUrlFilter] = useState<string | null>(null);
-  const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>("home");
+  const urlFilter = pathname === "/" ? searchParams.get("type") : null;
+  const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>(() => {
+    if (pathname.startsWith("/wishlist")) return "wishlist";
+    return urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home";
+  });
   const currentUrlKey = pathname.startsWith("/wishlist")
     ? "wishlist"
     : pathname === "/"
-      ? urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : null
+      ? urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home"
       : null;
 
   useEffect(() => {
-    const pageFilter = pathname === "/" && typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("type")
-      : null;
-    const validFilter = pageFilter === "movies" || pageFilter === "series" || pageFilter === "anime" ? pageFilter : null;
     const type = pathname.startsWith("/series")
       ? "series"
       : pathname.startsWith("/movies")
-        ? new URLSearchParams(window.location.search).get("type") === "anime" ? "anime" : "movies"
+        ? searchParams.get("type") === "anime" ? "anime" : "movies"
         : null;
-    setUrlFilter(validFilter);
     setSearchHref(type ? "/search/?type=" + type : "/search/");
     if (pathname.startsWith("/wishlist")) setActiveKey("wishlist");
-    else if (pathname === "/" && validFilter) setActiveKey(validFilter);
-    else if (pathname === "/" && !validFilter) setActiveKey("home");
-  }, [pathname, activeKey]);
+    else if (pathname === "/") setActiveKey(urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home");
+  }, [pathname, searchParams, urlFilter]);
 
   function isActive(key: (typeof navigation)[number]["key"]) {
     return (currentUrlKey ?? activeKey) === key;
@@ -91,5 +89,13 @@ export function Header() {
       </header>
       <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
     </>
+  );
+}
+
+export function Header() {
+  return (
+    <Suspense fallback={null}>
+      <HeaderContent />
+    </Suspense>
   );
 }
