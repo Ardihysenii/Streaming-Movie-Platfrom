@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AgentIcon, SearchIcon, SettingsIcon } from "./Icons";
 import { NovaAgentPanel } from "./NovaAgentPanel";
@@ -17,21 +17,21 @@ const navigation = [
 
 export function Header() {
   const pathname = usePathname() ?? "";
+  const searchParams = useSearchParams();
   const { setSettingsOpen } = useNovaSettings();
   const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
   const [homeFilter, setHomeFilter] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
     const type = pathname.startsWith("/series")
       ? "series"
       : pathname.startsWith("/movies")
-        ? params.get("type") === "anime" ? "anime" : "movies"
+        ? searchParams.get("type") === "anime" ? "anime" : "movies"
         : null;
     setSearchHref(type ? "/search/?type=" + type : "/search/");
-    setHomeFilter(pathname === "/" ? params.get("type") : null);
-  }, [pathname]);
+    setHomeFilter(pathname === "/" ? searchParams.get("type") : null);
+  }, [pathname, searchParams]);
 
   function isActive(key: (typeof navigation)[number]["key"]) {
     if (key === "home") return pathname === "/" && !homeFilter;
