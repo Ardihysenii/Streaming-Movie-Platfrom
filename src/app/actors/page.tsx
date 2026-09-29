@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { BackIcon, SearchIcon } from "@/components/Icons";
+import { SearchIcon } from "@/components/Icons";
 import { CardSkeletons } from "@/components/Loading";
 import { getPopularPeople, getTopHollywoodActors, imageUrl, searchPeople } from "@/lib/tmdb";
 import type { PersonCredit } from "@/lib/types";
@@ -94,16 +94,8 @@ export default function ActorsPage() {
 
   return (
     <main className="actors-page">
-      <Link className="back-link actors-back" href="/">
-        <BackIcon /> Back to home
-      </Link>
 
       <header className="actors-header">
-        <div>
-          <p className="eyebrow">NOVA people</p>
-          <h1>Actors</h1>
-          <p>Meet the performers and creators behind your favorite stories.</p>
-        </div>
         <form className="actor-search" onSubmit={submit} role="search">
           <SearchIcon />
           <input
