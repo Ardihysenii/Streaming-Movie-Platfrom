@@ -246,7 +246,6 @@ img {
   color: white;
 }
 
-.desktop-nav a:hover::after,
 .desktop-nav a.is-active::after {
   transform: scaleX(1);
 }
