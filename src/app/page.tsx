@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
@@ -17,9 +18,7 @@ function filterForHome(movies: HomeData["trending"], filter: HomeFilter) {
   return movies;
 }
 
-function homeFilterFromUrl(): HomeFilter {
-  if (typeof window === "undefined") return "all";
-  const value = new URLSearchParams(window.location.search).get("type");
+function homeFilterFromValue(value: string | null): HomeFilter {
   return value === "movies" || value === "series" || value === "anime" ? value : "all";
 }
 
@@ -55,6 +54,7 @@ function releasedHomePool(data: HomeData) {
 }
 
 export default function HomePage() {
+  const searchParams = useSearchParams();
   const [data, setData] = useState<HomeData | null>(null);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
@@ -73,11 +73,11 @@ export default function HomePage() {
       if (value === "movies" || value === "series" || value === "anime") setHomeFilter(value);
       else setHomeFilter("all");
     };
-    applyFilter(homeFilterFromUrl());
+    applyFilter(homeFilterFromValue(searchParams.get("type")));
     const handleFilter = (event: Event) => applyFilter((event as CustomEvent).detail);
     window.addEventListener("nova:home-filter", handleFilter);
     return () => window.removeEventListener("nova:home-filter", handleFilter);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (homeFilter !== "anime") {
