@@ -11980,3 +11980,66 @@ body {
     gap: 14px 10px;
   }
 }
+
+
+/* Actors search: square More Details-style control, without changing the hero button. */
+.actors-page .actors-header {
+  align-items: flex-start;
+  border-bottom: 0;
+  justify-content: flex-end;
+  margin-bottom: 48px;
+  padding-bottom: 0;
+}
+
+.actors-page .actor-search {
+  background: rgba(28, 31, 35, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0;
+  box-shadow: none;
+  max-width: 440px;
+  min-height: 40px;
+  padding: 0 0 0 16px;
+}
+
+.actors-page .actor-search > svg {
+  color: rgba(255, 255, 255, 0.68);
+  height: 16px;
+  width: 16px;
+}
+
+.actors-page .actor-search input {
+  font-size: 0.9rem;
+  padding: 0 2px;
+}
+
+.actors-page .actor-search button {
+  align-self: stretch;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0;
+  color: rgba(255, 255, 255, 0.92);
+  min-height: 40px;
+  padding: 0 22px;
+}
+
+.actors-page .actor-search button:hover {
+  background: rgba(50, 54, 60, 0.9);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: none;
+  color: #ffffff;
+  transform: none;
+}
+
+.actors-page .actor-search:focus-within {
+  border-color: rgba(255, 255, 255, 0.42);
+  border-radius: 0;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 680px) {
+  .actors-page .actors-header {
+    align-items: stretch;
+    margin-bottom: 36px;
+  }
+}
