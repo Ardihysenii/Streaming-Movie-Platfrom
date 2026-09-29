@@ -12071,3 +12071,9 @@ body {
     width: 38px;
   }
 }
+
+
+/* Keep the new top-header actions visible over the homepage hero. */
+body:has(.hero) .site-header .header-actions {
+  display: flex;
+}
