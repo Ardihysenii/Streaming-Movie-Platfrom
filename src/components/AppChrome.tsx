@@ -21,7 +21,7 @@ export function Header() {
   const { setSettingsOpen } = useNovaSettings();
   const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
-  const [homeFilter, setHomeFilter] = useState<string | null>(null);
+  const homeFilter = pathname === "/" ? searchParams.get("type") : null;
 
   useEffect(() => {
     const type = pathname.startsWith("/series")
@@ -30,7 +30,6 @@ export function Header() {
         ? searchParams.get("type") === "anime" ? "anime" : "movies"
         : null;
     setSearchHref(type ? "/search/?type=" + type : "/search/");
-    setHomeFilter(pathname === "/" ? searchParams.get("type") : null);
   }, [pathname, searchParams]);
 
   function isActive(key: (typeof navigation)[number]["key"]) {
