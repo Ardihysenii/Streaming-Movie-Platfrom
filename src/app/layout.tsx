@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { BottomDock, Header } from "@/components/AppChrome";
+import { Header } from "@/components/AppChrome";
 import { Footer } from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 import { SettingsPanel } from "@/components/SettingsPanel";
@@ -32,7 +32,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <Header />
           {children}
           <Footer />
-          <BottomDock />
           <SettingsPanel />
         </Providers>
       </body>
