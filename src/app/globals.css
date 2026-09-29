@@ -2446,15 +2446,6 @@ body:has(.hero) .header-actions {
   width: 100%;
 }
 
-.actor-search::before {
-  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.12) 48%, transparent 66%);
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-120%);
-  animation: actorSearchSheen 8s ease-in-out infinite;
-}
 
 .actor-search > * {
   position: relative;
@@ -3001,77 +2992,7 @@ body:has(.hero) .header-actions {
   padding: calc(var(--header-height) + 56px) var(--page-gutter) var(--section-gap);
 }
 
-.person-page > .person-atmosphere {
-  height: 100dvh;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: fixed;
-  width: 100vw;
-  z-index: 0;
-}
-
-.person-atmosphere::before {
-  background:
-    linear-gradient(118deg, transparent 0 37%, rgba(255, 255, 255, 0.04) 37.2%, transparent 37.5%),
-    linear-gradient(24deg, transparent 0 70%, rgba(var(--accent-rgb), 0.08) 70.2%, transparent 70.5%);
-  content: "";
-  inset: 0;
-  opacity: 0.7;
-  position: absolute;
-  animation: personLightSweep 17s ease-in-out infinite alternate;
-}
-
-.person-frame,
-.person-orbit {
-  display: block;
-  pointer-events: none;
-  position: absolute;
-}
-
-.person-frame {
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 48px;
-  height: 116%;
-  left: -12%;
-  top: -10%;
-  transform: rotate(-7deg);
-  width: 78%;
-  animation: personFrameDrift 25s ease-in-out infinite;
-}
-
-.person-frame-two {
-  border-color: rgba(var(--accent-rgb), 0.15);
-  height: 128%;
-  left: auto;
-  right: -13%;
-  top: -16%;
-  transform: rotate(10deg);
-  width: 60%;
-  animation: personFrameDriftReverse 30s ease-in-out infinite;
-}
-
-.person-orbit {
-  aspect-ratio: 1;
-  border: 1px solid rgba(112, 150, 190, 0.14);
-  border-radius: 50%;
-  height: min(92vh, 840px);
-  right: -10%;
-  top: -14%;
-  animation: personOrbitDrift 24s linear infinite;
-}
-
-.person-orbit-two {
-  border-color: rgba(var(--accent-rgb), 0.12);
-  height: min(54vh, 500px);
-  left: 16%;
-  right: auto;
-  top: 50%;
-  animation-duration: 29s;
-  animation-direction: reverse;
-}
-
-.person-page > *:not(.person-atmosphere) {
+.person-page > * {
   position: relative;
   z-index: 1;
 }
@@ -8612,23 +8533,6 @@ body:has(.watch-page) .bottom-dock {
 
 
 /* Actors page: use the established player purple for atmosphere and accents. */
-.actors-page::before {
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.18), rgba(var(--accent-rgb), 0) 68%);
-}
-
-.actors-atmosphere::before {
-  background:
-    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.045) 42.2%, transparent 42.5%),
-    linear-gradient(25deg, transparent 0 67%, rgba(var(--accent-rgb), 0.08) 67.2%, transparent 67.5%);
-}
-
-.actors-frame-two {
-  border-color: rgba(var(--accent-rgb), 0.16);
-}
-
-.actors-orbit-two {
-  border-color: rgba(var(--accent-rgb), 0.13);
-}
 
 .actors-header > div::before {
   background: linear-gradient(180deg, var(--accent), rgba(var(--accent-rgb), 0.08));
@@ -12042,4 +11946,30 @@ body {
     align-items: stretch;
     margin-bottom: 36px;
   }
+}
+
+
+/* Person filmography heading: match the platform’s red-line section treatment. */
+.person-known-for .section-heading {
+  padding-left: 16px;
+  position: relative;
+}
+
+.person-known-for .section-heading::before {
+  background: #e50914;
+  border-radius: 999px;
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 4px;
+}
+
+.person-known-for .section-heading h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.65rem, 2.2vw, 2.15rem);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
 }
