@@ -577,10 +577,16 @@ export async function getPerson(id: string | number, signal?: AbortSignal): Prom
     tmdbRequest<TmdbPersonDetails>(`/person/${personId}`, {}, signal),
     tmdbRequest<TmdbMovieCredits>(`/person/${personId}/movie_credits`, { include_adult: false }, signal),
   ]);
-  const knownFor = [...(credits.cast ?? []), ...(credits.crew ?? [])]
+  const knownFor = (credits.cast ?? [])
     .map(toMovie)
     .filter((movie) => movie.poster_path && !movie.adult)
-    .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0) || b.vote_average - a.vote_average)
+    .sort((a, b) => {
+      const dateA = Date.parse(a.release_date || "");
+      const dateB = Date.parse(b.release_date || "");
+      const safeDateA = Number.isFinite(dateA) ? dateA : 0;
+      const safeDateB = Number.isFinite(dateB) ? dateB : 0;
+      return safeDateB - safeDateA || (b.popularity ?? 0) - (a.popularity ?? 0);
+    })
     .filter((movie, index, all) => all.findIndex((candidate) => candidate.tmdb_id === movie.tmdb_id) === index);
 
   return {
