@@ -94,12 +94,6 @@ export default function ActorsPage() {
 
   return (
     <main className="actors-page">
-      <div className="actors-atmosphere" aria-hidden="true">
-        <span className="actors-frame actors-frame-one" />
-        <span className="actors-frame actors-frame-two" />
-        <span className="actors-orbit actors-orbit-one" />
-        <span className="actors-orbit actors-orbit-two" />
-      </div>
       <Link className="back-link actors-back" href="/">
         <BackIcon /> Back to home
       </Link>
