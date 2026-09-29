@@ -72,12 +72,6 @@ function PersonPageContent() {
 
   return (
     <main className="person-page">
-      <div className="person-atmosphere" aria-hidden="true">
-        <span className="person-frame person-frame-one" />
-        <span className="person-frame person-frame-two" />
-        <span className="person-orbit person-orbit-one" />
-        <span className="person-orbit person-orbit-two" />
-      </div>
       <button
         aria-label="Back to actors"
         className="back-link person-back"
