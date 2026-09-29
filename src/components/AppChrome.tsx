@@ -21,7 +21,11 @@ export function Header() {
   const { setSettingsOpen } = useNovaSettings();
   const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
-  const homeFilter = pathname === "/" ? searchParams.get("type") : null;
+  const urlFilter = pathname === "/" ? searchParams.get("type") : null;
+  const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>(() => {
+    if (pathname.startsWith("/wishlist")) return "wishlist";
+    return urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home";
+  });
 
   useEffect(() => {
     const type = pathname.startsWith("/series")
@@ -30,12 +34,12 @@ export function Header() {
         ? searchParams.get("type") === "anime" ? "anime" : "movies"
         : null;
     setSearchHref(type ? "/search/?type=" + type : "/search/");
-  }, [pathname, searchParams]);
+    if (pathname.startsWith("/wishlist")) setActiveKey("wishlist");
+    else if (pathname === "/") setActiveKey(urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home");
+  }, [pathname, searchParams, urlFilter]);
 
   function isActive(key: (typeof navigation)[number]["key"]) {
-    if (key === "home") return pathname === "/" && !homeFilter;
-    if (key === "wishlist") return pathname.startsWith("/wishlist");
-    return pathname === "/" && homeFilter === key;
+    return activeKey === key;
   }
 
   return (
@@ -50,6 +54,7 @@ export function Header() {
             return (
               <Link
                 className={active ? "is-active" : ""}
+                onClick={() => setActiveKey(key)}
                 href={href}
                 aria-current={active ? "page" : undefined}
                 key={key}
