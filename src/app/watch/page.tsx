@@ -195,7 +195,9 @@ export default function WatchPage() {
       <section className="player-shell provider-player-shell">
         <CustomMoviePlayer
           key={`${queryId}:${seasonNumber ?? ""}:${episodeNumber ?? ""}`}
-          tmdbId={movie.tmdb_id ?? movie.id}
+          // The watch URL ID is the authoritative TMDB ID for the provider.
+          // Do not fall back to the movie/IMDb identifier when a numeric TMDB ID is present.
+          tmdbId={/^\d+$/.test(queryId) ? queryId : movie.tmdb_id ?? movie.id}
           imdbId={movie.id}
           mediaType={isSeries ? "tv" : "movie"}
           seasonNumber={seasonNumber}
