@@ -363,7 +363,13 @@ export default function CustomMoviePlayer({
 
 
 
-  const providerBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
+  // CineSrc currently resolves Runner (TMDB 1377237) to an unrelated asset.
+  // Keep the existing provider for other titles, but use the documented VidSrc
+  // fallback for Runner until CineSrc repairs its catalog/source mapping.
+  const configuredProviderBase = process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st";
+  const providerBase = (mediaType === "movie" && String(activeId) === "1377237"
+    ? "https://vidsrc.sbs"
+    : configuredProviderBase).replace(/\/+$/, "");
   const isCineSrc = /cinesrc\.st/i.test(providerBase);
   const providerOrigin = useMemo(() => {
     try {
