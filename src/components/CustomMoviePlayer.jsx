@@ -733,7 +733,6 @@ export default function CustomMoviePlayer({
           if (Number.isFinite(nextCurrentTime)) {
             currentTimeRef.current = nextCurrentTime;
             setCurrentTime(nextCurrentTime);
-            setSourceResumeAt(nextCurrentTime);
             onProgress?.(nextCurrentTime, nextDuration);
           }
           if (Number.isFinite(nextDuration) && nextDuration > 0) setDuration(nextDuration);
