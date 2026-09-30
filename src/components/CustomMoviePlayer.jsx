@@ -50,6 +50,10 @@ const CINESRC_SERVER_OPTIONS = [
 ];
 
 const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
+const PLAYER_SOURCE_OPTIONS = [
+  { id: "cinesrc", label: "CineSrc" },
+  { id: "vidstuck", label: "VidStuck" },
+];
 const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
 
 function readSubtitleProviderPreference() {
@@ -236,6 +240,9 @@ export default function CustomMoviePlayer({
   const [controlsVisible, setControlsVisible] = useState(true);
   const [quality, setQuality] = useState("auto");
   const [reportedQuality, setReportedQuality] = useState("");
+  const [selectedSource, setSelectedSource] = useState("cinesrc");
+  const [sourceResumeAt, setSourceResumeAt] = useState(resumeAt);
+  const [sourceMenuOpen, setSourceMenuOpen] = useState(false);
   const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
@@ -363,11 +370,12 @@ export default function CustomMoviePlayer({
 
 
 
-  // CineSrc currently resolves Runner (TMDB 1377237) to an unrelated asset.
-  // Keep the existing provider for other titles, but use the documented VidSrc
-  // fallback for Runner until CineSrc repairs its catalog/source mapping.
-  const providerBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
-  const isCineSrc = /cinesrc\.st/i.test(providerBase);
+  // CineSrc remains the default source. VidStuck is available only through the
+  // manual source picker and never activates automatically.
+  const configuredProviderBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
+  const isVidStuck = selectedSource === "vidstuck";
+  const providerBase = isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
+  const isCineSrc = !isVidStuck && /cinesrc\.st/i.test(providerBase);
   const providerOrigin = useMemo(() => {
     try {
       return new URL(providerBase).origin;
@@ -426,6 +434,12 @@ export default function CustomMoviePlayer({
         params.set("lastserver", "surge");
       }
     }
+    if (isVidStuck) {
+      params.set("branding", "NIGHTOWL");
+      params.set("color", "ff003c");
+      params.set("subtitle", subtitleLanguage === "en" ? "english" : subtitleLanguage);
+      if (sourceResumeAt > 0) params.set("progress", String(Math.max(0, Math.floor(sourceResumeAt))));
+    }
     if (isCineSrc) {
       // CineSrc only honors lastserver when prioritize is enabled. Keep the
       // remembered working server first, while still allowing CineSrc to
@@ -443,7 +457,7 @@ export default function CustomMoviePlayer({
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer]);
+  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, isVidStuck, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer, sourceResumeAt, subtitleLanguage]);
 
 
 
@@ -687,7 +701,7 @@ export default function CustomMoviePlayer({
 
 
   useEffect(() => {
-    if (!isCineSrc) return undefined;
+    if (!isCineSrc && !isVidStuck) return undefined;
 
 
 
@@ -709,6 +723,26 @@ export default function CustomMoviePlayer({
       const message = event.data;
       if (!message || typeof message.type !== "string") return;
       const payload = message.data ?? message;
+
+      if (isVidStuck) {
+        if (message.type === "VIDEO_PROGRESS") {
+          const progress = message.payload ?? {};
+          if (progress.tmdbId && String(progress.tmdbId) !== String(activeId)) return;
+          const nextCurrentTime = Number(progress.currentTime);
+          const nextDuration = Number(progress.duration);
+          if (Number.isFinite(nextCurrentTime)) {
+            currentTimeRef.current = nextCurrentTime;
+            setCurrentTime(nextCurrentTime);
+            setSourceResumeAt(nextCurrentTime);
+            onProgress?.(nextCurrentTime, nextDuration);
+          }
+          if (Number.isFinite(nextDuration) && nextDuration > 0) setDuration(nextDuration);
+          setIsReady(true);
+        } else if (message.type === "VIDEO_ENDED") {
+          setIsPlaying(false);
+        }
+        return;
+      }
 
 
 
@@ -820,7 +854,7 @@ export default function CustomMoviePlayer({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isCineSrc, onProgress, providerOrigin, resumeAt, sendCommand, settings.autoplayPlayer]);
+  }, [activeId, isCineSrc, isVidStuck, onProgress, providerOrigin, resumeAt, sendCommand, settings.autoplayPlayer]);
 
 
 
@@ -1331,6 +1365,26 @@ export default function CustomMoviePlayer({
 
 
 
+  const handleSourceChange = (nextSource) => {
+    if (!PLAYER_SOURCE_OPTIONS.some((option) => option.id === nextSource) || nextSource === selectedSource) {
+      setSourceMenuOpen(false);
+      return;
+    }
+    const nextResumeAt = nextSource === "vidstuck"
+      ? Math.max(0, Number(currentTimeRef.current || currentTime) || 0)
+      : Math.max(0, Number(resumeAt) || 0);
+    setSourceResumeAt(nextResumeAt);
+    setSelectedSource(nextSource);
+    setSourceMenuOpen(false);
+    setSettingsOpen(false);
+    setServerMenuOpen(false);
+    setIsReady(false);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setControlsVisible(true);
+  };
+
   const handleQualityChange = (nextQuality) => {
     const normalizedQuality = normalizeCineSrcQuality(nextQuality);
     setQuality(normalizedQuality);
@@ -1408,6 +1462,21 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
+        <div className="player-source-control">
+          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "VidStuck" : "CineSrc")}>
+            <span className="player-setting-label">Source</span>
+            <strong>{isVidStuck ? "VidStuck" : "CineSrc"}</strong>
+          </button>
+          {sourceMenuOpen ? (
+            <div className="player-source-menu" role="listbox" aria-label="Playback source">
+              {PLAYER_SOURCE_OPTIONS.map((option) => (
+                <button key={option.id} type="button" role="option" aria-selected={option.id === selectedSource} className={option.id === selectedSource ? "is-selected" : ""} onClick={() => handleSourceChange(option.id)}>
+                  <span>{option.label}</span>{option.id === selectedSource ? <small>Active</small> : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
         {isCineSrc && !isReady ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
