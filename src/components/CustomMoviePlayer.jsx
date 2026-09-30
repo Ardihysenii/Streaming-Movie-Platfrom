@@ -457,7 +457,7 @@ export default function CustomMoviePlayer({
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, isVidStuck, mediaType, providerBase, quality, seasonNumber, selectedServer, settings.autoplayPlayer, sourceResumeAt, subtitleLanguage]);
+  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, isVidStuck, mediaType, providerBase, quality, seasonNumber, selectedServer, selectedSource, settings.autoplayPlayer, sourceResumeAt, subtitleLanguage]);
 
 
 
