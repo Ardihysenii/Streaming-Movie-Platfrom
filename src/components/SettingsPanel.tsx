@@ -31,6 +31,7 @@ export function SettingsPanel() {
             <CloseIcon />
           </button>
         </header>
+                <section className="settings-section settings-list"><a className="select-setting" href="/actors/" onClick={() => setSettingsOpen(false)}>Actors →</a></section>
 
         <section className="settings-section">
           <div className="setting-heading">
