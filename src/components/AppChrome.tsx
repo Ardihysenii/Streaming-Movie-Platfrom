@@ -59,7 +59,10 @@ function HeaderContent() {
             return (
               <Link
                 className={active ? "is-active" : ""}
-                onClick={() => setActiveKey(key)}
+                onClick={() => {
+                  setActiveKey(key);
+                  window.dispatchEvent(new CustomEvent("nova:home-filter", { detail: key }));
+                }}
                 href={href}
                 aria-current={active ? "page" : undefined}
                 key={key}
