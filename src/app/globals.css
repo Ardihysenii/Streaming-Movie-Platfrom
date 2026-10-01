@@ -12160,6 +12160,34 @@ body {
 
 
 /* Keep the new top-header actions visible over the homepage hero. */
+
+/* Preserve the existing subtle button hover motion when the browser requests reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+    :where(
+          button:not(:disabled),
+          [role="button"],
+          [role="tab"],
+          [role="menuitem"],
+          summary
+        ) {
+          transition-duration: 180ms !important;
+    }
+
+    :where(
+          .primary-button:hover,
+          .secondary-button:hover,
+          .icon-button:hover,
+          .rail-tabs button:hover,
+          .rail-arrow:hover,
+          .movie-card:hover,
+          .wishlist-toggle:hover,
+          .bottom-dock a:hover,
+          .bottom-dock button:hover
+        ) {
+          transition-duration: 180ms !important;
+    }
+}
+
 body:has(.hero) .site-header .header-actions {
   display: flex;
 }
