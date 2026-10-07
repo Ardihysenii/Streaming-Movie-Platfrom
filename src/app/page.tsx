@@ -198,7 +198,6 @@ export default function HomePage() {
     filteredSections.topRated = take(14);
     filteredSections.awardSeries = take(14);
   }
-  const seriesPool = uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries);
   const recentSeriesCutoff = new Date();
   recentSeriesCutoff.setMonth(recentSeriesCutoff.getMonth() - 15);
   const recentTrendingSeries = data.trendingSeries.filter((movie) => {
@@ -206,12 +205,6 @@ export default function HomePage() {
     return Number.isFinite(date) && date >= recentSeriesCutoff.getTime();
   });
   const currentSeriesPool = uniqueMovies(data.airingSeries, recentTrendingSeries);
-  const americanHorrorStory = seriesPool.find((movie) => movie.title.trim().toLowerCase() === "american horror story");
-  const series = isFilteredHome
-    ? filteredSections.series
-    : americanHorrorStory
-      ? [americanHorrorStory, ...excludeMovies(seriesPool.filter((movie) => movie !== americanHorrorStory), currentSeriesPool)].slice(0, 14)
-      : excludeMovies(seriesPool, currentSeriesPool).slice(0, 14);
   const releasedHomeItems = releasedHomePool(data);
   // One shared daily lead for the opening hero and Top 1 (Budapest calendar day).
   const dailyPool = releasedHomeItems
@@ -291,13 +284,7 @@ export default function HomePage() {
           movies={isFilteredHome ? filteredSections.trending : data.trending.slice(0, 14)}
           href="/movies/?sort=popularity.desc"
         />
-        <MoodRail movies={discoveryPool} />
-        <MovieRail
-          title={isFilteredHome ? categoryLabel : "Series"}
-          eyebrow="Stories worth staying for"
-          movies={series}
-          href="/series/?sort=popularity.desc"
-        />
+        <MoodRail movies={(isFilteredHome ? categoryPool : allHomeMovies).filter(isReleased)} />
         {visibleNetflixSeries.length ? (
           <MovieRail
             title={isFilteredHome ? `Featured ${categoryLabel}` : "Netflix"}
