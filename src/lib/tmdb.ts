@@ -1160,3 +1160,42 @@ export async function searchCatalog(
     return scope === "anime" ? fallback.filter((movie) => movie.genre_ids.includes(16)) : fallback;
   }
 }
+
+/** Upcoming premieres ranked by catalog popularity, with two requested tentpoles first. */
+export async function getComingSoon(signal?: AbortSignal): Promise<Movie[]> {
+  const today = new Date().toISOString().slice(0, 10);
+  const horizon = new Date();
+  horizon.setFullYear(horizon.getFullYear() + 2);
+  const until = horizon.toISOString().slice(0, 10);
+  const upcoming = (movie: Movie) => movie.poster_path && !movie.adult && movie.release_date > today;
+  const featuredPromise = Promise.all(["tt21357150", "tt31378509"].map(async (id) => {
+    try { return await getMovie(id, signal); }
+    catch (error) { if (isAbortError(error)) throw error; return null; }
+  }));
+  const moviesPromise = TMDB_API_KEY ? tmdbRequest<TmdbPage>("/discover/movie", {
+    page: 1, sort_by: "popularity.desc", include_adult: false,
+    "primary_release_date.gte": today, "primary_release_date.lte": until,
+  }, signal).then((page) => page.results.map(toMovie)).catch((error) => { if (isAbortError(error)) throw error; return [] as Movie[]; }) : Promise.resolve([] as Movie[]);
+  const seriesPromise = TMDB_API_KEY ? tmdbRequest<TmdbSeriesPage>("/discover/tv", {
+    page: 1, sort_by: "popularity.desc", include_adult: false,
+    "first_air_date.gte": today, "first_air_date.lte": until,
+  }, signal).then((page) => page.results.map(toSeries)).catch((error) => { if (isAbortError(error)) throw error; return [] as Movie[]; }) : Promise.resolve([] as Movie[]);
+  const [featured, movies, series] = await Promise.all([featuredPromise, moviesPromise, seriesPromise]);
+  const seen = new Set<string>();
+  const unique = (items: Movie[]) => items.filter((item) => {
+    const key = homeItemKey(item);
+    if (!upcoming(item) || seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  const leads = unique(featured.filter((item): item is MovieDetails => item !== null));
+  const films = unique(movies);
+  const shows = unique(series);
+  // Mix upcoming TV premieres into the popular film lineup rather than hiding them at the end.
+  const mixed: Movie[] = [...leads];
+  let film = 0, show = 0;
+  while (mixed.length < 14 && (film < films.length || show < shows.length)) {
+    for (let n = 0; n < 2 && film < films.length && mixed.length < 14; n += 1) mixed.push(films[film++]);
+    if (show < shows.length && mixed.length < 14) mixed.push(shows[show++]);
+  }
+  return mixed;
+}
