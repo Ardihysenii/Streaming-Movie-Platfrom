@@ -12447,3 +12447,21 @@ body:has(.hero) .site-header .header-actions {
 /* More readable navbar labels without changing navigation spacing. */
 .site-header .desktop-nav a { font-size: 0.94rem; font-weight: 650; }
 @media (max-width: 600px) { .site-header .desktop-nav a { font-size: 0.8rem; } }
+
+/* Align trailer audio with the bottom action row, retaining its right-side placement. */
+.detail-page .detail-trailer-audio {
+  top: auto;
+  bottom: calc(clamp(42px, 6vh, 76px) + 1px);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+.detail-page .detail-trailer-audio:hover {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.8);
+  color: #fff;
+}
+.detail-page .detail-trailer-audio svg { opacity: 1; }
+@media (max-width: 680px) {
+  .detail-page .detail-trailer-audio { top: auto; bottom: 49px; }
+}
