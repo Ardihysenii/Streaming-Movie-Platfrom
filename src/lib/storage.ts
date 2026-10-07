@@ -1,3 +1,4 @@
+import { isBlockedTitle } from "./catalogPolicy";
 import type { ContinueWatchingItem, Movie, NovaSettings, WishlistItem } from "./types";
 
 const SETTINGS_KEY = "nova:settings:v1";
@@ -47,7 +48,7 @@ export function readContinueWatching(): ContinueWatchingItem[] {
   try {
     const saved = window.localStorage.getItem(CONTINUE_KEY);
     const parsed = saved ? (JSON.parse(saved) as ContinueWatchingItem[]) : [];
-    return parsed.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 12);
+    return parsed.filter((item) => !isBlockedTitle(item)).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 12);
   } catch {
     return [];
   }
@@ -60,7 +61,7 @@ export function readLastWatched(): ContinueWatchingItem | null {
     const saved = window.localStorage.getItem(LAST_WATCHED_KEY);
     if (saved) {
       const item = JSON.parse(saved);
-      if (item && !Array.isArray(item) && (typeof item.id === "string" || typeof item.id === "number") && item.watchedSeconds > 0 && !String(item.id).startsWith("ia:")) return item;
+      if (item && !isBlockedTitle(item) && !Array.isArray(item) && (typeof item.id === "string" || typeof item.id === "number") && item.watchedSeconds > 0 && !String(item.id).startsWith("ia:")) return item;
     }
     // Preserve existing devices' latest title before Continue Watching is cleared.
     const latest = readContinueWatching().find((item) => item.watchedSeconds > 0 && !String(item.id).startsWith("ia:")) ?? null;
@@ -76,7 +77,7 @@ export function saveWatchProgress(
   watchedSeconds: number,
   estimatedDurationSeconds = 7200,
 ) {
-  if (!canUseStorage()) return;
+  if (!canUseStorage() || isBlockedTitle(movie)) return;
   const items = readContinueWatching().filter((item) => item.id !== movie.id);
   const nextItem: ContinueWatchingItem = {
     ...movie,
@@ -127,6 +128,7 @@ export function readWishlist(): WishlistItem[] {
     const seen = new Set<string>();
     return parsed
       .filter((item): item is WishlistItem => item && typeof item === "object" && (typeof item.id === "string" || typeof item.id === "number"))
+      .filter((item) => !isBlockedTitle(item))
       .map((item) => ({ ...item, addedAt: Number(item.addedAt) || 0 }))
       .sort((a, b) => b.addedAt - a.addedAt)
       .filter((item) => {
@@ -146,7 +148,7 @@ export function isInWishlist(movie: Pick<Movie, "id" | "tmdb_id" | "media_type">
 }
 
 export function toggleWishlist(movie: Movie) {
-  if (!canUseStorage()) return false;
+  if (!canUseStorage() || isBlockedTitle(movie)) return false;
   const identity = wishlistIdentity(movie);
   const items = readWishlist();
   const exists = items.some((item) => wishlistIdentity(item) === identity);
