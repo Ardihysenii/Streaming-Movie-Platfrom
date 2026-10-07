@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching, readLastWatched } from "@/lib/storage";
-import { discoverAnime, discoverSeries, getHomeData, getMovie, getNetflixSeries, isReleased } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getComingSoon, getHomeData, getMovie, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
@@ -56,6 +56,7 @@ export default function HomePage() {
   const [dailyDate, setDailyDate] = useState(() => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
   const [openingMovie, setOpeningMovie] = useState<HomeData["trending"][number] | null>(null);
   const [data, setData] = useState<HomeData | null>(null);
+  const [comingSoon, setComingSoon] = useState<HomeData["trending"]>([]);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
   const [lastWatched, setLastWatched] = useState<ContinueWatchingItem | null>(null);
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
@@ -74,6 +75,12 @@ export default function HomePage() {
     getMovie(977942, controller.signal).then(setOpeningMovie).catch(() => undefined);
     return () => controller.abort();
   }, [dailyDate]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getComingSoon(controller.signal).then(setComingSoon).catch(() => undefined);
+    return () => controller.abort();
+  }, []);
 
   const refreshContinue = useCallback(() => {
     setLastWatched(readLastWatched());
@@ -256,12 +263,14 @@ export default function HomePage() {
         <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
         <ForYouRail watched={lastWatched && filterForHome([lastWatched], homeFilter).length ? lastWatched : null} />
-        <MovieRail
-          title={isFilteredHome ? `Current & Upcoming ${categoryLabel}` : "Current & Upcoming TV Shows"}
-          eyebrow="Fresh episodes and returning favorites"
-          movies={currentUpcomingSeries}
-          href="/series/?sort=first_air_date.desc"
-        />
+        {filterForHome(comingSoon, homeFilter).length ? (
+          <MovieRail
+            title="Coming Soon"
+            eyebrow="The next big movies and shows"
+            movies={filterForHome(comingSoon, homeFilter)}
+            href=""
+          />
+        ) : null}
         <MovieRail
           title={isFilteredHome && homeFilter !== "series" ? `More ${categoryLabel} To Watch` : "First Episodes You Can't Miss"}
           eyebrow="Start a new story tonight"
