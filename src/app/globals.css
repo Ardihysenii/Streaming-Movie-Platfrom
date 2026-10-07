@@ -12521,3 +12521,9 @@ body:has(.hero) .site-header .header-actions {
 .release-countdown-clock { color: #ddd; font-size: .84rem; font-variant-numeric: tabular-nums; }
 .release-countdown-copy small { color: var(--muted); font-size: .64rem; }
 @media (max-width: 680px) { .detail-release-countdown { gap: 12px; flex-wrap: wrap; } .release-countdown-copy time { font-size: .84rem; } }
+
+/* Mood filters replace the subtitle, below the heading. */
+.home-page .mood-rail .section-heading > div { display: flex; flex-direction: column; min-width: 0; }
+.home-page .content-section.mood-rail .section-heading h2 { order: 0; }
+.home-page .mood-rail .rail-tabs { order: 1; margin-top: 12px; max-width: 100%; }
+.home-page .mood-rail .mood-empty { color: var(--muted); font-size: .86rem; margin: 0; }
