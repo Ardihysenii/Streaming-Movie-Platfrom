@@ -3,6 +3,7 @@ import type { ContinueWatchingItem, Movie, NovaSettings, WishlistItem } from "./
 const SETTINGS_KEY = "nova:settings:v1";
 const AUTOPLAY_DEFAULT_MIGRATION_KEY = "nova:autoplay-player-default:v1";
 const CONTINUE_KEY = "nova:continue-watching:v1";
+const LAST_WATCHED_KEY = "nova:last-watched:v1";
 const WISHLIST_KEY = "nova:wishlist:v1";
 
 export const DEFAULT_SETTINGS: NovaSettings = {
@@ -52,6 +53,24 @@ export function readContinueWatching(): ContinueWatchingItem[] {
   }
 }
 
+// A single recommendation seed, independent of the removable Continue Watching list.
+export function readLastWatched(): ContinueWatchingItem | null {
+  if (!canUseStorage()) return null;
+  try {
+    const saved = window.localStorage.getItem(LAST_WATCHED_KEY);
+    if (saved) {
+      const item = JSON.parse(saved);
+      if (item && !Array.isArray(item) && (typeof item.id === "string" || typeof item.id === "number") && item.watchedSeconds > 0 && !String(item.id).startsWith("ia:")) return item;
+    }
+    // Preserve existing devices' latest title before Continue Watching is cleared.
+    const latest = readContinueWatching().find((item) => item.watchedSeconds > 0 && !String(item.id).startsWith("ia:")) ?? null;
+    if (latest) window.localStorage.setItem(LAST_WATCHED_KEY, JSON.stringify(latest));
+    return latest;
+  } catch {
+    return null;
+  }
+}
+
 export function saveWatchProgress(
   movie: Movie,
   watchedSeconds: number,
@@ -65,12 +84,16 @@ export function saveWatchProgress(
     estimatedDurationSeconds,
     updatedAt: Date.now(),
   };
+  if (watchedSeconds > 0 && !String(movie.id).startsWith("ia:")) {
+    window.localStorage.setItem(LAST_WATCHED_KEY, JSON.stringify(nextItem));
+  }
   window.localStorage.setItem(CONTINUE_KEY, JSON.stringify([nextItem, ...items].slice(0, 12)));
   window.dispatchEvent(new CustomEvent("nova:continue-updated"));
 }
 
 export function removeContinueWatching(id: string | number) {
   if (!canUseStorage()) return;
+  readLastWatched();
   const items = readContinueWatching().filter((item) => item.id !== id);
   window.localStorage.setItem(CONTINUE_KEY, JSON.stringify(items));
   window.dispatchEvent(new CustomEvent("nova:continue-updated"));
@@ -78,6 +101,7 @@ export function removeContinueWatching(id: string | number) {
 
 export function clearContinueWatching() {
   if (!canUseStorage()) return;
+  readLastWatched();
   window.localStorage.removeItem(CONTINUE_KEY);
   window.dispatchEvent(new CustomEvent("nova:continue-updated"));
 }
