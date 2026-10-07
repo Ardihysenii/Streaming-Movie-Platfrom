@@ -12433,3 +12433,13 @@ body:has(.hero) .site-header .header-actions {
 .hero .hero-arrow:focus-visible,
 .hero .hero-arrow:active { transform: translateY(-50%); translate: none; scale: none; animation: none; transition: color 180ms ease, opacity 180ms ease; }
 .hero .hero-arrow svg { transform: none; translate: none; animation: none; transition: none; }
+
+/* Preserve the original top-of-page header; apply cinema chrome only after scrolling. */
+.site-header.is-scrolled {
+  position: fixed;
+  border-radius: 0 0 18px 18px;
+  background: rgba(10, 12, 14, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14), 0 10px 30px rgba(0, 0, 0, 0.22);
+}
