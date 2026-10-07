@@ -12351,3 +12351,38 @@ body:has(.hero) .site-header .header-actions {
 @media (max-width: 767px) {
   .custom-movie-player-cinesrc .custom-player-ui .player-settings-panel.player-settings-panel-subtitles { width: min(380px, calc(100vw - 80px)); right: -28px; max-height: min(460px, 65vh); padding: 8px; }
 }
+
+/* Cinema page surround only — no player or details-page selectors. */
+.watch-page.watch-page-cinema { position: relative; isolation: isolate; min-height: 100vh; padding: 24px var(--page-gutter) 56px; background: #08090c; }
+.watch-page-cinema .watch-cinema-ambient { position: absolute; z-index: -1; inset: 0 0 auto; height: min(100vh, 1000px); overflow: hidden; pointer-events: none; opacity: .24; mask-image: linear-gradient(#000, transparent 92%); }
+.watch-page-cinema .watch-cinema-ambient img { object-fit: cover; filter: blur(72px) saturate(.7); transform: scale(1.12); }
+.watch-page-cinema .watch-cinema-header { min-height: 46px; margin-bottom: 20px; gap: 20px; }
+.watch-page-cinema .watch-cinema-header .back-link { color: #c5c5ce; font-size: 11px; letter-spacing: .08em; }
+.watch-page-cinema .watch-cinema-header .back-link::before { display: none; }
+.watch-page-cinema .watch-cinema-header .back-link { padding-left: 0; }
+.watch-page-cinema .watch-cinema-header .watch-cinema-brand { display: flex; flex-direction: row; align-items: center; gap: 9px; font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #f4f4f5; }
+.watch-page-cinema .watch-cinema-brand-mark { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); }
+.watch-page-cinema .watch-cinema-header .watch-cinema-brand-label { font-size: 10px; font-weight: 500; color: #9d9da9; letter-spacing: .18em; border-left: 1px solid #ffffff24; padding-left: 10px; }
+.watch-page-cinema .watch-cinema-info { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 2px 30px; border-bottom: 1px solid #ffffff14; }
+.watch-page-cinema .watch-cinema-title-group { min-width: 0; }
+.watch-page-cinema .watch-cinema-kicker { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #a4a4af; }
+.watch-page-cinema .watch-cinema-kicker > span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.watch-page-cinema .watch-cinema-info h1 { margin: 0; color: #f5f5f7; font-family: var(--font-sans),sans-serif; font-size: clamp(24px, 2.5vw, 38px); font-weight: 650; line-height: 1.2; letter-spacing: -.035em; text-transform: none; overflow-wrap: anywhere; }
+.watch-page-cinema .watch-cinema-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 14px; font-size: 13px; color: #b2b2be; }
+.watch-page-cinema .watch-cinema-type { border: 1px solid #ffffff26; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #dddde5; }
+.watch-page-cinema .watch-cinema-episode { color: #e4e4eb; }
+.watch-page-cinema .watch-cinema-rating { font-variant-numeric: tabular-nums; color: #e1d3a8; }
+.watch-page-cinema .watch-cinema-details { display: inline-flex; align-items: center; gap: 16px; flex-shrink: 0; padding: 12px 16px; border: 1px solid #ffffff20; border-radius: 8px; background: #ffffff03; color: #d5d5df; font-size: 12px; text-decoration: none; transition: color .18s ease,background .18s ease,border-color .18s ease; }
+.watch-page-cinema .watch-cinema-details:hover { color: #fff; background: #ffffff09; border-color: #ffffff40; }
+.watch-page-cinema .watch-cinema-details:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.watch-page.watch-page-cinema .watch-cinema-episodes { margin-top: 32px; padding: 0; }
+@media (max-width: 680px) {
+  .watch-page.watch-page-cinema { padding: 14px var(--page-gutter) 32px; }
+  .watch-page-cinema .watch-cinema-header { min-height: 36px; margin-bottom: 14px; gap: 12px; }
+  .watch-page-cinema .watch-cinema-header .watch-cinema-brand { font-size: 10px; letter-spacing: .1em; }
+  .watch-page-cinema .watch-cinema-header .watch-cinema-brand-label { display: none; }
+  .watch-page-cinema .watch-cinema-info { align-items: flex-start; flex-direction: column; gap: 18px; padding: 24px 0; }
+  .watch-page-cinema .watch-cinema-facts { gap: 10px 12px; font-size: 12px; }
+  .watch-page-cinema .watch-cinema-details { padding: 10px 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .watch-page-cinema .watch-cinema-details { transition: none; } }
