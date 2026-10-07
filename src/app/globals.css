@@ -12386,3 +12386,19 @@ body:has(.hero) .site-header .header-actions {
   .watch-page-cinema .watch-cinema-details { padding: 10px 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .watch-page-cinema .watch-cinema-details { transition: none; } }
+
+/* Outer watch frame and quiet navigation; fullscreen remains square. */
+.watch-page.watch-page-cinema > .player-shell { border-radius: 12px; }
+.watch-page.watch-page-cinema > .player-shell:fullscreen,
+.watch-page.watch-page-cinema > .player-shell:has(:fullscreen),
+.watch-page.watch-page-cinema > .player-shell:has(.is-mobile-fullscreen) { border-radius: 0; }
+.watch-page.watch-page-cinema > .player-shell:-webkit-full-screen { border-radius: 0; }
+.watch-page.watch-page-cinema > .player-shell:has(:-webkit-full-screen) { border-radius: 0; }
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; padding: 0; flex-shrink: 0; border: 1px solid #ffffff16; border-radius: 10px; background: #ffffff04; color: #dedee6; transform: none; }
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back::before,
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back::after { display: none; }
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back svg { width: 20px; height: 20px; }
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back:hover { background: #ffffff0d; color: #fff; border-color: #ffffff30; transform: none; }
+.watch-page.watch-page-cinema .watch-header .watch-cinema-back:hover svg { transform: translateX(-2px); }
+.watch-page.watch-page-cinema .watch-cinema-details { border-color: transparent; background: transparent; padding: 12px 0; color: #b8b8c5; }
+.watch-page.watch-page-cinema .watch-cinema-details:hover { border-color: transparent; background: transparent; color: #fff; }
