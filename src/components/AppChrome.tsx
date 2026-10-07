@@ -17,6 +17,7 @@ const navigation = [
 function HeaderContent() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
+  const logoOnlyHeader = /^\/(actors|person)(\/|$)/.test(pathname);
   const { setSettingsOpen } = useNovaSettings();
   const [searchHref, setSearchHref] = useState("/search/");
   const urlFilter = pathname === "/" ? searchParams.get("type") : null;
@@ -51,6 +52,8 @@ function HeaderContent() {
         <Link className="wordmark" href="/" aria-label="NIGHTOWL home">
           <img className="wordmark-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
         </Link>
+        {!logoOnlyHeader ? (
+          <>
         <nav className="desktop-nav" aria-label="Main navigation">
           {navigation.map(({ href, label, key }) => {
             const active = isActive(key);
@@ -78,6 +81,8 @@ function HeaderContent() {
             <SettingsIcon />
           </button>
         </div>
+          </>
+        ) : null}
       </header>
     </>
   );
