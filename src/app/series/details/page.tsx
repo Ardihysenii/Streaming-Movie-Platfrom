@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { ReleaseCountdown } from "@/components/ReleaseCountdown";
 import { Credits } from "@/components/Credits";
 import { EpisodeBrowser } from "@/components/EpisodeBrowser";
 import { MutedIcon, PlayIcon, PlusIcon, StarIcon, VolumeIcon } from "@/components/Icons";
@@ -11,7 +12,7 @@ import { PageLoader } from "@/components/Loading";
 import { WishlistButton } from "@/components/MovieCard";
 import { readContinueWatching } from "@/lib/storage";
 import { MovieRail } from "@/components/MovieRail";
-import { formatRuntime, getSeries, getSimilarSeries, imageUrl, releaseYear } from "@/lib/tmdb";
+import { formatRuntime, getSeries, getSimilarSeries, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import type { ContinueWatchingItem, Movie, SeriesDetails } from "@/lib/types";
 
 function formatWatchedMinutes(seconds: number) {
@@ -223,7 +224,9 @@ function SeriesDetailsContent() {
                 <p className="detail-overview">{series.overview}</p>
               </div>
               <div className={`detail-actions${resumeCandidate && resumeEpisodeUrl ? " has-resume" : ""}`}>
-                {resumeEpisodeUrl ? (
+                {!isReleased(series) ? (
+                  <ReleaseCountdown releaseDate={series.release_date} />
+                ) : resumeEpisodeUrl ? (
                   <Link className="primary-button detail-play-button" href={resumeEpisodeUrl}>
                     <PlayIcon /> Resume
                   </Link>
