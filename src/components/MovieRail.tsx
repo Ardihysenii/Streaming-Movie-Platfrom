@@ -7,6 +7,7 @@ import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, StarIcon, VolumeIco
 import { MovieCard, mediaHref, movieKey, progressPercentage, WishlistButton } from "./MovieCard";
 import { getSimilarMovies, getSimilarSeries, getTrailer, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
+import { buildMoodChoices } from "@/lib/moods";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 type MovieRailProps = {
@@ -28,22 +29,24 @@ function ChoiceRail({
   eyebrow,
   choices,
   className = "",
+  strict = false,
 }: {
   title: string;
-  eyebrow: string;
+  eyebrow?: string;
+  strict?: boolean;
   choices: RailChoice[];
   className?: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = choices[activeIndex] ?? choices[0];
   if (!active) return null;
-  const movies = (active.movies.length ? active.movies : choices.flatMap((choice) => choice.movies)).slice(0, 14);
+  const movies = (strict || active.movies.length ? active.movies : choices.flatMap((choice) => choice.movies)).slice(0, 14);
 
   return (
     <section className={`content-section interactive-rail ${className}`}>
       <header className="section-heading interactive-rail-heading">
         <div>
-          <p className="eyebrow">{eyebrow}</p>
+          {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           <h2>{title}</h2>
           <div className="rail-tabs" role="tablist" aria-label={`${title} choices`}>
             {choices.map((choice, index) => (
@@ -62,7 +65,8 @@ function ChoiceRail({
         </div>
         {active.href ? <Link href={active.href}>View all <ArrowRightIcon /></Link> : null}
       </header>
-      <RailScroller label={`${title}: ${active.label}`} itemCount={movies.length}>
+      {strict && !movies.length ? <p className="mood-empty">No matching titles available for this mood yet.</p> : null}
+      <RailScroller key={strict ? active.label : undefined} label={`${title}: ${active.label}`} itemCount={movies.length}>
         {movies.map((movie, index) => (
           <MovieCard movie={movie} key={movieKey(movie, index)} />
         ))}
@@ -70,14 +74,6 @@ function ChoiceRail({
     </section>
   );
 }
-
-const MOOD_GENRES = [
-  { label: "Intense Thrills", ids: [28, 53, 80] },
-  { label: "Chill & Relax", ids: [35, 10751, 10749] },
-  { label: "Action Packed", ids: [28, 12, 878] },
-  { label: "Heartwarming", ids: [18, 10751, 10749] },
-  { label: "Nighttime Vibes", ids: [27, 9648, 53] },
-];
 
 const GENRE_CHOICES = [
   { label: "Action", id: 28 },
@@ -134,13 +130,9 @@ export function MoodRail({ movies }: { movies: Movie[] }) {
   return (
     <ChoiceRail
       className="mood-rail"
-      eyebrow="Find the feeling"
       title="What's Your Mood"
-      choices={MOOD_GENRES.map((mood) => ({
-        label: mood.label,
-        movies: movies.filter((movie) => mood.ids.some((id) => movie.genre_ids.includes(id))),
-        href: `/movies/?genre=${mood.ids[0]}&sort=popularity.desc`,
-      }))}
+      strict
+      choices={buildMoodChoices(movies)}
     />
   );
 }
