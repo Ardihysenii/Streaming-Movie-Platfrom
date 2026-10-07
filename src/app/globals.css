@@ -12479,3 +12479,10 @@ body:has(.hero) .site-header .header-actions {
 @media (max-width: 680px) {
   .detail-page .detail-trailer-audio { top: calc(var(--header-height) + 22px); bottom: auto; }
 }
+
+/* Watch-based recommendations: source artwork sits before the heading accent. */
+.home-page .for-you-rail .section-heading.for-you-heading { align-items: center; justify-content: flex-start; gap: 14px; padding-left: 0; }
+.home-page .for-you-rail .section-heading.for-you-heading::before { display: none; }
+.home-page .for-you-rail .for-you-source { display: block; flex: 0 0 48px; width: 48px; margin: 0; padding: 0; }
+.home-page .for-you-rail .for-you-source img { display: block; width: 48px; height: 72px; object-fit: cover; border-radius: 5px; }
+.home-page .for-you-rail .for-you-heading-copy { min-width: 0; border-left: 4px solid #e50914; padding-left: 12px; }
