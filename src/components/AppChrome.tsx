@@ -17,7 +17,7 @@ const navigation = [
 function HeaderContent() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
-  const logoOnlyHeader = /^\/(actors|person)(\/|$)/.test(pathname);
+  const logoOnlyHeader = /^\/(actors|person|search)(\/|$)/.test(pathname);
   const { setSettingsOpen } = useNovaSettings();
   const [searchHref, setSearchHref] = useState("/search/");
   const urlFilter = pathname === "/" ? searchParams.get("type") : null;
