@@ -12471,3 +12471,6 @@ body:has(.hero) .site-header .header-actions {
 
 /* Phone navbar: retain logo and actions, hide navigation links only. */
 @media (max-width: 680px) { .site-header .desktop-nav { display: none; } }
+
+/* Keep the phone logo unchanged; push Search actions to the far right. */
+@media (max-width: 680px) { .site-header .header-actions { margin-left: auto; } }
