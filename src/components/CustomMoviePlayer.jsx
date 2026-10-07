@@ -1462,6 +1462,9 @@ export default function CustomMoviePlayer({
           allow="autoplay; fullscreen; picture-in-picture"
         />
         <div className="player-source-control">
+          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}>
+            <strong>{isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}</strong>
+          </button>
           <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "VidStuck" : "CineSrc")}>
             <span className="player-setting-label">Source</span>
             <strong>{isVidStuck ? "VidStuck" : "CineSrc"}</strong>
