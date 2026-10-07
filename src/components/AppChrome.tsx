@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { AgentIcon, SearchIcon, SettingsIcon } from "./Icons";
-import { NovaAgentPanel } from "./NovaAgentPanel";
+import { SearchIcon, SettingsIcon } from "./Icons";
 import { useNovaSettings } from "./Providers";
 
 const navigation = [
@@ -19,7 +18,6 @@ function HeaderContent() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
   const { setSettingsOpen } = useNovaSettings();
-  const [agentOpen, setAgentOpen] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
   const urlFilter = pathname === "/" ? searchParams.get("type") : null;
   const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>(() => {
@@ -76,21 +74,11 @@ function HeaderContent() {
           <Link className="icon-button" href={searchHref} aria-label="Search movies and series">
             <SearchIcon />
           </Link>
-          <button
-            className={agentOpen ? "icon-button is-active" : "icon-button"}
-            onClick={() => setAgentOpen(true)}
-            aria-label="Open NIGHTOWL AI"
-            aria-haspopup="dialog"
-            aria-expanded={agentOpen}
-          >
-            <AgentIcon />
-          </button>
           <button className="icon-button settings-button" onClick={() => setSettingsOpen(true)} aria-label="Open settings">
             <SettingsIcon />
           </button>
         </div>
       </header>
-      <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
     </>
   );
 }
