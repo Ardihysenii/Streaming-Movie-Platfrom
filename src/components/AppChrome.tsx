@@ -19,6 +19,7 @@ function HeaderContent() {
   const searchParams = useSearchParams();
   const logoOnlyHeader = /^\/(actors|person|search)(\/|$)/.test(pathname);
   const { setSettingsOpen } = useNovaSettings();
+  const [isScrolled, setIsScrolled] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
   const urlFilter = pathname === "/" ? searchParams.get("type") : null;
   const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>(() => {
@@ -42,13 +43,24 @@ function HeaderContent() {
     else if (pathname === "/") setActiveKey(urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home");
   }, [pathname, searchParams, urlFilter]);
 
+  useEffect(() => {
+    const updateScroll = () => setIsScrolled(window.scrollY > 0);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    window.addEventListener("pageshow", updateScroll);
+    return () => {
+      window.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("pageshow", updateScroll);
+    };
+  }, [pathname]);
+
   function isActive(key: (typeof navigation)[number]["key"]) {
     return (currentUrlKey ?? activeKey) === key;
   }
 
   return (
     <>
-      <header className="site-header">
+      <header className={isScrolled ? "site-header is-scrolled" : "site-header"}>
         <Link className="wordmark" href="/" aria-label="NIGHTOWL home">
           <img className="wordmark-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
         </Link>
