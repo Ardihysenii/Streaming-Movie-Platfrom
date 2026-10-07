@@ -1,6 +1,8 @@
 "use client";
 
-import { CloseIcon } from "./Icons";
+import { useState } from "react";
+import { AgentIcon, ArrowRightIcon, CloseIcon } from "./Icons";
+import { NovaAgentPanel } from "./NovaAgentPanel";
 import { useNovaSettings } from "./Providers";
 import type { AccentName, DensityName } from "@/lib/types";
 
@@ -13,7 +15,10 @@ const accentOptions: { value: AccentName; label: string; color: string }[] = [
 export function SettingsPanel() {
   const { settings, updateSettings, settingsOpen, setSettingsOpen } = useNovaSettings();
 
+  const [agentOpen, setAgentOpen] = useState(false);
+
   return (
+    <>
     <div className={`settings-layer${settingsOpen ? " is-open" : ""}`} aria-hidden={!settingsOpen}>
       <button
         className="settings-backdrop"
@@ -31,6 +36,12 @@ export function SettingsPanel() {
             <CloseIcon />
           </button>
         </header>
+        <section className="settings-section settings-list">
+          <button className="select-setting settings-ai-entry" type="button" onClick={() => { setSettingsOpen(false); setAgentOpen(true); }} aria-label="Open NIGHTOWL AI" aria-haspopup="dialog" aria-expanded={agentOpen} tabIndex={settingsOpen ? 0 : -1}>
+            <span className="settings-ai-copy"><AgentIcon /><span><strong>NIGHTOWL AI</strong><small>Your AI movie assistant.</small></span></span>
+            <ArrowRightIcon />
+          </button>
+        </section>
                 <section className="settings-section settings-list"><a className="select-setting" href="/actors/" onClick={() => setSettingsOpen(false)}>Actors →</a></section>
 
         <section className="settings-section">
@@ -143,6 +154,8 @@ export function SettingsPanel() {
         </section>
       </aside>
     </div>
+    <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
+    </>
   );
 }
 
