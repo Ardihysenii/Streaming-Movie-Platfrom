@@ -12474,3 +12474,8 @@ body:has(.hero) .site-header .header-actions {
 
 /* Keep the phone logo unchanged; push Search actions to the far right. */
 @media (max-width: 680px) { .site-header .header-actions { margin-left: auto; } }
+
+/* Phone details only: keep trailer sound away from the Play/My List row. */
+@media (max-width: 680px) {
+  .detail-page .detail-trailer-audio { top: calc(var(--header-height) + 22px); bottom: auto; }
+}
