@@ -1461,6 +1461,7 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
+        {!isCineSrc ? (
         <div className="player-source-control">
           <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}>
             <strong>{isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}</strong>
@@ -1479,16 +1480,17 @@ export default function CustomMoviePlayer({
             </div>
           ) : null}
         </div>
+        ) : null}
         {isCineSrc && !isReady ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
             <div className="montana-player-intro-content">
-              <p className="montana-player-intro-kicker">Now screening</p>
+              <p className="montana-player-intro-kicker">{title}</p>
               <div className="montana-player-intro-brand" aria-label="NIGHTOWL">
                 <img className="montana-player-intro-logo" src="/nightowl-logo.png" alt="NIGHTOWL" width="720" height="180" />
               </div>
               <div className="montana-player-intro-rule" aria-hidden="true"><span /> <i /></div>
-              <strong>{mediaType === "tv" ? "Your episode is about to begin" : "Your movie is about to begin"}</strong>
+              <strong className="nightowl-intro-connecting">Connecting to {cineSrcServerLabel(activeServer)}<span aria-hidden="true"> _</span></strong>
               <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${cineSrcServerLabel(activeServer)}…` : "Connecting to your stream…"}</span>
             </div>
           </div>
@@ -1606,7 +1608,9 @@ export default function CustomMoviePlayer({
                   aria-label="Volume"
                 />
               </div>
-              <span className="player-control-spacer" />
+              <span className="player-time nightowl-bar-time">{formatTime(currentTime)} / {formatTime(duration)}</span>
+<span className="player-control-spacer" />
+<button type="button" aria-label="Subtitles" onClick={() => { setSettingsOpen(true); setSettingsView("subtitles"); setServerMenuOpen(false); }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M6 11h4m4 0h4M6 15h6m3 0h3"/></svg></button>
               <div className="player-settings-control">
                 <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
                   <SettingsIcon className="player-setting-icon" />
@@ -1667,13 +1671,15 @@ export default function CustomMoviePlayer({
                 ) : null}
               </div>
               <div className="player-server-control">
-                <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Server " + activeServer}>
+                <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Sources and servers, current server " + activeServer}>
                   <span className="player-server-cloud-icon" aria-hidden="true" />
-                  <span className="player-setting-label">Server</span>
-                  <strong>{cineSrcServerLabel(activeServer)}</strong>
+                  <span className="nightowl-server-label">Sources</span>
                 </button>
                 {serverMenuOpen ? (
-                  <div className="player-server-menu" role="listbox" aria-label="CineSrc server">
+                  <div className="player-server-menu" role="listbox" aria-label="Playback sources and CineSrc servers">
+<h3 className="nightowl-menu-heading">Playback source</h3>
+{PLAYER_SOURCE_OPTIONS.map((option) => (<button key={option.id} type="button" role="option" aria-selected={option.id === selectedSource} className={option.id === selectedSource ? "is-selected" : ""} onClick={() => handleSourceChange(option.id)}><span>{option.label}</span><small>{option.id === selectedSource ? "Active" : "Switch"}</small></button>))}
+<h3 className="nightowl-menu-heading">CineSrc servers</h3>
                     {CINESRC_SERVER_OPTIONS.map((option) => (
                       <button key={option.id} type="button" role="option" aria-selected={option.id === selectedServer} className={option.id === selectedServer ? "is-selected" : ""} onClick={() => handleServerChange(option.id)}>
                         <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
