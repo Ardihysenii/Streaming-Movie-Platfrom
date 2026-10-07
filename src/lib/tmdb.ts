@@ -1,3 +1,4 @@
+import { filterCatalogResponse } from "./catalogPolicy";
 import {
   CINEMETA_GENRES,
   discoverMovies as discoverCinemetaMovies,
@@ -215,7 +216,7 @@ async function tmdbRequest<T>(
   });
   const response = await fetch(endpoint, { headers: { Accept: "application/json" }, signal });
   if (!response.ok) throw new Error(`TMDB request failed (${response.status})`);
-  return response.json() as Promise<T>;
+  return filterCatalogResponse(await response.json()) as T;
 }
 
 function toMovie(movie: TmdbMovie): Movie {
@@ -436,7 +437,7 @@ async function withTmdbLogo(movie: Movie, signal?: AbortSignal) {
       logo_height: logo.height,
     };
   } catch (error) {
-    if (isAbortError(error)) throw error;
+    if (isAbortError(error) || (error instanceof Error && error.name === "CatalogBlockedError")) throw error;
     return movie;
   }
 }
@@ -559,6 +560,7 @@ export async function getTrailer(
 }
 
 export async function getMovie(id: string | number, signal?: AbortSignal) {
+  filterCatalogResponse({ id, media_type: "movie" });
   if (!TMDB_API_KEY) return getCinemetaMovie(id, signal);
   try {
     return await loadDetails(id, signal);
