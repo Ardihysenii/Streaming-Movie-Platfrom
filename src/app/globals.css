@@ -12486,3 +12486,6 @@ body:has(.hero) .site-header .header-actions {
 .home-page .for-you-rail .for-you-source { display: block; flex: 0 0 48px; width: 48px; margin: 0; padding: 0; }
 .home-page .for-you-rail .for-you-source img { display: block; width: 48px; height: 72px; object-fit: cover; border-radius: 5px; }
 .home-page .for-you-rail .for-you-heading-copy { min-width: 0; border-left: 4px solid #e50914; padding-left: 12px; }
+
+/* Slightly smaller homepage rail titles; subtitles and card labels unchanged. */
+.home-page .content-section:not(.top-ten-section) .section-heading h2 { font-size: clamp(1.4rem, 1.87vw, 1.83rem); }
