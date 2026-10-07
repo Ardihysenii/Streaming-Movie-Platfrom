@@ -10,7 +10,6 @@ import type { Movie } from "@/lib/types";
 
 export function Hero({ movies }: { movies: Movie[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
   const logoPreloaders = useRef<HTMLImageElement[]>([]);
   const { settings } = useNovaSettings();
   const slides = movies.slice(0, 10);
@@ -22,13 +21,14 @@ export function Hero({ movies }: { movies: Movie[] }) {
   }
 
   useEffect(() => {
-    if (!slides.length || !settings.autoplayHero || paused || settings.reduceMotion) return;
-    const timer = window.setInterval(
+    if (slides.length < 2) return;
+    const intervalSeconds = Number.isFinite(settings.heroInterval) && settings.heroInterval > 0 ? settings.heroInterval : 8;
+    const timer = window.setTimeout(
       () => setActiveIndex((current) => (current + 1) % slides.length),
-      settings.heroInterval * 1000,
+      intervalSeconds * 1000,
     );
-    return () => window.clearInterval(timer);
-  }, [paused, settings.autoplayHero, settings.heroInterval, settings.reduceMotion, slides.length]);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, settings.heroInterval, slides.length]);
 
   useEffect(() => {
     logoPreloaders.current = movies.slice(0, 10).flatMap((movie, index) => {
@@ -56,12 +56,6 @@ export function Hero({ movies }: { movies: Movie[] }) {
     <section
       className="hero"
       style={{ minHeight: "75dvh" }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
-      }}
       aria-roledescription="carousel"
       aria-label="Featured movies"
     >
