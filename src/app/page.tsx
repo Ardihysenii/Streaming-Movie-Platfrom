@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
-import { readContinueWatching } from "@/lib/storage";
+import { readContinueWatching, readLastWatched } from "@/lib/storage";
 import { discoverAnime, discoverSeries, getHomeData, getMovie, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
@@ -57,6 +57,7 @@ export default function HomePage() {
   const [openingMovie, setOpeningMovie] = useState<HomeData["trending"][number] | null>(null);
   const [data, setData] = useState<HomeData | null>(null);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
+  const [lastWatched, setLastWatched] = useState<ContinueWatchingItem | null>(null);
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
   const [homeFilter, setHomeFilter] = useState<HomeFilter>("all");
   const [animeItems, setAnimeItems] = useState<HomeData["trending"]>([]);
@@ -75,6 +76,7 @@ export default function HomePage() {
   }, [dailyDate]);
 
   const refreshContinue = useCallback(() => {
+    setLastWatched(readLastWatched());
     setContinueWatching(
       readContinueWatching().filter((item) => !String(item.id).startsWith("ia:")),
     );
@@ -253,7 +255,7 @@ export default function HomePage() {
       <div className="home-content">
         <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
-        <ForYouRail watched={filteredContinue.find((item) => item.watchedSeconds > 0) ?? null} />
+        <ForYouRail watched={lastWatched && filterForHome([lastWatched], homeFilter).length ? lastWatched : null} />
         <MovieRail
           title={isFilteredHome ? `Current & Upcoming ${categoryLabel}` : "Current & Upcoming TV Shows"}
           eyebrow="Fresh episodes and returning favorites"
