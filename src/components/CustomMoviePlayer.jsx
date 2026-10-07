@@ -282,7 +282,7 @@ export default function CustomMoviePlayer({
   const [subtitlePosition, setSubtitlePosition] = useState(8);
 
   const [subtitleOffset, setSubtitleOffset] = useState(0);
-  const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Shqip"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]];
+  const subtitleLanguageOptions = [["en", "English"], ["de", "Deutsch"], ["es", "Español"], ["fr", "Français"], ["it", "Italiano"], ["pt", "Português"], ["tr", "Türkçe"], ["sq", "Albanian"], ["ja", "日本語"], ["ru", "Русский"], ["ko", "한국어"], ["zh", "中文"], ["nl", "Nederlands"], ["pl", "Polski"], ["ar", "العربية"], ["hi", "हिन्दी"], ["ro", "Română"], ["cs", "Čeština"], ["uk", "Українська"], ["sv", "Svenska"], ["da", "Dansk"]].sort(([, a], [, b]) => a.localeCompare(b, "en", { sensitivity: "base" }));
   const subtitleFontFamilyOptions = [["var(--font-sans)", "System UI"], ["Arial, sans-serif", "Arial"], ["Trebuchet MS, sans-serif", "Trebuchet"], ["Georgia, serif", "Georgia"], ["Verdana, sans-serif", "Verdana"], ["Courier New, monospace", "Courier"]];
   const controlsTimerRef = useRef(null);
   const centerFeedbackTimerRef = useRef(null);
@@ -1639,7 +1639,7 @@ export default function CustomMoviePlayer({
                   <NightowlReferenceIcon name="Settings" />
                 </button>
                 {settingsOpen ? (
-                  <div className="player-settings-panel" role="dialog" aria-label="Player settings">
+                  <div className={"player-settings-panel" + (["subtitles", "subtitle-customize"].includes(settingsView) ? " player-settings-panel-subtitles" : "")} role="dialog" aria-label="Player settings">
                     <div className="player-settings-header">
                       {settingsView !== "root" ? <button type="button" onClick={() => setSettingsView("root")} aria-label="Back to settings">‹</button> : <span />}
                       <strong>{settingsView === "root" ? "Settings" : settingsView === "audio" ? "Audio" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : settingsView === "subtitle-customize" ? "Customize subtitles" : "Playback settings"}</strong>
@@ -1663,9 +1663,9 @@ export default function CustomMoviePlayer({
                     {settingsView === "subtitles" ? (
                       <div className="player-settings-body player-settings-subtitles">
                         <button type="button" className="player-settings-toggle" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span>Subtitles</span><strong>{subtitlesEnabled ? "On" : "Off"}</strong></button>
-                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? subtitleProviderLabel(subtitleProvider) + " • " + subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
+                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? (subtitleProvider === "auto" ? "" : subtitleProviderLabel(subtitleProvider) + " • ") + subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
                         <span className="player-settings-label-block">Subtitle provider</span>
-                        <div className="player-settings-language-grid">{SUBTITLE_PROVIDER_OPTIONS.map(([value, label]) => <button key={value} type="button" className={value === subtitleProvider ? "is-selected" : ""} onClick={() => setSubtitleProvider(value)}>{label}</button>)}</div>
+                        <div className="player-settings-language-grid">{SUBTITLE_PROVIDER_OPTIONS.map(([value, label]) => <button key={value} type="button" className={value === subtitleProvider ? "is-selected" : ""} onClick={() => setSubtitleProvider(value)} aria-label={value === "auto" ? "Automatic subtitle provider" : label} title={value === "auto" ? "Automatic subtitle provider" : undefined}>{value === "auto" ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.6-1L20 9M4 15l2.3 3A7 7 0 0 0 17.9 17" /></svg> : label}</button>)}</div>
                         <span className="player-settings-label-block">Language</span>
                         <div className="nightowl-subtitle-track-list">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}><span>{label}</span>{value === subtitleLanguage ? <b>✓</b> : null}</button>)}</div>
                         <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Style &amp; delay <b>›</b></button>
