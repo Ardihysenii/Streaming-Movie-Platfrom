@@ -6,13 +6,14 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon, PlayIcon, StarIcon } from "./Icons";
 import { useNovaSettings } from "./Providers";
 import { genreNames, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
+import { isBlockedTitle } from "@/lib/catalogPolicy";
 import type { Movie } from "@/lib/types";
 
 export function Hero({ movies }: { movies: Movie[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const logoPreloaders = useRef<HTMLImageElement[]>([]);
   const { settings } = useNovaSettings();
-  const slides = movies.slice(0, 10);
+  const slides = movies.filter((movie) => !isBlockedTitle(movie)).slice(0, 10);
   const activeMovie = slides[activeIndex] ?? slides[0];
   const heroGenres = activeMovie ? genreNames(activeMovie.genre_ids).split(" · ").filter(Boolean) : [];
 
