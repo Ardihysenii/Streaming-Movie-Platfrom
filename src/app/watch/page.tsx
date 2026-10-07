@@ -184,8 +184,8 @@ export default function WatchPage() {
         </div>
       ) : null}
       <header className="watch-header watch-cinema-header">
-        <Link className="back-link" href={detailsHref}>
-          <BackIcon /> Back to details
+        <Link className="back-link watch-cinema-back" href={detailsHref} aria-label="Back to details" title="Back to details">
+          <BackIcon />
         </Link>
         <div className="watch-cinema-brand"><span className="watch-cinema-brand-mark" aria-hidden="true" />NIGHTOWL <span className="watch-cinema-brand-label">Cinema</span></div>
       </header>
