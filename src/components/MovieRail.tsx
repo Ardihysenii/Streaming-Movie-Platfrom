@@ -464,9 +464,9 @@ export function MovieRail({ title, eyebrow, movies, numbered = false, href = "/m
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           <h2>{title}</h2>
         </div>
-        <Link href={href}>
+        {href ? <Link href={href}>
           View all <ArrowRightIcon />
-        </Link>
+        </Link> : null}
       </header>
       <RailScroller label={title} itemCount={movies.length}>
         {movies.map((movie, index) => (
