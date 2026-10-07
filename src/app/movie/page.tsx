@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { ReleaseCountdown } from "@/components/ReleaseCountdown";
 import { Credits } from "@/components/Credits";
 import { MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/Icons";
 import { PageLoader } from "@/components/Loading";
@@ -233,9 +234,7 @@ function MoviePageContent() {
                     <WishlistButton movie={movie} className="detail-my-list-button" icon="plus" label="My List" redirectToWishlist />
                   </>
                 ) : (
-                  <button className="primary-button is-coming-soon" type="button" disabled>
-                    Coming Soon
-                  </button>
+                  <ReleaseCountdown releaseDate={movie.release_date} />
                 )}
                 {resumeCandidate ? (
                   <div className="detail-resume-progress" aria-label={`${Math.round(resumePercent)} percent watched, ${formatWatchedMinutes(resumeCandidate.watchedSeconds)} in`}>
