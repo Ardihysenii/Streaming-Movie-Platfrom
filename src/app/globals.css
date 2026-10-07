@@ -12468,3 +12468,6 @@ body:has(.hero) .site-header .header-actions {
 
 /* Navbar labels share the Top 10 heading font family. */
 .site-header .desktop-nav a { font-family: var(--font-sans); }
+
+/* Phone navbar: retain logo and actions, hide navigation links only. */
+@media (max-width: 680px) { .site-header .desktop-nav { display: none; } }
