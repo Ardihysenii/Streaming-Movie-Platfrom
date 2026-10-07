@@ -1,183 +1,39 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { AgentIcon, ArrowRightIcon, CloseIcon } from "./Icons";
 import { NovaAgentPanel } from "./NovaAgentPanel";
 import { useNovaSettings } from "./Providers";
-import type { AccentName, DensityName } from "@/lib/types";
-
-const accentOptions: { value: AccentName; label: string; color: string }[] = [
-  { value: "signal", label: "Signal red", color: "#ff003c" },
-  { value: "cobalt", label: "Purple", color: "#b69cff" },
-  { value: "sage", label: "Sage", color: "#91ad9a" },
-];
 
 export function SettingsPanel() {
-  const { settings, updateSettings, settingsOpen, setSettingsOpen } = useNovaSettings();
-
+  const { settingsOpen, setSettingsOpen } = useNovaSettings();
   const [agentOpen, setAgentOpen] = useState(false);
 
   return (
     <>
-    <div className={`settings-layer${settingsOpen ? " is-open" : ""}`} aria-hidden={!settingsOpen}>
-      <button
-        className="settings-backdrop"
-        aria-label="Close settings"
-        onClick={() => setSettingsOpen(false)}
-        tabIndex={settingsOpen ? 0 : -1}
-      />
-      <aside className="settings-panel" aria-label="NIGHTOWL settings">
-        <header>
-          <div>
-            <p className="eyebrow">Personalize NIGHTOWL</p>
-            <h2>Settings</h2>
-          </div>
-          <button className="icon-button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">
-            <CloseIcon />
-          </button>
-        </header>
-        <section className="settings-section settings-list">
-          <button className="select-setting settings-ai-entry" type="button" onClick={() => { setSettingsOpen(false); setAgentOpen(true); }} aria-label="Open NIGHTOWL AI" aria-haspopup="dialog" aria-expanded={agentOpen} tabIndex={settingsOpen ? 0 : -1}>
-            <span className="settings-ai-copy"><AgentIcon /><span><strong>NIGHTOWL AI</strong><small>Your AI movie assistant.</small></span></span>
-            <ArrowRightIcon />
-          </button>
-        </section>
-                <section className="settings-section settings-list"><a className="select-setting" href="/actors/" onClick={() => setSettingsOpen(false)}>Actors →</a></section>
-
-        <section className="settings-section">
-          <div className="setting-heading">
-            <div>
-              <h3>Accent color</h3>
-              <p>Used sparingly for controls and progress.</p>
-            </div>
-          </div>
-          <div className="swatch-options">
-            {accentOptions.map((option) => (
-              <button
-                className={settings.accent === option.value ? "is-selected" : ""}
-                key={option.value}
-                onClick={() => updateSettings({ accent: option.value })}
-              >
-                <span style={{ backgroundColor: option.color }} />
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="settings-section">
-          <div className="setting-heading">
-            <div>
-              <h3>Layout density</h3>
-              <p>Choose how much artwork is visible at once.</p>
-            </div>
-          </div>
-          <div className="segmented-control">
-            {(["cinematic", "compact"] as DensityName[]).map((density) => (
-              <button
-                className={settings.density === density ? "is-selected" : ""}
-                key={density}
-                onClick={() => updateSettings({ density })}
-              >
-                {density}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="settings-section settings-list">
-          <ToggleSetting
-            title="Rotate featured movies"
-            description="Automatically cycle through the weekly top 10."
-            checked={settings.autoplayHero}
-            onChange={(checked) => updateSettings({ autoplayHero: checked })}
-          />
-          <label className="select-setting">
-            <span>
-              <strong>Hero timing</strong>
-              <small>Time before the next featured movie.</small>
-            </span>
-            <select
-              value={settings.heroInterval}
-              onChange={(event) => updateSettings({ heroInterval: Number(event.target.value) })}
-            >
-              <option value={5}>5 seconds</option>
-              <option value={8}>8 seconds</option>
-              <option value={12}>12 seconds</option>
-              <option value={16}>16 seconds</option>
-            </select>
-          </label>
-          <ToggleSetting
-            title="Autoplay player"
-            description="Ask the video provider to begin playback automatically."
-            checked={settings.autoplayPlayer}
-            onChange={(checked) => updateSettings({ autoplayPlayer: checked })}
-          />
-          <label className="select-setting">
-            <span>
-              <strong>Subtitle language</strong>
-              <small>Preselected when the source provides it.</small>
-            </span>
-            <select
-              value={settings.subtitleLanguage}
-              onChange={(event) => updateSettings({ subtitleLanguage: event.target.value })}
-            >
-              <option value="en">English</option>
-              <option value="de">German</option>
-              <option value="fr">French</option>
-              <option value="es">Spanish</option>
-              <option value="it">Italian</option>
-              <option value="pl">Polish</option>
-              <option value="sq">Albanian</option>
-            </select>
-          </label>
-          <ToggleSetting
-            title="Reduce motion"
-            description="Minimize large transitions and hero movement."
-            checked={settings.reduceMotion}
-            onChange={(checked) => updateSettings({ reduceMotion: checked })}
-          />
-          <ToggleSetting
-            title="Film texture"
-            description="Adds a subtle grain layer over cinematic artwork."
-            checked={settings.showFilmGrain}
-            onChange={(checked) => updateSettings({ showFilmGrain: checked })}
-          />
-        </section>
-
-        <section className="settings-note">
-          <strong>About playback quality</strong>
-          <p>
-            NIGHTOWL cannot force a resolution from outside an embedded provider. Quality remains source-controlled;
-            choose it inside the player whenever the source exposes that control.
-          </p>
-        </section>
-      </aside>
-    </div>
-    <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
+      <div className={`settings-layer${settingsOpen ? " is-open" : ""}`} aria-hidden={!settingsOpen} inert={!settingsOpen}>
+        <button className="settings-backdrop" aria-label="Close settings" onClick={() => setSettingsOpen(false)} tabIndex={settingsOpen ? 0 : -1} />
+        <aside className="settings-panel settings-panel-minimal" aria-label="NIGHTOWL settings">
+          <header>
+            <div><p className="eyebrow">Your cinema tools</p><h2>Settings</h2></div>
+            <button className="icon-button" type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings"><CloseIcon /></button>
+          </header>
+          <nav className="settings-tools" aria-label="Cinema tools">
+            <button className="settings-tool-card" type="button" onClick={() => { setSettingsOpen(false); setAgentOpen(true); }} aria-label="Open NIGHTOWL AI" aria-haspopup="dialog" aria-expanded={agentOpen}>
+              <span className="settings-tool-icon" aria-hidden="true"><AgentIcon /></span>
+              <span className="settings-tool-copy"><strong>AI Agent</strong><small>Find your next great watch.</small></span>
+              <span className="settings-tool-arrow" aria-hidden="true"><ArrowRightIcon /></span>
+            </button>
+            <Link className="settings-tool-card" href="/actors/" onClick={() => setSettingsOpen(false)}>
+              <span className="settings-tool-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21v-2a8 8 0 0 1 16 0v2" /></svg></span>
+              <span className="settings-tool-copy"><strong>Actors</strong><small>Explore the faces behind the films.</small></span>
+              <span className="settings-tool-arrow" aria-hidden="true"><ArrowRightIcon /></span>
+            </Link>
+          </nav>
+        </aside>
+      </div>
+      <NovaAgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
     </>
-  );
-}
-
-function ToggleSetting({
-  title,
-  description,
-  checked,
-  onChange,
-}: {
-  title: string;
-  description: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="toggle-setting">
-      <span>
-        <strong>{title}</strong>
-        <small>{description}</small>
-      </span>
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
-      <i aria-hidden="true" />
-    </label>
   );
 }
