@@ -1,3 +1,4 @@
+import { filterCatalogResponse } from "./catalogPolicy";
 import { FALLBACK_CREDITS, FALLBACK_GENRES, FALLBACK_MOVIES } from "./fallback";
 import { withFanartLogo } from "./fanart";
 import { distinctRecommendations, organizeHomeData } from "./catalog";
@@ -140,7 +141,7 @@ async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
     signal,
   });
   if (!response.ok) throw new Error(`Cinemeta request failed (${response.status})`);
-  return response.json() as Promise<T>;
+  return filterCatalogResponse(await response.json()) as T;
 }
 
 async function requestCatalog(
@@ -228,7 +229,7 @@ export async function getHomeData(signal?: AbortSignal): Promise<HomeData> {
       usingFallback: false,
     });
   } catch (error) {
-    if (isAbortError(error)) throw error;
+    if (isAbortError(error) || (error instanceof Error && error.name === "CatalogBlockedError")) throw error;
     const heroMovies = await Promise.all(
       FALLBACK_MOVIES.map((movie) => withFanartLogo(movie, signal)),
     );
