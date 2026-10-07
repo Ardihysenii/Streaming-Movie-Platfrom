@@ -12336,11 +12336,11 @@ body:has(.hero) .site-header .header-actions {
   max-height: min(560px, 70vh); padding: 12px; background: rgba(14,14,17,.97);
   border: 1px solid rgba(255,255,255,.18);
 }
-.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-header strong { font-size: 18px; font-weight: 700; letter-spacing: .02em; color: #fff; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-header strong { font-size: 24px; line-height: 1.3; font-weight: 800; letter-spacing: .01em; color: #fff; }
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-header button { color: #f4f4f5; }
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-subtitles { gap: 12px; }
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-caption { margin: 0; font-size: 13px; line-height: 1.5; color: #d4d4d8; overflow-wrap: anywhere; }
-.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-label-block { font-size: 13px; font-weight: 700; color: #f4f4f5; letter-spacing: .05em; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-label-block { margin: 12px 12px 4px; font-size: 17px; line-height: 1.4; font-weight: 800; color: #fff; letter-spacing: .025em; }
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-toggle,
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-action,
 .custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-language-grid button,
