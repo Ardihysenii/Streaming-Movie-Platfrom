@@ -12465,3 +12465,6 @@ body:has(.hero) .site-header .header-actions {
 @media (max-width: 680px) {
   .detail-page .detail-trailer-audio { top: auto; bottom: 49px; }
 }
+
+/* Navbar labels share the Top 10 heading font family. */
+.site-header .desktop-nav a { font-family: var(--font-sans); }
