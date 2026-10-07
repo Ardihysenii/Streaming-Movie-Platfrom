@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching } from "@/lib/storage";
-import { discoverAnime, discoverSeries, getHomeData, getNetflixSeries, isReleased } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getHomeData, getMovie, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
@@ -53,12 +53,26 @@ function releasedHomePool(data: HomeData) {
 }
 
 export default function HomePage() {
+  const [dailyDate, setDailyDate] = useState(() => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
+  const [openingMovie, setOpeningMovie] = useState<HomeData["trending"][number] | null>(null);
   const [data, setData] = useState<HomeData | null>(null);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
   const [homeFilter, setHomeFilter] = useState<HomeFilter>("all");
   const [animeItems, setAnimeItems] = useState<HomeData["trending"]>([]);
   const [crimeSeriesItems, setCrimeSeriesItems] = useState<HomeData["trending"]>([]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setDailyDate(new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (dailyDate !== "2026-10-07") return;
+    const controller = new AbortController();
+    getMovie(977942, controller.signal).then(setOpeningMovie).catch(() => undefined);
+    return () => controller.abort();
+  }, [dailyDate]);
 
   const refreshContinue = useCallback(() => {
     setContinueWatching(
@@ -196,8 +210,16 @@ export default function HomePage() {
       ? [americanHorrorStory, ...excludeMovies(seriesPool.filter((movie) => movie !== americanHorrorStory), currentSeriesPool)].slice(0, 14)
       : excludeMovies(seriesPool, currentSeriesPool).slice(0, 14);
   const releasedHomeItems = releasedHomePool(data);
-  const mixedHomepageFeatured = americanHorrorStory
-    ? [americanHorrorStory, ...excludeMovies(releasedHomeItems, [americanHorrorStory])]
+  // One shared daily lead for the opening hero and Top 1 (Budapest calendar day).
+  const dailyPool = releasedHomeItems
+    .filter((movie) => movie.backdrop_path && movie.poster_path && movie.title.trim().toLowerCase() !== "runner")
+    .sort((a, b) => movieIdentity(a).localeCompare(movieIdentity(b), "en"));
+  const dayOffset = Math.max(0, Math.floor((Date.parse(dailyDate + "T00:00:00Z") - Date.parse("2026-10-07T00:00:00Z")) / 86_400_000));
+  const dailyLead = dailyDate === "2026-10-07" && openingMovie
+    ? openingMovie
+    : dailyPool.length ? dailyPool[dayOffset % dailyPool.length] : undefined;
+  const mixedHomepageFeatured = dailyLead
+    ? [dailyLead, ...excludeMovies(releasedHomeItems, [dailyLead])]
     : releasedHomeItems;
   const mixedTopTenFeatured = mixedHomepageFeatured.filter(
     (movie) => movie.title.trim().toLowerCase() !== "runner",
@@ -233,7 +255,7 @@ export default function HomePage() {
   const categoryLabel = homeFilter === "series" ? "TV Shows" : homeFilter === "anime" ? "Anime" : "Movies";
   return (
     <main className="home-page">
-      <Hero movies={heroMovies} />
+      <Hero key={`${homeFilter}:${dailyDate}:${heroMovies[0] ? movieIdentity(heroMovies[0]) : "empty"}`} movies={heroMovies} />
       <div className="home-content">
         <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
