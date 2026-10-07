@@ -1,3 +1,4 @@
+import { isBlockedTitle } from "./catalogPolicy";
 import type { HomeData, Movie } from "./types";
 
 function mediaKey(item: Movie) {
@@ -32,7 +33,7 @@ function takeDistinct(
   const source = compare ? [...items].sort(compare) : items;
   const result: Movie[] = [];
   for (const item of source) {
-    if (!item.poster_path || item.adult) continue;
+    if (!item.poster_path || item.adult || isBlockedTitle(item)) continue;
     const key = mediaKey(item);
     if (seen.has(key)) continue;
     seen.add(key);
