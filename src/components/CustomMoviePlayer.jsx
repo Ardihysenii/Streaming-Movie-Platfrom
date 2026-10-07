@@ -208,6 +208,22 @@ function formatTime(seconds) {
 
 
 
+
+function NightowlReferenceIcon({ name }) {
+  switch (name) {
+    case "Pause": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M96 448h106.7V64H96v384zM309.3 64v384H416V64H309.3z"></path></svg>);
+    case "Backward 15s": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C17.5228 2 22 6.47715 22 12 22 17.5228 17.5228 22 12 22 6.47715 22 2 17.5228 2 12H4C4 16.4183 7.58172 20 12 20 16.4183 20 20 16.4183 20 12 20 7.58172 16.4183 4 12 4 9.53614 4 7.33243 5.11383 5.86492 6.86543L8 9H2V3L4.44656 5.44648C6.28002 3.33509 8.9841 2 12 2ZM8.5 8.5H10V15.5H8.5V8.5ZM16.75 8.5H12V12.75H14.875C15.2202 12.75 15.5 13.0298 15.5 13.375 15.5 13.7202 15.2202 14 14.875 14H12V15.5H14.875C16.0486 15.5 17 14.5486 17 13.375 17 12.2014 16.0486 11.25 14.875 11.25H13.5V10H16.75V8.5Z"></path></svg>);
+    case "Forward 15s": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.47715 2 2 6.47715 2 12 2 17.5228 6.47715 22 12 22 17.5228 22 22 17.5228 22 12H20C20 16.4183 16.4183 20 12 20 7.58172 20 4 16.4183 4 12 4 7.58172 7.58172 4 12 4 14.4639 4 16.6676 5.11383 18.1351 6.86543L16.5001 8.5H12V12.75H14.875C15.2202 12.75 15.5 13.0298 15.5 13.375 15.5 13.7202 15.2202 14 14.875 14H12V15.5H14.875C16.0486 15.5 17 14.5486 17 13.375 17 12.2014 16.0486 11.25 14.875 11.25H13.5V10H16.75V9H22V3L19.5534 5.44648C17.72 3.33509 15.0159 2 12 2ZM8.5 8.5H10V15.5H8.5V8.5Z"></path></svg>);
+    case "Volume": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M2 16.0001H5.88889L11.1834 20.3319C11.2727 20.405 11.3846 20.4449 11.5 20.4449C11.7761 20.4449 12 20.2211 12 19.9449V4.05519C12 3.93977 11.9601 3.8279 11.887 3.73857C11.7121 3.52485 11.3971 3.49335 11.1834 3.66821L5.88889 8.00007H2C1.44772 8.00007 1 8.44778 1 9.00007V15.0001C1 15.5524 1.44772 16.0001 2 16.0001ZM23 12C23 15.292 21.5539 18.2463 19.2622 20.2622L17.8445 18.8444C19.7758 17.1937 21 14.7398 21 12C21 9.26016 19.7758 6.80629 17.8445 5.15557L19.2622 3.73779C21.5539 5.75368 23 8.70795 23 12ZM18 12C18 10.0883 17.106 8.38548 15.7133 7.28673L14.2842 8.71584C15.3213 9.43855 16 10.64 16 12C16 13.36 15.3213 14.5614 14.2842 15.2841L15.7133 16.7132C17.106 15.6145 18 13.9116 18 12Z"></path></svg>);
+    case "Audio": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 640 512" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 128C0 92.7 28.7 64 64 64l192 0 48 0 16 0 256 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64l-256 0-16 0-48 0L64 448c-35.3 0-64-28.7-64-64L0 128zm320 0l0 256 256 0 0-256-256 0zM178.3 175.9c-3.2-7.2-10.4-11.9-18.3-11.9s-15.1 4.7-18.3 11.9l-64 144c-4.5 10.1 .1 21.9 10.2 26.4s21.9-.1 26.4-10.2l8.9-20.1 73.6 0 8.9 20.1c4.5 10.1 16.3 14.6 26.4 10.2s14.6-16.3 10.2-26.4l-64-144zM160 233.2L179 276l-38 0 19-42.8zM448 164c11 0 20 9 20 20l0 4 44 0 16 0c11 0 20 9 20 20s-9 20-20 20l-2 0-1.6 4.5c-8.9 24.4-22.4 46.6-39.6 65.4c.9 .6 1.8 1.1 2.7 1.6l18.9 11.3c9.5 5.7 12.5 18 6.9 27.4s-18 12.5-27.4 6.9l-18.9-11.3c-4.5-2.7-8.8-5.5-13.1-8.5c-10.6 7.5-21.9 14-34 19.4l-3.6 1.6c-10.1 4.5-21.9-.1-26.4-10.2s.1-21.9 10.2-26.4l3.6-1.6c6.4-2.9 12.6-6.1 18.5-9.8l-12.2-12.2c-7.8-7.8-7.8-20.5 0-28.3s20.5-7.8 28.3 0l14.6 14.6 .5 .5c12.4-13.1 22.5-28.3 29.8-45L448 228l-72 0c-11 0-20-9-20-20s9-20 20-20l52 0 0-4c0-11 9-20 20-20z"></path></svg>);
+    case "Subtitle": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2M4 12h4v2H4zm10 6H4v-2h10zm6 0h-4v-2h4zm0-4H10v-2h10z"></path></svg>);
+    case "Settings": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5.33409 4.54491C6.3494 3.63637 7.55145 2.9322 8.87555 2.49707C9.60856 3.4128 10.7358 3.99928 12 3.99928C13.2642 3.99928 14.3914 3.4128 15.1245 2.49707C16.4486 2.9322 17.6506 3.63637 18.6659 4.54491C18.2405 5.637 18.2966 6.90531 18.9282 7.99928C19.5602 9.09388 20.6314 9.77679 21.7906 9.95392C21.9279 10.6142 22 11.2983 22 11.9993C22 12.7002 21.9279 13.3844 21.7906 14.0446C20.6314 14.2218 19.5602 14.9047 18.9282 15.9993C18.2966 17.0932 18.2405 18.3616 18.6659 19.4536C17.6506 20.3622 16.4486 21.0664 15.1245 21.5015C14.3914 20.5858 13.2642 19.9993 12 19.9993C10.7358 19.9993 9.60856 20.5858 8.87555 21.5015C7.55145 21.0664 6.3494 20.3622 5.33409 19.4536C5.75952 18.3616 5.7034 17.0932 5.0718 15.9993C4.43983 14.9047 3.36862 14.2218 2.20935 14.0446C2.07212 13.3844 2 12.7002 2 11.9993C2 11.2983 2.07212 10.6142 2.20935 9.95392C3.36862 9.77679 4.43983 9.09388 5.0718 7.99928C5.7034 6.90531 5.75952 5.637 5.33409 4.54491ZM13.5 14.5974C14.9349 13.7689 15.4265 11.9342 14.5981 10.4993C13.7696 9.0644 11.9349 8.57277 10.5 9.4012C9.06512 10.2296 8.5735 12.0644 9.40192 13.4993C10.2304 14.9342 12.0651 15.4258 13.5 14.5974Z"></path></svg>);
+    case "Fullscreen": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M17.5858 5H14V3H21V10H19V6.41421L14.7071 10.7071L13.2929 9.29289L17.5858 5ZM3 14H5V17.5858L9.29289 13.2929L10.7071 14.7071L6.41421 19H10V21H3V14Z"></path></svg>);
+    case "Servers": return (<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M123.4 183c.4-.1.8-.1 1.2-.2-.5.1-.8.2-1.2.2z"></path><path d="M393.2 219.2C380.5 154.6 323.9 106 256 106c-39.7 0-76 14-100.9 45.4 34.3 2.6 66.1 15.2 90.7 39.8 18.2 18.2 31 40.5 37.4 64.8h-33.5c-15.3-43.7-56-75-105.7-75-6 0-14.3.7-20.6 2C70 194 32 238.4 32 293.5 32 355.6 82.2 406 144 406h242.7c51.5 0 93.3-42 93.3-93.8 0-49.4-38.3-89.6-86.8-93z"></path></svg>);
+    default: return (<svg viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M96 48v416l352-208z" /></svg>);
+  }
+}
+
 export default function CustomMoviePlayer({
   tmdbId,
   imdbId,
@@ -229,6 +245,7 @@ export default function CustomMoviePlayer({
 }) {
   const { settings } = useNovaSettings();
   const [isReady, setIsReady] = useState(false);
+  const [introFinished, setIntroFinished] = useState(false);
   const [connectionSlow, setConnectionSlow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -566,6 +583,13 @@ export default function CustomMoviePlayer({
     return () => window.clearTimeout(timer);
   }, [embedUrl]);
 
+  useEffect(() => {
+    setIntroFinished(false);
+    if (!isCineSrc) return undefined;
+    const timer = window.setTimeout(() => setIntroFinished(true), 1800);
+    return () => window.clearTimeout(timer);
+  }, [embedUrl, isCineSrc]);
+
 
 
 
@@ -584,10 +608,10 @@ export default function CustomMoviePlayer({
   const showControls = useCallback(() => {
     setControlsVisible(true);
     if (controlsTimerRef.current !== null) window.clearTimeout(controlsTimerRef.current);
-    if (isPlaying) {
+    if (isPlaying && !settingsOpen && !serverMenuOpen) {
       controlsTimerRef.current = window.setTimeout(() => setControlsVisible(false), 4000);
     }
-  }, [isPlaying]);
+  }, [isPlaying, settingsOpen, serverMenuOpen]);
 
 
 
@@ -1109,7 +1133,7 @@ export default function CustomMoviePlayer({
     // Each gesture applies its full counted amount to the current movie position.
     // Example: +10, then +20 means the movie moves +10 and then another +20.
     const startTime = Number.isFinite(previous.lastTime) ? previous.lastTime : currentTime;
-    const nextTime = Math.max(0, startTime + direction * 10 * count);
+    const nextTime = Math.max(0, startTime + direction * 15 * count);
     if (previous.timer !== null) window.clearTimeout(previous.timer);
     seekGestureRef.current = {
       direction,
@@ -1481,17 +1505,12 @@ export default function CustomMoviePlayer({
           ) : null}
         </div>
         ) : null}
-        {isCineSrc && !isReady ? (
+        {isCineSrc && (!isReady || !introFinished) ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
-            <div className="montana-player-intro-content">
-              <p className="montana-player-intro-kicker">{title}</p>
-              <div className="montana-player-intro-brand" aria-label="NIGHTOWL">
-                <img className="montana-player-intro-logo" src="/nightowl-logo.png" alt="NIGHTOWL" width="720" height="180" />
-              </div>
-              <div className="montana-player-intro-rule" aria-hidden="true"><span /> <i /></div>
-              <strong className="nightowl-intro-connecting">Connecting to {cineSrcServerLabel(activeServer)}<span aria-hidden="true"> _</span></strong>
-              <span className="nova-source-loading-detail">{connectionSlow ? `Still waiting for ${cineSrcServerLabel(activeServer)}…` : "Connecting to your stream…"}</span>
+            <div className="nightowl-reference-intro">
+              <div className="nightowl-reference-wordmark" aria-label="NIGHTOWL"><span>NIGHTOWL</span><span className="nightowl-reference-fill" aria-hidden="true">NIGHTOWL</span><span className="nightowl-reference-glow" aria-hidden="true">NIGHTOWL</span></div>
+              <p className="nightowl-reference-connection">Connecting to {cineSrcServerLabel(activeServer)}<span aria-hidden="true">_</span></p>
             </div>
           </div>
         ) : null}
@@ -1562,11 +1581,16 @@ export default function CustomMoviePlayer({
             {centerFeedback === "play" || centerFeedback === "pause" ? (
               <span className="nova-center-glyph" aria-hidden="true" />
             ) : centerFeedback === "forward" ? (
-              <ForwardIcon />
+              <NightowlReferenceIcon name="Forward 15s" />
             ) : centerFeedback === "back" ? (
-              <RewindIcon />
+              <NightowlReferenceIcon name="Backward 15s" />
             ) : null}
           </button>
+          <div className={"nightowl-mobile-center" + (controlsVisible && !settingsOpen && !serverMenuOpen ? " is-visible" : "")}>
+            <button type="button" onClick={() => seekBy(-15)} aria-label="Backward 15s"><NightowlReferenceIcon name="Backward 15s" /></button>
+            <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>{isPlaying ? <NightowlReferenceIcon name="Pause" /> : <NightowlReferenceIcon name="Play" />}</button>
+            <button type="button" onClick={() => seekBy(15)} aria-label="Forward 15s"><NightowlReferenceIcon name="Forward 15s" /></button>
+          </div>
           {seekFeedback ? (
             <div key={seekFeedback} className={`player-seek-feedback ${seekFeedback.startsWith("+") ? "is-forward" : "is-back"}`} role="status" aria-live="polite">
               <strong>{seekFeedback}</strong>
@@ -1585,17 +1609,17 @@ export default function CustomMoviePlayer({
               onChange={handleSeek}
               aria-label="Seek"
             />
-            <span className="player-time player-time-progress">{formatTime(currentTime)} / {formatTime(duration)}</span>
+            <span className="player-time player-time-progress"><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></span>
             </div>
             <div className="player-control-row">
               <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {isPlaying ? <NightowlReferenceIcon name="Pause" /> : <NightowlReferenceIcon name="Play" />}
               </button>
-              <button type="button" onClick={() => seekBy(-10)} aria-label="Rewind 10 seconds"><RewindIcon /></button>
-              <button type="button" onClick={() => seekBy(10)} aria-label="Forward 10 seconds"><ForwardIcon /></button>
+              <button type="button" onClick={() => seekBy(-15)} aria-label="Backward 15s"><NightowlReferenceIcon name="Backward 15s" /></button>
+              <button type="button" onClick={() => seekBy(15)} aria-label="Forward 15s"><NightowlReferenceIcon name="Forward 15s" /></button>
               <div className="player-volume-control">
                 <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>
-                  {muted ? <MutedIcon /> : <VolumeIcon />}
+                  {muted ? <MutedIcon /> : <NightowlReferenceIcon name="Volume" />}
                 </button>
                 <input
                   className="player-volume"
@@ -1608,18 +1632,19 @@ export default function CustomMoviePlayer({
                   aria-label="Volume"
                 />
               </div>
-              <span className="player-time nightowl-bar-time">{formatTime(currentTime)} / {formatTime(duration)}</span>
+              
 <span className="player-control-spacer" />
-<button type="button" aria-label="Subtitles" onClick={() => { setSettingsOpen(true); setSettingsView("subtitles"); setServerMenuOpen(false); }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M6 11h4m4 0h4M6 15h6m3 0h3"/></svg></button>
+<button type="button" aria-label="Audio" onClick={() => { setSettingsOpen(true); setSettingsView("audio"); setServerMenuOpen(false); }}><NightowlReferenceIcon name="Audio" /></button>
+<button type="button" aria-label="Subtitles" onClick={() => { setSettingsOpen(true); setSettingsView("subtitles"); setServerMenuOpen(false); }}><NightowlReferenceIcon name="Subtitle" /></button>
               <div className="player-settings-control">
                 <button type="button" className="player-settings-button" onClick={() => { setSettingsOpen((open) => !open); setSettingsView("root"); }} aria-label="Player settings" aria-expanded={settingsOpen}>
-                  <SettingsIcon className="player-setting-icon" />
+                  <NightowlReferenceIcon name="Settings" />
                 </button>
                 {settingsOpen ? (
                   <div className="player-settings-panel" role="dialog" aria-label="Player settings">
                     <div className="player-settings-header">
                       {settingsView !== "root" ? <button type="button" onClick={() => setSettingsView("root")} aria-label="Back to settings">‹</button> : <span />}
-                      <strong>{settingsView === "root" ? "Settings" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : settingsView === "subtitle-customize" ? "Customize subtitles" : "Playback settings"}</strong>
+                      <strong>{settingsView === "root" ? "Settings" : settingsView === "audio" ? "Audio" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : settingsView === "subtitle-customize" ? "Customize subtitles" : "Playback settings"}</strong>
                       <button type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">×</button>
                     </div>
                     {settingsView === "root" ? (
@@ -1633,6 +1658,7 @@ export default function CustomMoviePlayer({
                         <button type="button" className="player-settings-row player-settings-card player-settings-single" onClick={() => setSettingsView("playback")}><span>Playback settings</span><b>›</b></button>
                       </div>
                     ) : null}
+                    {settingsView === "audio" ? (<div className="player-settings-body"><div className="player-settings-option is-selected"><span>Original audio</span><b>✓</b></div><p className="player-settings-caption">Audio tracks are supplied by the selected CineSrc server.</p></div>) : null}
                     {settingsView === "quality" ? (
                       <div className="player-settings-body player-settings-list">{CINESRC_QUALITY_OPTIONS.map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{cineSrcQualityLabel(option)}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
                     ) : null}
@@ -1640,11 +1666,11 @@ export default function CustomMoviePlayer({
                       <div className="player-settings-body player-settings-subtitles">
                         <button type="button" className="player-settings-toggle" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span>Subtitles</span><strong>{subtitlesEnabled ? "On" : "Off"}</strong></button>
                         <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? subtitleProviderLabel(subtitleProvider) + " • " + subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
-                        <span className="player-settings-label-block">Source</span>
+                        <span className="player-settings-label-block">Subtitle provider</span>
                         <div className="player-settings-language-grid">{SUBTITLE_PROVIDER_OPTIONS.map(([value, label]) => <button key={value} type="button" className={value === subtitleProvider ? "is-selected" : ""} onClick={() => setSubtitleProvider(value)}>{label}</button>)}</div>
                         <span className="player-settings-label-block">Language</span>
-                        <div className="player-settings-language-grid">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}>{label}</button>)}</div>
-                        <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Customize subtitles <b>›</b></button>
+                        <div className="nightowl-subtitle-track-list">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}><span>{label}</span>{value === subtitleLanguage ? <b>✓</b> : null}</button>)}</div>
+                        <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Style &amp; delay <b>›</b></button>
                       </div>
                     ) : null}
                     {settingsView === "subtitle-customize" ? (
@@ -1672,7 +1698,7 @@ export default function CustomMoviePlayer({
               </div>
               <div className="player-server-control">
                 <button type="button" className="player-server-button" onClick={() => setServerMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={serverMenuOpen} aria-label={"Sources and servers, current server " + activeServer}>
-                  <span className="player-server-cloud-icon" aria-hidden="true" />
+                  <NightowlReferenceIcon name="Servers" />
                   <span className="nightowl-server-label">Sources</span>
                 </button>
                 {serverMenuOpen ? (
@@ -1689,7 +1715,7 @@ export default function CustomMoviePlayer({
                 ) : null}
               </div>
               <button type="button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
-                <FullscreenIcon />
+                <NightowlReferenceIcon name="Fullscreen" />
               </button>
             </div>
           </div>
