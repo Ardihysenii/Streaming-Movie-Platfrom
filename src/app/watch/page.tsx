@@ -169,16 +169,25 @@ export default function WatchPage() {
     ? `S${seasonNumber.toString().padStart(2, "0")} · E${episodeNumber.toString().padStart(2, "0")}`
     : null;
 
+  const detailsHref = isSeries ? `/series/details/?id=${movie.id}` : `/movie/?id=${movie.id}`;
+  const releaseYear = String(movie.release_date ?? "").slice(0, 4);
+  const runtimeMinutes = movie.runtime ?? 0;
+  const runtimeLabel = runtimeMinutes > 0
+    ? [Math.floor(runtimeMinutes / 60) ? `${Math.floor(runtimeMinutes / 60)}h` : "", runtimeMinutes % 60 ? `${runtimeMinutes % 60}m` : ""].filter(Boolean).join(" ")
+    : "";
+
   return (
-    <main className="watch-page">
-      <header className="watch-header">
-        <Link className="back-link" href={isSeries ? `/series/details/?id=${movie.id}` : `/movie/?id=${movie.id}`}>
+    <main className="watch-page watch-page-cinema">
+      {movie.backdrop_path ? (
+        <div className="watch-cinema-ambient" aria-hidden="true">
+          <Image src={"https://image.tmdb.org/t/p/w1280" + movie.backdrop_path} alt="" fill sizes="100vw" />
+        </div>
+      ) : null}
+      <header className="watch-header watch-cinema-header">
+        <Link className="back-link" href={detailsHref}>
           <BackIcon /> Back to details
         </Link>
-        <div>
-          <strong>{movie.title}{episodeLabel ? ` · ${episodeLabel}` : ""}</strong>
-          <span>NOVA custom player</span>
-        </div>
+        <div className="watch-cinema-brand"><span className="watch-cinema-brand-mark" aria-hidden="true" />NIGHTOWL <span className="watch-cinema-brand-label">Cinema</span></div>
       </header>
 
       <section className="player-shell provider-player-shell">
@@ -206,36 +215,26 @@ export default function WatchPage() {
         />
       </section>
 
-      <div className="player-meta">
-        <div className="player-title">
-          <p className="eyebrow">Now watching</p>
-          {movie.logo_url ? (
-            <div className="player-title-logo">
-              <Image
-                src={movie.logo_url}
-                alt={movie.title}
-                width={movie.logo_width ?? 800}
-                height={movie.logo_height ?? 310}
-                sizes="(max-width: 680px) 72vw, 34vw"
-              />
-              {episodeLabel ? <span>{episodeLabel}</span> : null}
-            </div>
-          ) : (
-            <h1>{movie.title}{episodeLabel ? ` · ${episodeLabel}` : ""}</h1>
-          )}
+      <section className="watch-cinema-info" aria-label="Now watching">
+        <div className="watch-cinema-title-group">
+          <p className="watch-cinema-kicker"><span aria-hidden="true" />Now watching</p>
+          <h1>{movie.title}</h1>
+          <div className="watch-cinema-facts">
+            <span className="watch-cinema-type">{isSeries ? "Series" : "Film"}</span>
+            {releaseYear ? <span>{releaseYear}</span> : null}
+            {runtimeLabel ? <span>{runtimeLabel}</span> : null}
+            {episodeLabel ? <span className="watch-cinema-episode">{episodeLabel}</span> : null}
+            {movie.vote_average > 0 ? <span className="watch-cinema-rating" aria-label={`Rating ${movie.vote_average.toFixed(1)} out of 10`}><span aria-hidden="true">★</span> {movie.vote_average.toFixed(1)}</span> : null}
+          </div>
         </div>
-        <dl>
-          <div><dt>Quality</dt><dd>Resolver managed</dd></div>
-          <div><dt>Subtitles</dt><dd>External tracks</dd></div>
-          <div><dt>Playback</dt><dd>NOVA custom player</dd></div>
-        </dl>
-      </div>
+        <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
+      </section>
 
-      <div className="inner-page-content">
-        {detailsLoaded && isSeries && "seasons" in movie ? (
+      {detailsLoaded && isSeries && "seasons" in movie ? (
+        <section className="inner-page-content watch-cinema-episodes" aria-label="Episode selection">
           <EpisodeBrowser series={movie} initialSeasonNumber={seasonNumber} />
-        ) : null}
-      </div>
+        </section>
+      ) : null}
     </main>
   );
 }
