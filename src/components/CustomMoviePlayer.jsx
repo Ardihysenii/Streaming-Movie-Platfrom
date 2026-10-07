@@ -25,7 +25,6 @@ import {
   RewindIcon,
   ForwardIcon,
   VolumeIcon,
-  PictureInPictureIcon,
   CastIcon,
   SettingsIcon,
 } from "@/components/Icons";
@@ -1481,7 +1480,7 @@ export default function CustomMoviePlayer({
         src={embedUrl}
         className={"provider-player-frame player-fit-" + videoFit}
         style={{ filter: "brightness(" + (brightness / 100) + ")" }}
-        title="NOVA video player"
+        title="NIGHTOWL video player"
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
@@ -1533,7 +1532,6 @@ export default function CustomMoviePlayer({
                     height={logoHeight}
                   />
                 ) : <span>{title}</span>}
-                <span className="player-paused-topline-mark">NOVA</span>
               </div>
               <div className="player-paused-info">
                 <p className="player-paused-eyebrow">You are watching</p>
@@ -1556,7 +1554,6 @@ export default function CustomMoviePlayer({
             </div>
           ) : null}
               <div className="player-paused-actions">
-                <PictureInPictureIcon />
                 <button
                   className="player-cast-button"
                   type="button"
@@ -1628,6 +1625,7 @@ export default function CustomMoviePlayer({
                   max="1"
                   step="0.05"
                   value={muted ? 0 : volume}
+                  style={{ "--volume-level": `${(muted ? 0 : volume) * 100}%` }}
                   onChange={handleVolume}
                   aria-label="Volume"
                 />
