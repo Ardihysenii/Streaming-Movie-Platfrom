@@ -189,12 +189,6 @@ export default function HomePage() {
     filteredSections.topRated = take(14);
     filteredSections.awardSeries = take(14);
   }
-  const forYou = isFilteredHome
-    ? filteredSections.recommendations
-    : excludeMovies(
-        uniqueMovies(data.topRated, data.trending, data.nowPlaying, data.trendingSeries, data.topRatedSeries),
-        isFilteredHome ? filteredSections.topTen : [],
-      ).slice(0, 14);
   const seriesPool = uniqueMovies(data.trendingSeries, data.airingSeries, data.topRatedSeries);
   const recentSeriesCutoff = new Date();
   recentSeriesCutoff.setMonth(recentSeriesCutoff.getMonth() - 15);
@@ -259,15 +253,7 @@ export default function HomePage() {
       <div className="home-content">
         <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
-        {isFilteredHome ? (
-          <MovieRail
-            title={`Because You Watched ${categoryLabel}`}
-            eyebrow="Recommended for this category"
-            movies={forYou}
-          />
-        ) : (
-          <ForYouRail movies={forYou} />
-        )}
+        <ForYouRail watched={filteredContinue.find((item) => item.watchedSeconds > 0) ?? null} />
         <MovieRail
           title={isFilteredHome ? `Current & Upcoming ${categoryLabel}` : "Current & Upcoming TV Shows"}
           eyebrow="Fresh episodes and returning favorites"
