@@ -44,18 +44,15 @@ export function ReleaseCountdown({ releaseDate }: { releaseDate: string }) {
   const minutes = remaining === null ? 0 : Math.floor(remaining % 3600 / 60);
   const seconds = remaining === null ? 0 : remaining % 60;
   const pad = (value: number) => String(value).padStart(2, "0");
-  const dateLabel = new Intl.DateTimeFormat("en-GB", { timeZone: RELEASE_TIME_ZONE, day: "numeric", month: "long", year: "numeric" }).format(new Date(deadline));
   const fill = now === null ? 0 : releaseProgress(deadline, now);
   return (
     <div className="detail-release-countdown">
       <button className="primary-button is-coming-soon release-countdown-button" type="button" disabled>
-        <span className="release-countdown-fill" style={{ width: fill + "%" }} aria-hidden="true" />
+        <span className="release-countdown-fill" style={{ width: fill + "%", minWidth: fill > 0 ? "2px" : "0" }} aria-hidden="true" />
         <span className="release-countdown-label">Coming Soon</span>
       </button>
       <div className="release-countdown-copy">
-        <time dateTime={new Date(deadline).toISOString()}>{dateLabel}</time>
         <span className="release-countdown-clock" role="timer" aria-live="off">{remaining === null ? "Preparing countdown…" : remaining === 0 ? "Release day" : days + "d " + pad(hours) + "h " + pad(minutes) + "m " + pad(seconds) + "s"}</span>
-        <small>00:00 Central European time · date-based estimate</small>
       </div>
     </div>
   );
