@@ -8,6 +8,7 @@ import { BookmarkIcon, CloseIcon, HeartIcon, MutedIcon, PlayIcon, PlusIcon, Star
 import { LoadingSpinner } from "./Loading";
 import { imageUrl, releaseYear } from "@/lib/tmdb";
 import { isInWishlist, toggleWishlist } from "@/lib/storage";
+import { isBlockedTitle } from "@/lib/catalogPolicy";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
 
@@ -82,6 +83,7 @@ export function movieKey(movie: Movie, index: number) {
 
 export function MovieCard({ movie, rank, progress, onRemove, priority = false, continueWatching = false, removeActionLabel = "Continue Watching" }: MovieCardProps) {
   const [loaded, setLoaded] = useState(false);
+  if (isBlockedTitle(movie)) return null;
   const rankLabel = rank ? rank.toString() : null;
   const href = mediaHref(movie, continueWatching);
   const cardImagePath = movie.poster_path;
