@@ -4858,8 +4858,6 @@ body:has(.watch-page) .bottom-dock {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-  z-index: 2;
-}
 
 .custom-movie-player-cinesrc .provider-player-frame {
   height: calc(100% - 86px);
