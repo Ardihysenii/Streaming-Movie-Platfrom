@@ -12425,3 +12425,11 @@ body:has(.hero) .site-header .header-actions {
 .settings-panel-minimal .settings-tool-arrow svg { display: block; width: 16px; height: 16px; }
 @media (max-width: 400px) { .settings-panel-minimal .settings-tool-card { padding: 16px 12px; gap: 10px; } }
 @media (prefers-reduced-motion: reduce) { .settings-panel-minimal .settings-tool-card { transition: none; } }
+
+/* Hero arrows retain their vertical centering through every interaction state. */
+.hero .hero-arrow,
+.hero .hero-arrow:hover,
+.hero .hero-arrow:focus,
+.hero .hero-arrow:focus-visible,
+.hero .hero-arrow:active { transform: translateY(-50%); translate: none; scale: none; animation: none; transition: color 180ms ease, opacity 180ms ease; }
+.hero .hero-arrow svg { transform: none; translate: none; animation: none; transition: none; }
