@@ -12513,7 +12513,7 @@ body:has(.hero) .site-header .header-actions {
 /* Date and second-accurate clock beside the existing-size Coming Soon action. */
 .detail-release-countdown { display: flex; align-items: center; gap: 18px; max-width: 100%; }
 .detail-page .detail-actions .release-countdown-button { position: relative; overflow: hidden; isolation: isolate; flex: 0 0 auto; }
-.release-countdown-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(110deg, #8f9399, #c6c9ce); pointer-events: none; z-index: -1; }
+.release-countdown-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(110deg, #8f9399, #c6c9ce); pointer-events: none; z-index: 0; }
 .release-countdown-label { position: relative; z-index: 1; }
 .detail-page .detail-actions .release-countdown-button { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
 .release-countdown-copy { display: grid; gap: 4px; min-width: 0; }
