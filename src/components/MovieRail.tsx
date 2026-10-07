@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, MutedIcon, PlayIcon, StarIcon, VolumeIcon } from "./Icons";
-import { MovieCard, movieKey, progressPercentage, WishlistButton } from "./MovieCard";
-import { getTrailer, imageUrl, releaseYear } from "@/lib/tmdb";
+import { MovieCard, mediaHref, movieKey, progressPercentage, WishlistButton } from "./MovieCard";
+import { getSimilarMovies, getSimilarSeries, getTrailer, imageUrl, isReleased, releaseYear } from "@/lib/tmdb";
 import { removeContinueWatching } from "@/lib/storage";
 import type { ContinueWatchingItem, Movie } from "@/lib/types";
 
@@ -88,17 +88,45 @@ const GENRE_CHOICES = [
   { label: "Romance", id: 10749 },
 ];
 
-export function ForYouRail({ movies }: { movies: Movie[] }) {
+export function ForYouRail({ watched }: { watched: ContinueWatchingItem | null }) {
+  const mediaType = watched?.media_type === "tv" ? "tv" : "movie";
+  const sourceId = watched ? watched.series_id ?? watched.tmdb_id ?? watched.id : null;
+  const sourceKey = sourceId === null ? "" : mediaType + ":" + String(sourceId);
+  const [related, setRelated] = useState<{ key: string; movies: Movie[] }>({ key: "", movies: [] });
+
+  useEffect(() => {
+    if (sourceId === null) return;
+    const controller = new AbortController();
+    const load = mediaType === "tv" ? getSimilarSeries : getSimilarMovies;
+    load(sourceId, controller.signal)
+      .then((movies) => {
+        if (!controller.signal.aborted) setRelated({ key: sourceKey, movies: movies.filter((movie) =>
+          movie.poster_path && !movie.adult && isReleased(movie) &&
+          (movie.media_type ?? "movie") + ":" + String(movie.tmdb_id ?? movie.id) !== sourceKey
+        ).slice(0, 14) });
+      })
+      .catch(() => { if (!controller.signal.aborted) setRelated({ key: sourceKey, movies: [] }); });
+    return () => controller.abort();
+  }, [mediaType, sourceId, sourceKey]);
+
+  if (!watched || related.key !== sourceKey || !related.movies.length) return null;
+  const sourceMovie: Movie = { ...watched, id: sourceId ?? watched.id, tmdb_id: typeof sourceId === "number" ? sourceId : undefined, season_number: undefined, episode_number: undefined };
+  const poster = watched.poster_path?.startsWith("http") ? watched.poster_path : imageUrl(watched.poster_path, "w500");
   return (
-    <ChoiceRail
-      className="for-you-rail"
-      eyebrow="Recommended from your watch history"
-      title="Because You Watched"
-      choices={[
-        { label: "Movies", movies: movies.filter((movie) => movie.media_type !== "tv"), href: "/movies/" },
-        { label: "TV Shows", movies: movies.filter((movie) => movie.media_type === "tv"), href: "/series/" },
-      ]}
-    />
+    <section className="content-section for-you-rail">
+      <header className="section-heading for-you-heading">
+        <Link className="for-you-source" href={mediaHref(sourceMovie)} aria-label={"View " + watched.title}>
+          <Image src={poster} alt={watched.title + " artwork"} width={48} height={72} sizes="48px" />
+        </Link>
+        <div className="for-you-heading-copy">
+          <h2>Because You Watched</h2>
+          <p className="eyebrow">{watched.title}</p>
+        </div>
+      </header>
+      <RailScroller label={"Recommended because you watched " + watched.title} itemCount={related.movies.length}>
+        {related.movies.map((movie, index) => <MovieCard movie={movie} key={movieKey(movie, index)} />)}
+      </RailScroller>
+    </section>
   );
 }
 
