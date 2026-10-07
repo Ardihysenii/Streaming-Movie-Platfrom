@@ -8,9 +8,8 @@ import CustomMoviePlayer from "@/components/CustomMoviePlayer";
 import { BackIcon } from "@/components/Icons";
 import { EpisodeBrowser } from "@/components/EpisodeBrowser";
 import { PageLoader } from "@/components/Loading";
-import { MovieRail } from "@/components/MovieRail";
 import { getSavedProgress, saveWatchProgress } from "@/lib/storage";
-import { getMovie, getSeries, getSimilarMovies, getSimilarSeries } from "@/lib/tmdb";
+import { getMovie, getSeries } from "@/lib/tmdb";
 import type { Movie, MovieDetails, SeriesDetails } from "@/lib/types";
 
 export default function WatchPage() {
@@ -44,7 +43,6 @@ export default function WatchPage() {
     : null;
   const [movie, setMovie] = useState<MovieDetails | SeriesDetails | null>(playerSeed);
   const [detailsLoaded, setDetailsLoaded] = useState(false);
-  const [similar, setSimilar] = useState<Movie[]>([]);
   const [missingId, setMissingId] = useState(false);
   const [isSeries, setIsSeries] = useState(false);
   const [seasonNumber, setSeasonNumber] = useState<number | undefined>();
@@ -63,7 +61,6 @@ export default function WatchPage() {
     setMissingId(false);
     setMovie(playerSeed);
     setDetailsLoaded(false);
-    setSimilar([]);
     setResumeAt(0);
     setContinueItem(null);
     lastSavedProgressRef.current = 0;
@@ -73,9 +70,6 @@ export default function WatchPage() {
     }
 
     const detailsRequest = type === "tv" ? getSeries(id, controller.signal) : getMovie(id, controller.signal);
-    const similarRequest = type === "tv"
-      ? getSimilarSeries(id, controller.signal)
-      : getSimilarMovies(id, controller.signal);
     setIsSeries(type === "tv");
     setSeasonNumber(type === "tv" ? season : undefined);
     setEpisodeNumber(type === "tv" ? episode : undefined);
@@ -114,10 +108,6 @@ export default function WatchPage() {
       })
       .catch(() => undefined);
 
-    // Recommendations are below the player and must not delay playback startup.
-    similarRequest
-      .then((related) => setSimilar(related))
-      .catch(() => undefined);
 
     return () => controller.abort();
   }, [queryEpisode, queryId, queryImdbId, querySeason, queryType]);
@@ -178,7 +168,6 @@ export default function WatchPage() {
   const episodeLabel = isSeries && seasonNumber && episodeNumber
     ? `S${seasonNumber.toString().padStart(2, "0")} · E${episodeNumber.toString().padStart(2, "0")}`
     : null;
-  const isAnime = movie.genre_ids.includes(16);
 
   return (
     <main className="watch-page">
@@ -246,18 +235,6 @@ export default function WatchPage() {
         {detailsLoaded && isSeries && "seasons" in movie ? (
           <EpisodeBrowser series={movie} initialSeasonNumber={seasonNumber} />
         ) : null}
-        <MovieRail
-          title={isAnime ? "Anime You May Like" : isSeries ? "More Series" : "Watch Next"}
-          eyebrow="More like this"
-          movies={similar}
-          href={
-            isAnime
-              ? `/movies/?type=anime&similar=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}`
-              : isSeries
-              ? `/series/?similar=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}`
-              : `/movies/?similar=${encodeURIComponent(String(movie.tmdb_id ?? movie.id))}`
-          }
-        />
       </div>
     </main>
   );
