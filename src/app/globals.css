@@ -12402,3 +12402,10 @@ body:has(.hero) .site-header .header-actions {
 .watch-page.watch-page-cinema .watch-header .watch-cinema-back:hover svg { transform: translateX(-2px); }
 .watch-page.watch-page-cinema .watch-cinema-details { border-color: transparent; background: transparent; padding: 12px 0; color: #b8b8c5; }
 .watch-page.watch-page-cinema .watch-cinema-details:hover { border-color: transparent; background: transparent; color: #fff; }
+
+/* Details recommendations match the Cast title/subtitle hierarchy. */
+.detail-page .content-section .section-heading { align-items: flex-start; margin-bottom: 22px; }
+.detail-page .content-section .section-heading > div { display: flex; flex-direction: column; }
+.detail-page .content-section .section-heading h2 { font-family: var(--font-sans); font-size: clamp(1.65rem, 2.2vw, 2.15rem); font-weight: 720; letter-spacing: -0.045em; line-height: 1.04; text-transform: none; margin: 0; order: 1; }
+.detail-page .content-section .section-heading .eyebrow { color: var(--muted); font-size: .86rem; font-weight: 400; letter-spacing: normal; line-height: 1.35; margin: 8px 0 0; text-transform: none; order: 2; }
+.detail-page .content-section .section-heading > a { margin-top: 4px; }
