@@ -12329,3 +12329,25 @@ body:has(.hero) .site-header .header-actions {
 
 /* Volume icon optical sizing: match the apparent size of adjacent icons. */
 .custom-movie-player-cinesrc .custom-player-ui .player-volume-control > button svg { transform: scale(1.3); transform-origin: center; }
+
+/* Readable, left-expanded subtitle settings; other settings keep their layout. */
+.custom-movie-player-cinesrc .custom-player-ui .player-settings-panel.player-settings-panel-subtitles {
+  box-sizing: border-box; width: min(440px, calc(100vw - 160px)); right: 64px;
+  max-height: min(560px, 70vh); padding: 12px; background: rgba(14,14,17,.97);
+  border: 1px solid rgba(255,255,255,.18);
+}
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-header strong { font-size: 18px; font-weight: 700; letter-spacing: .02em; color: #fff; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-header button { color: #f4f4f5; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-subtitles { gap: 12px; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-caption { margin: 0; font-size: 13px; line-height: 1.5; color: #d4d4d8; overflow-wrap: anywhere; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-label-block { font-size: 13px; font-weight: 700; color: #f4f4f5; letter-spacing: .05em; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-toggle,
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-action,
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-language-grid button,
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .nightowl-subtitle-track-list button { min-height: 44px; font-size: 16px; line-height: 1.4; color: #f4f4f5; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .player-settings-toggle strong { font-size: 14px; font-weight: 600; color: #e4e4e7; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles .nightowl-subtitle-track-list { max-height: 240px; }
+.custom-movie-player-cinesrc .player-settings-panel-subtitles button:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+@media (max-width: 767px) {
+  .custom-movie-player-cinesrc .custom-player-ui .player-settings-panel.player-settings-panel-subtitles { width: min(380px, calc(100vw - 80px)); right: -28px; max-height: min(460px, 65vh); padding: 8px; }
+}
