@@ -259,6 +259,10 @@ export default function CustomMoviePlayer({
   const [selectedSource, setSelectedSource] = useState("cinesrc");
   const [sourceResumeAt, setSourceResumeAt] = useState(resumeAt);
   const [sourceMenuOpen, setSourceMenuOpen] = useState(false);
+  // VIDSTUCK_PLAY_PAUSE_TEST: isolated experimental state; no CineSrc changes.
+  const [vidStuckTestEnabled, setVidStuckTestEnabled] = useState(true);
+  const [vidStuckTestCommand, setVidStuckTestCommand] = useState("");
+  const [vidStuckTestStatus, setVidStuckTestStatus] = useState("");
   const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
@@ -1387,6 +1391,25 @@ export default function CustomMoviePlayer({
 
 
 
+  // VIDSTUCK_PLAY_PAUSE_TEST: unverified command probe, NOT a supported API.
+  // Sending a message is not proof that playback changed. Never update isPlaying here.
+  const handleVidStuckTestToggle = () => {
+    if (!isVidStuck || !providerOrigin || !iframeRef.current?.contentWindow) return;
+    const command = vidStuckTestCommand === "play" ? "pause" : "play";
+    iframeRef.current.contentWindow.postMessage(
+      { type: "PLAYER_COMMAND", command },
+      providerOrigin,
+    );
+    setVidStuckTestCommand(command);
+    setVidStuckTestStatus(command + " probe sent — playback response unconfirmed");
+  };
+
+  useEffect(() => {
+    setVidStuckTestCommand("");
+    setVidStuckTestStatus("");
+    setVidStuckTestEnabled(true);
+  }, [embedUrl]);
+
   const handleSourceChange = (nextSource) => {
     if (!PLAYER_SOURCE_OPTIONS.some((option) => option.id === nextSource) || nextSource === selectedSource) {
       setSourceMenuOpen(false);
@@ -1484,6 +1507,34 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
+        {/* VIDSTUCK_PLAY_PAUSE_TEST: masks only approximate control areas.
+            Does not remove iframe DOM controls; restore native controls if blocked. */}
+        {isVidStuck ? (
+          <div data-vidstuck-play-pause-test style={{ position: "absolute", inset: 0, zIndex: 25, pointerEvents: "none" }}>
+            {vidStuckTestEnabled ? (
+              <>
+                <button type="button" onClick={handleVidStuckTestToggle}
+                  aria-label={vidStuckTestCommand === "play" ? "Test custom pause" : "Test custom play"}
+                  title="Experimental command; VIDSTUCK may ignore it"
+                  style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", width: 90, height: 90, borderRadius: "50%", background: "#111", color: "white", border: "1px solid #ff003c", pointerEvents: "auto", display: "grid", placeItems: "center" }}>
+                  <span style={{ width: 34, height: 34 }}>{vidStuckTestCommand === "play" ? <PauseIcon /> : <PlayIcon />}</span>
+                </button>
+                <button type="button" onClick={handleVidStuckTestToggle}
+                  aria-label={vidStuckTestCommand === "play" ? "Test custom pause" : "Test custom play"}
+                  style={{ position: "absolute", left: 0, bottom: 0, width: 64, height: 64, background: "#111", color: "white", border: 0, pointerEvents: "auto", display: "grid", placeItems: "center" }}>
+                  <span style={{ width: 26, height: 26 }}>{vidStuckTestCommand === "play" ? <PauseIcon /> : <PlayIcon />}</span>
+                </button>
+              </>
+            ) : null}
+            <div style={{ position: "absolute", left: 12, top: 12, maxWidth: "65%", padding: "8px 10px", background: "rgba(0,0,0,.85)", color: "white", fontSize: 12, pointerEvents: "auto" }}>
+              <strong>VIDSTUCK play/pause test</strong>
+              <p role="status" aria-live="polite" style={{ margin: "4px 0" }}>{vidStuckTestStatus || "Unverified probe — confirm playback visually."}</p>
+              <button type="button" onClick={() => setVidStuckTestEnabled((enabled) => !enabled)} style={{ color: "white", background: "#333", padding: "4px 8px", border: "1px solid #666" }}>
+                {vidStuckTestEnabled ? "Restore native controls" : "Enable custom test"}
+              </button>
+            </div>
+          </div>
+        ) : null}
         {!isCineSrc ? (
         <div className="player-source-control">
           <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}>
