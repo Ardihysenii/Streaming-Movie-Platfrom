@@ -22,8 +22,6 @@ function HeaderContent() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
   const urlFilter = pathname === "/" ? searchParams.get("type") : null;
-  const isHomeBrand = pathname === "/" && !["movies", "series", "anime"].includes(urlFilter ?? "");
-  const brandName = isHomeBrand ? "DONTSPOILE" : "NIGHTOWL";
   const [activeKey, setActiveKey] = useState<(typeof navigation)[number]["key"]>(() => {
     if (pathname.startsWith("/wishlist")) return "wishlist";
     return urlFilter === "movies" || urlFilter === "series" || urlFilter === "anime" ? urlFilter : "home";
@@ -63,8 +61,8 @@ function HeaderContent() {
   return (
     <>
       <header className={isScrolled ? "site-header is-scrolled" : "site-header"}>
-        <Link className="wordmark" href="/" aria-label={`${brandName} home`}>
-          <img className="wordmark-image" src={isHomeBrand ? "/dontspoile-logo.png" : "/nightowl-logo.png"} alt={brandName} width={isHomeBrand ? 991 : 160} height={isHomeBrand ? 278 : 40} />
+        <Link className="wordmark" href="/" aria-label="NIGHTOWL home">
+          <img className="wordmark-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
         </Link>
         {!logoOnlyHeader ? (
           <>
