@@ -256,7 +256,7 @@ function RailScroller({ children, label, itemCount }: { children: ReactNode; lab
 }
 
 
-export function TopTenRail({ movies, title = "Top 10 on", homeBrand = false }: { movies: Movie[]; title?: string; homeBrand?: boolean }) {
+export function TopTenRail({ movies, title = "Top 10 on" }: { movies: Movie[]; title?: string }) {
   const topTen = movies.slice(0, 10);
   const [trailerMovie, setTrailerMovie] = useState<Movie | null>(null);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
@@ -337,12 +337,12 @@ export function TopTenRail({ movies, title = "Top 10 on", homeBrand = false }: {
         <div className="top-ten-heading-text">
           <div className="top-ten-title-row">
             <h2 className="top-ten-section-title">Top 10 on</h2>
-            <img className="top-ten-brand-image" src={homeBrand ? "/dontspoile-logo.png" : "/nightowl-logo.png"} alt={homeBrand ? "DONTSPOILE" : "NIGHTOWL"} width={homeBrand ? 991 : 160} height={homeBrand ? 278 : 40} />
+            <img className="top-ten-brand-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
           </div>
           <p>The most watched titles right now</p>
         </div>
       </header>
-      <RailScroller label={homeBrand ? "Top 10 on DONTSPOILE" : "Top 10 on NIGHTOWL"} itemCount={topTen.length}>
+      <RailScroller label="Top 10 on NIGHTOWL" itemCount={topTen.length}>
         {topTen.map((movie, index) => {
           const isFeatured = index === 0;
           const trailerActive = isFeatured && trailerMovie?.id === movie.id;
