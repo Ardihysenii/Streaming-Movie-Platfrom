@@ -253,7 +253,7 @@ export default function HomePage() {
     <main className="home-page">
       <Hero key={`${homeFilter}:${dailyDate}:${heroMovies[0] ? movieIdentity(heroMovies[0]) : "empty"}`} movies={heroMovies} />
       <div className="home-content">
-        <TopTenRail movies={topTenMovies} homeBrand={!isFilteredHome} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
+        <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
         <ForYouRail watched={lastWatched && filterForHome([lastWatched], homeFilter).length ? lastWatched : null} />
         {filterForHome(comingSoon, homeFilter).length ? (
