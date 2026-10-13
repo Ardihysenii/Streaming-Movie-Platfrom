@@ -12527,3 +12527,9 @@ body:has(.hero) .site-header .header-actions {
 .home-page .content-section.mood-rail .section-heading h2 { order: 0; }
 .home-page .mood-rail .rail-tabs { order: 1; margin-top: 12px; max-width: 100%; }
 .home-page .mood-rail .mood-empty { color: var(--muted); font-size: .86rem; margin: 0; }
+
+
+/* Place Genres filters beneath the heading where the subtitle used to be. */
+.home-page .genre-rail .section-heading > div { display: flex; flex-direction: column; min-width: 0; }
+.home-page .content-section.genre-rail .section-heading h2 { order: 0; }
+.home-page .genre-rail .rail-tabs { order: 1; margin-top: 12px; max-width: 100%; }
