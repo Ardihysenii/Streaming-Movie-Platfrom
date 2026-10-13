@@ -141,7 +141,6 @@ export function GenreRail({ movies }: { movies: Movie[] }) {
   return (
     <ChoiceRail
       className="genre-rail"
-      eyebrow="Browse by feeling"
       title="Genres"
       choices={GENRE_CHOICES.map((genre) => ({
         label: genre.label,
