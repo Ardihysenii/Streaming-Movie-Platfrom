@@ -50,8 +50,8 @@ const CINESRC_SERVER_OPTIONS = [
 
 const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
 const PLAYER_SOURCE_OPTIONS = [
-  { id: "cinesrc", label: "CineSrc" },
-  { id: "vidstuck", label: "VidStuck" },
+  { id: "cinesrc", label: "NightOwl" },
+  { id: "vidstuck", label: "NightOwl Ads" },
 ];
 const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
 
@@ -392,6 +392,22 @@ export default function CustomMoviePlayer({
   const isVidStuck = selectedSource === "vidstuck";
   const providerBase = isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
   const isCineSrc = !isVidStuck && /cinesrc\.st/i.test(providerBase);
+
+  useEffect(() => {
+    const openSourcePicker = () => {
+      if (isCineSrc) {
+        setSourceMenuOpen(false);
+        setServerMenuOpen(true);
+      } else {
+        setServerMenuOpen(false);
+        setSourceMenuOpen(true);
+      }
+      setSettingsOpen(false);
+      setControlsVisible(true);
+    };
+    window.addEventListener("nova:open-player-sources", openSourcePicker);
+    return () => window.removeEventListener("nova:open-player-sources", openSourcePicker);
+  }, [isCineSrc]);
   const providerOrigin = useMemo(() => {
     try {
       return new URL(providerBase).origin;
@@ -1486,12 +1502,12 @@ export default function CustomMoviePlayer({
         />
         {!isCineSrc ? (
         <div className="player-source-control">
-          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}>
-            <strong>{isVidStuck ? "Play with CineSrc" : "Play with VidStuck"}</strong>
+          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}>
+            <strong>{isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}</strong>
           </button>
-          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "VidStuck" : "CineSrc")}>
+          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "NightOwl Ads" : "NightOwl")}>
             <span className="player-setting-label">Source</span>
-            <strong>{isVidStuck ? "VidStuck" : "CineSrc"}</strong>
+            <strong>{isVidStuck ? "NightOwl Ads" : "NightOwl"}</strong>
           </button>
           {sourceMenuOpen ? (
             <div className="player-source-menu" role="listbox" aria-label="Playback source">
@@ -1656,7 +1672,7 @@ export default function CustomMoviePlayer({
                         <button type="button" className="player-settings-row player-settings-card player-settings-single" onClick={() => setSettingsView("playback")}><span>Playback settings</span><b>›</b></button>
                       </div>
                     ) : null}
-                    {settingsView === "audio" ? (<div className="player-settings-body"><div className="player-settings-option is-selected"><span>Original audio</span><b>✓</b></div><p className="player-settings-caption">Audio tracks are supplied by the selected CineSrc server.</p></div>) : null}
+                    {settingsView === "audio" ? (<div className="player-settings-body"><div className="player-settings-option is-selected"><span>Original audio</span><b>✓</b></div><p className="player-settings-caption">Audio tracks are supplied by the selected NightOwl server.</p></div>) : null}
                     {settingsView === "quality" ? (
                       <div className="player-settings-body player-settings-list">{CINESRC_QUALITY_OPTIONS.map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{cineSrcQualityLabel(option)}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
                     ) : null}
@@ -1700,10 +1716,10 @@ export default function CustomMoviePlayer({
                   <span className="nightowl-server-label">Sources</span>
                 </button>
                 {serverMenuOpen ? (
-                  <div className="player-server-menu" role="listbox" aria-label="Playback sources and CineSrc servers">
+                  <div className="player-server-menu" role="listbox" aria-label="Playback sources and NightOwl servers">
 <h3 className="nightowl-menu-heading">Playback source</h3>
 {PLAYER_SOURCE_OPTIONS.map((option) => (<button key={option.id} type="button" role="option" aria-selected={option.id === selectedSource} className={option.id === selectedSource ? "is-selected" : ""} onClick={() => handleSourceChange(option.id)}><span>{option.label}</span><small>{option.id === selectedSource ? "Active" : "Switch"}</small></button>))}
-<h3 className="nightowl-menu-heading">CineSrc servers</h3>
+<h3 className="nightowl-menu-heading">NightOwl servers</h3>
                     {CINESRC_SERVER_OPTIONS.map((option) => (
                       <button key={option.id} type="button" role="option" aria-selected={option.id === selectedServer} className={option.id === selectedServer ? "is-selected" : ""} onClick={() => handleServerChange(option.id)}>
                         <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
