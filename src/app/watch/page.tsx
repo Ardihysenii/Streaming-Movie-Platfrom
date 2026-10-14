@@ -227,7 +227,19 @@ export default function WatchPage() {
             {movie.vote_average > 0 ? <span className="watch-cinema-rating" aria-label={`Rating ${movie.vote_average.toFixed(1)} out of 10`}><span aria-hidden="true">★</span> {movie.vote_average.toFixed(1)}</span> : null}
           </div>
         </div>
-        <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
+        <div className="watch-cinema-actions">
+          <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
+          <button
+            className="watch-cinema-source-action"
+            type="button"
+            onClick={() => {
+              document.querySelector(".provider-player-shell")?.scrollIntoView({ behavior: "smooth", block: "center" });
+              window.dispatchEvent(new Event("nova:open-player-sources"));
+            }}
+          >
+            Change server
+          </button>
+        </div>
       </section>
 
       {detailsLoaded && isSeries && "seasons" in movie ? (
