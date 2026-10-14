@@ -16,6 +16,7 @@
 
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import {
   FullscreenIcon,
@@ -52,6 +53,7 @@ const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
 const PLAYER_SOURCE_OPTIONS = [
   { id: "cinesrc", label: "NightOwl" },
   { id: "vidstuck", label: "NightOwl Ads" },
+  { id: "vidsrc", label: "NightOwl Fastest Server" },
 ];
 const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
 
@@ -259,6 +261,7 @@ export default function CustomMoviePlayer({
   const [selectedSource, setSelectedSource] = useState("cinesrc");
   const [sourceResumeAt, setSourceResumeAt] = useState(resumeAt);
   const [sourceMenuOpen, setSourceMenuOpen] = useState(false);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
   const initialServer = getDefaultCineSrcServer(tmdbId, mediaType, seasonNumber, episodeNumber);
   const [selectedServer, setSelectedServer] = useState(initialServer);
   const [activeServer, setActiveServer] = useState(initialServer);
@@ -386,28 +389,33 @@ export default function CustomMoviePlayer({
 
 
 
-  // CineSrc remains the default source. VidStuck is available only through the
-  // manual source picker and never activates automatically.
+  // CineSrc remains the default. Alternate sources only activate when selected.
   const configuredProviderBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
   const isVidStuck = selectedSource === "vidstuck";
-  const providerBase = isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
-  const isCineSrc = !isVidStuck && /cinesrc\.st/i.test(providerBase);
+  const isVidSrc = selectedSource === "vidsrc";
+  const providerBase = isVidSrc ? "https://vidsrc.mov" : isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
+  const isCineSrc = !isVidStuck && !isVidSrc && /cinesrc\.st/i.test(providerBase);
 
   useEffect(() => {
     const openSourcePicker = () => {
-      if (isCineSrc) {
-        setSourceMenuOpen(false);
-        setServerMenuOpen(true);
-      } else {
-        setServerMenuOpen(false);
-        setSourceMenuOpen(true);
-      }
+      setSourcePickerOpen(true);
+      setSourceMenuOpen(false);
+      setServerMenuOpen(false);
       setSettingsOpen(false);
       setControlsVisible(true);
     };
-    window.addEventListener("nova:open-player-sources", openSourcePicker);
-    return () => window.removeEventListener("nova:open-player-sources", openSourcePicker);
-  }, [isCineSrc]);
+    window.addEventListener("nova:open-custom-source-picker", openSourcePicker);
+    return () => window.removeEventListener("nova:open-custom-source-picker", openSourcePicker);
+  }, []);
+
+  useEffect(() => {
+    if (!sourcePickerOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setSourcePickerOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [sourcePickerOpen]);
   const providerOrigin = useMemo(() => {
     try {
       return new URL(providerBase).origin;
@@ -1500,7 +1508,7 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow="autoplay; fullscreen; picture-in-picture"
         />
-        {!isCineSrc ? (
+        {!isCineSrc && !isVidSrc ? (
         <div className="player-source-control">
           <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}>
             <strong>{isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}</strong>
@@ -1734,6 +1742,43 @@ export default function CustomMoviePlayer({
             </div>
           </div>
         </div>
+      ) : null}
+      {sourcePickerOpen && typeof document !== "undefined" ? createPortal(
+        <div className="nightowl-source-picker-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSourcePickerOpen(false); }}>
+          <section className="nightowl-source-picker" role="dialog" aria-modal="true" aria-labelledby="nightowl-source-picker-title">
+            <header className="nightowl-source-picker-header">
+              <div><p className="eyebrow">NIGHTOWL</p><h2 id="nightowl-source-picker-title">Playback source</h2></div>
+              <button type="button" onClick={() => setSourcePickerOpen(false)} aria-label="Close source picker">×</button>
+            </header>
+            <div className="nightowl-source-picker-list" aria-label="Playback sources">
+              {PLAYER_SOURCE_OPTIONS.map((option) => (
+                <button key={option.id} type="button" className={option.id === selectedSource ? "is-selected" : ""} aria-pressed={option.id === selectedSource} onClick={() => handleSourceChange(option.id)}>
+                  <span>{option.label}</span>{option.id === selectedSource ? <small>Active</small> : null}
+                </button>
+              ))}
+            </div>
+            <div className="nightowl-source-picker-servers">
+              {isCineSrc ? (
+                <>
+                  <h3>NightOwl servers</h3>
+                  <div className="nightowl-source-picker-list" aria-label="NightOwl servers">
+                    {CINESRC_SERVER_OPTIONS.map((option) => (
+                      <button key={option.id} type="button" className={option.id === selectedServer ? "is-selected" : ""} aria-pressed={option.id === selectedServer} onClick={() => handleServerChange(option.id)}>
+                        <span>{option.label}</span>{option.id === activeServer ? <small>Active</small> : null}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3>{isVidSrc ? "NightOwl Fastest Server" : "NightOwl Ads"} servers</h3>
+                  <p>{isVidSrc ? "VidSrc selects and switches between available servers automatically." : "Server selection is automatic for this source."}</p>
+                </>
+              )}
+            </div>
+          </section>
+        </div>,
+        document.body,
       ) : null}
     </div>
   );
