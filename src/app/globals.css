@@ -12542,3 +12542,20 @@ body:has(.hero) .site-header .header-actions {
 .watch-page-cinema .watch-cinema-source-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media (max-width: 680px) { .watch-page-cinema .watch-cinema-actions { align-items: flex-start; } }
 @media (prefers-reduced-motion: reduce) { .watch-page-cinema .watch-cinema-source-action { transition: none; } }
+
+
+/* Standalone source/server chooser opened by the watch-page button. */
+.nightowl-source-picker-backdrop { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,.74); backdrop-filter: blur(8px); }
+.nightowl-source-picker { width: min(100%, 460px); max-height: min(82vh, 680px); overflow-y: auto; padding: 22px; border: 1px solid #ffffff20; border-radius: 14px; background: #111216; color: #f5f5f7; box-shadow: 0 24px 80px rgba(0,0,0,.65); }
+.nightowl-source-picker-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.nightowl-source-picker-header .eyebrow { margin: 0 0 6px; font-size: 10px; }
+.nightowl-source-picker-header h2 { margin: 0; font-size: 22px; }
+.nightowl-source-picker-header > button { border: 0; background: transparent; color: #ddd; font-size: 26px; cursor: pointer; }
+.nightowl-source-picker-list { display: grid; gap: 6px; }
+.nightowl-source-picker-list > button { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; padding: 10px 12px; border: 1px solid transparent; border-radius: 8px; background: #ffffff06; color: #dddde5; text-align: left; cursor: pointer; }
+.nightowl-source-picker-list > button:hover,.nightowl-source-picker-list > button.is-selected { border-color: #ff003c66; background: #ff003c16; color: #fff; }
+.nightowl-source-picker-list > button small { color: #ff416d; }
+.nightowl-source-picker-servers { margin-top: 20px; padding-top: 16px; border-top: 1px solid #ffffff18; }
+.nightowl-source-picker-servers h3 { margin: 0 0 10px; color: #a9a9b5; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.nightowl-source-picker-servers p { margin: 0; color: #c4c4ce; font-size: 13px; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .nightowl-source-picker-backdrop { backdrop-filter: none; } }
