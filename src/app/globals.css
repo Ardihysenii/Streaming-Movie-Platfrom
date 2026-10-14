@@ -12533,3 +12533,12 @@ body:has(.hero) .site-header .header-actions {
 .home-page .genre-rail .section-heading > div { display: flex; flex-direction: column; min-width: 0; }
 .home-page .content-section.genre-rail .section-heading h2 { order: 0; }
 .home-page .genre-rail .rail-tabs { order: 1; margin-top: 12px; max-width: 100%; }
+
+
+/* Outside playback server control beneath the title link. */
+.watch-page-cinema .watch-cinema-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 2px; }
+.watch-page-cinema .watch-cinema-source-action { border: 0; background: transparent; color: #b8b8c5; padding: 8px 0; font: inherit; font-size: 12px; cursor: pointer; transition: color .18s ease; }
+.watch-page-cinema .watch-cinema-source-action:hover { color: #fff; }
+.watch-page-cinema .watch-cinema-source-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 680px) { .watch-page-cinema .watch-cinema-actions { align-items: flex-start; } }
+@media (prefers-reduced-motion: reduce) { .watch-page-cinema .watch-cinema-source-action { transition: none; } }
