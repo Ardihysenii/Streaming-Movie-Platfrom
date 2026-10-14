@@ -51,9 +51,9 @@ const CINESRC_SERVER_OPTIONS = [
 
 const CINESRC_QUALITY_OPTIONS = ["auto", "1080", "720", "480"];
 const PLAYER_SOURCE_OPTIONS = [
-  { id: "cinesrc", label: "NightOwl" },
-  { id: "vidstuck", label: "NightOwl Ads" },
-  { id: "vidsrc", label: "NightOwl Fastest Server" },
+  { id: "cinesrc", label: "NightOwl 1" },
+  { id: "vidstuck", label: "NightOwl 2" },
+  { id: "vidsrc", label: "NightOwl 3" },
 ];
 const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
 
@@ -1510,12 +1510,12 @@ export default function CustomMoviePlayer({
         />
         {!isCineSrc && !isVidSrc ? (
         <div className="player-source-control">
-          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}>
-            <strong>{isVidStuck ? "Play with NightOwl" : "Play with NightOwl Ads"}</strong>
+          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}>
+            <strong>{isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}</strong>
           </button>
-          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "NightOwl Ads" : "NightOwl")}>
+          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "NightOwl 2" : "NightOwl 1")}>
             <span className="player-setting-label">Source</span>
-            <strong>{isVidStuck ? "NightOwl Ads" : "NightOwl"}</strong>
+            <strong>{isVidStuck ? "NightOwl 2" : "NightOwl 1"}</strong>
           </button>
           {sourceMenuOpen ? (
             <div className="player-source-menu" role="listbox" aria-label="Playback source">
@@ -1771,8 +1771,8 @@ export default function CustomMoviePlayer({
                 </>
               ) : (
                 <>
-                  <h3>{isVidSrc ? "NightOwl Fastest Server" : "NightOwl Ads"} servers</h3>
-                  <p>{isVidSrc ? "VidSrc selects and switches between available servers automatically." : "Server selection is automatic for this source."}</p>
+                  <h3>Server selection</h3>
+                  <p>{isVidSrc ? "Servers are selected automatically for this source." : "Server selection is automatic for this source."}</p>
                 </>
               )}
             </div>
