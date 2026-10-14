@@ -233,8 +233,7 @@ export default function WatchPage() {
             className="watch-cinema-source-action"
             type="button"
             onClick={() => {
-              document.querySelector(".provider-player-shell")?.scrollIntoView({ behavior: "smooth", block: "center" });
-              window.dispatchEvent(new Event("nova:open-player-sources"));
+              window.dispatchEvent(new Event("nova:open-custom-source-picker"));
             }}
           >
             Change server
