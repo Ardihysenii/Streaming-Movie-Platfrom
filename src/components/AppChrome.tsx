@@ -18,6 +18,7 @@ function HeaderContent() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
   const logoOnlyHeader = /^\/(actors|person|search|movie)(\/|$)/.test(pathname) || /^\/series\/details(\/|$)/.test(pathname);
+  const myListPage = pathname.startsWith("/wishlist");
   const { setSettingsOpen } = useNovaSettings();
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchHref, setSearchHref] = useState("/search/");
@@ -64,7 +65,7 @@ function HeaderContent() {
         <Link className="wordmark" href="/" aria-label="NIGHTOWL home">
           <img className="wordmark-image" src="/nightowl-logo.png" alt="NIGHTOWL" width={160} height={40} />
         </Link>
-        {!logoOnlyHeader ? (
+        {!logoOnlyHeader && !myListPage ? (
           <>
         <nav className="desktop-nav" aria-label="Main navigation">
           {navigation.map(({ href, label, key }) => {
