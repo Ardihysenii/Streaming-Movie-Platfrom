@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { BackIcon, BookmarkIcon, TrashIcon } from "@/components/Icons";
+import { BookmarkIcon, TrashIcon } from "@/components/Icons";
 import { MovieCard, movieKey } from "@/components/MovieCard";
 import { PageLoader } from "@/components/Loading";
 import { clearWishlist, readWishlist, removeWishlist } from "@/lib/storage";
@@ -25,30 +25,15 @@ export default function WishlistPage() {
     };
   }, [refresh]);
 
-  if (!items) return <PageLoader label="Loading wishlist" />;
+  if (!items) return <PageLoader label="Loading My List" />;
 
   return (
     <main className="history-page wishlist-page">
-      <div className="history-atmosphere wishlist-atmosphere" aria-hidden="true">
-        <span className="history-frame history-frame-one" />
-        <span className="history-frame history-frame-two" />
-        <span className="history-orbit history-orbit-one" />
-        <span className="history-orbit history-orbit-two" />
-        <span className="wishlist-beam wishlist-beam-one" />
-        <span className="wishlist-beam wishlist-beam-two" />
-        <span className="wishlist-ring wishlist-ring-one" />
-        <span className="wishlist-ring wishlist-ring-two" />
-        <span className="wishlist-particles" />
-      </div>
-
-      <Link className="back-link history-back" href="/">
-        <BackIcon /> Back to home
-      </Link>
 
       <header className="history-header">
         <div>
           <p className="eyebrow">Your watch queue</p>
-          <h1>Wishlist</h1>
+          <h1>My List</h1>
           <p>Save films, series, and anime you want to come back to.</p>
         </div>
         <button
@@ -65,11 +50,11 @@ export default function WishlistPage() {
       </header>
 
       {items.length ? (
-        <section className="history-content" aria-labelledby="wishlist-list-title">
+        <section className="history-content" aria-labelledby="my-list-title">
           <div className="history-list-heading">
             <div>
               <p className="eyebrow">Saved for later</p>
-              <h2 id="wishlist-list-title">Your picks</h2>
+              <h2 id="my-list-title">Your picks</h2>
             </div>
             <span>{items.length} {items.length === 1 ? "title" : "titles"}</span>
           </div>
@@ -78,7 +63,7 @@ export default function WishlistPage() {
               <MovieCard
                 movie={item}
                 onRemove={() => removeWishlist(item)}
-                removeActionLabel="Wishlist"
+                removeActionLabel="My List"
                 key={movieKey(item, index)}
               />
             ))}
@@ -87,8 +72,8 @@ export default function WishlistPage() {
       ) : (
         <section className="history-empty wishlist-empty" aria-live="polite">
           <BookmarkIcon />
-          <h2>Your wishlist is empty</h2>
-          <p>Use the bookmark on any title to save it here for later.</p>
+          <h2>Your list is empty</h2>
+          <p>Use the bookmark on any title to save it to My List.</p>
           <Link className="primary-button" href="/movies/">Browse titles</Link>
         </section>
       )}
