@@ -55,17 +55,18 @@ const PLAYER_SOURCE_OPTIONS = [
   { id: "vidstuck", label: "NightOwl 2" },
   { id: "vidsrc", label: "NightOwl 3" },
 ];
-const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (SubDL first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
+const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (OpenSubtitles first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
 
 function readSubtitleProviderPreference() {
-  if (typeof window === "undefined") return "auto";
+  if (typeof window === "undefined") return "opensubtitles";
   try {
     const value = window.localStorage.getItem("nova-subtitle-provider-v1");
-    return SUBTITLE_PROVIDER_OPTIONS.some(([id]) => id === value) ? value : "auto";
-  } catch { return "auto"; }
+    if (value === "auto") return "opensubtitles";
+    return SUBTITLE_PROVIDER_OPTIONS.some(([id]) => id === value) ? value : "opensubtitles";
+  } catch { return "opensubtitles"; }
 }
 function subtitleProviderLabel(value) {
-  return SUBTITLE_PROVIDER_OPTIONS.find(([id]) => id === value)?.[1] || "Auto (SubDL first)";
+  return SUBTITLE_PROVIDER_OPTIONS.find(([id]) => id === value)?.[1] || "OpenSubtitles";
 }
 const CINESRC_PREFERENCES_STORAGE_KEY = "nova-cinesrc-preferences-v1";
 
@@ -279,7 +280,7 @@ export default function CustomMoviePlayer({
   const [subtitleError, setSubtitleError] = useState("");
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleProvider, setSubtitleProvider] = useState(readSubtitleProviderPreference);
-  const [subtitleFontSize, setSubtitleFontSize] = useState(1.3);
+  const [subtitleFontSize, setSubtitleFontSize] = useState(1.5);
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
