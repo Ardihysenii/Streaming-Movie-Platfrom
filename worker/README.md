@@ -40,7 +40,7 @@ The upstream must return the same manifest shape and its media host must allow c
 
 ## Subtitle providers
 
-The Worker exposes GET /v1/subtitles and accepts provider=auto, provider=subdl, or provider=opensubtitles. Automatic mode tries SubDL first and falls back to OpenSubtitles when SubDL has no usable track or returns an error. The player keeps this choice in its existing subtitle settings and sends it as a request parameter.
+The Worker exposes GET /v1/subtitles and accepts provider=auto, provider=subdl, or provider=opensubtitles. Automatic mode tries OpenSubtitles first and falls back to SubDL when OpenSubtitles has no usable track or returns an error. The player defaults to OpenSubtitles; explicitly choosing SubDL remains supported.
 
 Configure these Worker secrets for the OpenSubtitles fallback:
 
