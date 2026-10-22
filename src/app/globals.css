@@ -2821,7 +2821,10 @@ body:has(.hero) .header-actions {
 }
 
 .wishlist-page .history-header h1 {
-  animation: wishlistTitlePulse 8s ease-in-out infinite;
+  animation: none;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05;
+  text-transform: none;
 }
 
 .history-back {
