@@ -12527,3 +12527,96 @@ body:has(.hero) .site-header .header-actions {
 .nightowl-source-picker-servers h3 { margin: 0 0 10px; color: #a9a9b5; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .nightowl-source-picker-servers p { margin: 0; color: #c4c4ce; font-size: 13px; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .nightowl-source-picker-backdrop { backdrop-filter: none; } }
+
+
+/* TV detail episodes: My List visual treatment; preserve existing card geometry. */
+.series-detail-page .episode-card {
+  background: transparent;
+  border-color: rgba(180, 180, 180, .5);
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(220, 220, 220, .9);
+  font-family: Montserrat, Outfit, Inter, system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  letter-spacing: normal;
+  position: relative;
+  text-transform: none;
+  transition: background .3s cubic-bezier(.4,0,.2,1), border-color .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1), color .3s cubic-bezier(.4,0,.2,1), transform .3s cubic-bezier(.4,0,.2,1);
+}
+
+.series-detail-page .episode-card::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+  content: "";
+  height: 100%;
+  left: -100%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: left .5s;
+  width: 100%;
+}
+
+.series-detail-page .episode-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.series-detail-page .episode-card:hover,
+.series-detail-page .episode-card:focus-visible {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.8);
+  box-shadow: none;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.series-detail-page .episode-card:hover::before,
+.series-detail-page .episode-card:focus-visible::before {
+  left: 100%;
+}
+
+.series-detail-page .episode-card:focus-visible {
+  outline: rgba(255,255,255,.12) solid 2px;
+  outline-offset: 2px;
+}
+
+.series-detail-page .episode-title-row > span,
+.series-detail-page .episode-title-row h3,
+.series-detail-page .episode-meta {
+  font-family: inherit;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+.series-detail-page .episode-title-row h3 {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .series-detail-page .episode-card,
+  .series-detail-page .episode-card::before,
+  .series-detail-page .episode-still img,
+  .series-detail-page .episode-play {
+    transition: none;
+  }
+  .series-detail-page .episode-card:hover,
+  .series-detail-page .episode-card:focus-visible,
+  .series-detail-page .episode-card:hover .episode-still img {
+    transform: none;
+  }
+  .series-detail-page .episode-card::before {
+    display: none;
+  }
+}
+
+:root[data-motion="reduced"] .series-detail-page .episode-card,
+:root[data-motion="reduced"] .series-detail-page .episode-card::before {
+  transition: none;
+}
+:root[data-motion="reduced"] .series-detail-page .episode-card:hover,
+:root[data-motion="reduced"] .series-detail-page .episode-card:focus-visible {
+  transform: none;
+}
+:root[data-motion="reduced"] .series-detail-page .episode-card::before {
+  display: none;
+}
