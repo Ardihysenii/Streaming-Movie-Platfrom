@@ -92,7 +92,7 @@ export async function readSubsource(request: Request, env: { SUBSOURCE_API_KEY?:
   if (!imdb && !title) throw new Error("SubSource requires an IMDb ID or title.");
   if (imdb && !/^tt\d+$/i.test(imdb)) throw new Error("Invalid IMDb identifier.");
   async function api(path: string, binary = false): Promise<Response> {
-    const response = await fetch(BASE + path, { headers: { "X-API-Key": key!, Accept: binary ? "application/zip" : "application/json" }, signal: AbortSignal.timeout(15000), redirect: "error" });
+    const response = await fetch(BASE + path, { headers: { "X-API-Key": key!, Accept: binary ? "application/zip" : "application/json" }, signal: AbortSignal.timeout(15000), redirect: "manual" });
     if (!response.ok) throw new Error(`SubSource request failed (${response.status}).`);
     return response;
   }
