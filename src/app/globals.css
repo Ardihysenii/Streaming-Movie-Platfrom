@@ -9431,33 +9431,7 @@ body:has(.watch-page) .bottom-dock {
 
 
 
-/* ShahFlix-matched resume playback treatment. */
-.detail-actions.has-resume > .primary-button {
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  background: #fff !important;
-  border: 1px solid #fff !important;
-  border-radius: 0;
-  box-shadow: none;
-  color: #000 !important;
-  font-size: 0.82rem;
-  font-weight: 400;
-  height: 36px;
-  letter-spacing: 0;
-  min-height: 36px;
-  min-width: 90px;
-  padding: 0 14px;
-  text-transform: none;
-}
-
-.detail-actions.has-resume > .primary-button:hover {
-  background: #fff !important;
-  border-color: #fff !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  color: #000 !important;
-  transform: translateY(-2px);
-}
-
+/* Resume uses the same shared button styling as Play. */
 .detail-resume-progress {
   animation: fadeInUp 0.8s ease forwards;
   display: flex;
@@ -9542,21 +9516,12 @@ body:has(.watch-page) .bottom-dock {
 
 
 
-/* Keep the larger Continue control and its resume bar on one desktop row. */
+/* Keep the shared playback control and its resume bar on one desktop row. */
 .detail-actions.has-resume {
   align-items: center;
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 12px;
-}
-
-.detail-actions.has-resume > .primary-button {
-  flex: 0 0 auto;
-  font-size: 0.88rem;
-  height: 46px;
-  min-height: 46px;
-  min-width: 120px;
-  padding: 0 20px;
 }
 
 .detail-actions.has-resume .detail-resume-progress {
