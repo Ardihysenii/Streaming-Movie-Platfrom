@@ -55,7 +55,7 @@ const PLAYER_SOURCE_OPTIONS = [
   { id: "vidstuck", label: "NightOwl 2" },
   { id: "vidsrc", label: "NightOwl 3" },
 ];
-const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (OpenSubtitles first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"]];
+const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (OpenSubtitles first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"], ["subsource", "SubSource"]];
 
 function readSubtitleProviderPreference() {
   if (typeof window === "undefined") return "opensubtitles";
