@@ -40,9 +40,9 @@ The upstream must return the same manifest shape and its media host must allow c
 
 ## Subtitle providers
 
-The Worker exposes GET /v1/subtitles and accepts provider=auto, provider=subdl, or provider=opensubtitles. Automatic mode tries OpenSubtitles first and falls back to SubDL when OpenSubtitles has no usable track or returns an error. The player defaults to OpenSubtitles; explicitly choosing SubDL remains supported.
+The Worker exposes GET /v1/subtitles and accepts provider=auto, provider=subdl, provider=opensubtitles, or provider=subsource. Automatic mode tries OpenSubtitles first and falls back to SubDL, then SubSource, when earlier providers have no usable track or return an error. The player defaults to OpenSubtitles; explicitly choosing SubDL remains supported.
 
-Configure these Worker secrets for the OpenSubtitles fallback:
+Configure these Worker secrets for OpenSubtitles:
 
 - OPEN_SUBTITLES_API_KEY
 - OPEN_SUBTITLES_USERNAME
@@ -50,3 +50,17 @@ Configure these Worker secrets for the OpenSubtitles fallback:
 - optional OPEN_SUBTITLES_USER_AGENT
 
 The OpenSubtitles credentials are used only server-side. The Worker logs in and caches a short-lived session token, searches by TMDB/IMDb and TV season/episode, downloads SRT, and converts it to the same WebVTT response consumed by NOVA.
+
+## SubSource (third subtitle provider)
+
+Create a key from https://subsource.net/api-docs and store it only as a Worker secret:
+
+```bash
+npx wrangler secret put SUBSOURCE_API_KEY
+```
+
+Never put real keys in the repository or frontend. SubSource uses the existing provider and language controls; it does not change the OpenSubtitles default or existing saved choices. The adapter maps language codes to provider language names, searches by IMDb (or validated title/year), downloads ZIP archives and returns WebVTT. TV season packs are matched to the requested episode by filename; an ambiguous pack is rejected rather than guessed. Downloads and extraction are bounded. Search pagination is capped at three pages and at most three candidate ZIP downloads per request.
+
+The `/health` response reports `subtitleProviders.subsource` without exposing secrets. Explicit `provider=subsource` uses only SubSource; `provider=auto` tries OpenSubtitles → SubDL → SubSource.
+
+Run `npm ci`, `npm test` and `npm run typecheck` in `worker/`, then deploy the Worker with `npm run deploy`. The frontend also needs its normal build/deployment to show the new provider button. Adding source code alone does not activate the live Worker. Live searches require a configured key and title/language availability. Preserve subtitle translator credits; API access is not a blanket redistribution licence.

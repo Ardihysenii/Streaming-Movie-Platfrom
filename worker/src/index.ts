@@ -1,3 +1,5 @@
+import { readSubsource } from "./subsource";
+
 interface KVNamespace {
   get<T = unknown>(key: string, type: "json"): Promise<T | null>;
 }
@@ -39,6 +41,7 @@ interface Env {
   SUBDL_API_KEY?: string;
   SUBDL_API_KEY_2?: string;
   SUBDL_API_KEY_3?: string;
+  SUBSOURCE_API_KEY?: string;
   OPEN_SUBTITLES_API_KEY?: string;
   OPEN_SUBTITLES_USERNAME?: string;
   OPEN_SUBTITLES_PASSWORD?: string;
@@ -239,7 +242,23 @@ async function readSubdl(request:Request,env:Env){
   for(const apiKey of keys){endpoint.searchParams.set("api_key",apiKey);const searchResponse=await fetch(endpoint,{headers:{Accept:"application/json"}});if(!searchResponse.ok){if(quota.has(searchResponse.status))continue;throw new Error("SubDL search failed ("+searchResponse.status+").");}const payload=await searchResponse.json() as {subtitles?:Array<Record<string,unknown>>;status?:boolean;message?:string};const msg=String(payload.message||"").toLowerCase();if(payload.status===false&&/(limit|quota|credit|rate)/i.test(msg))continue;const candidates=(payload.subtitles||[]).flatMap(sub=>{const unpack=Array.isArray(sub.unpack_files)?sub.unpack_files:[];return(unpack.length?unpack:[sub]).map(file=>({...sub,...file as Record<string,unknown>}));});const selected=candidates.find(x=>{const lang=String(x.language||x.lang||"").toUpperCase().replace(/[-_].*$/,""),s=Number(x.season||0),e=Number(x.episode||0);return lang===language&&(type==="movie"||((!s||s===season)&&(!e||e===episode)));});const url=subtitleDownloadUrl(selected?.url);if(!url)throw new Error("No SubDL track is available.");let file=await fetch(url);if(!file.ok)file=await fetch(url,{headers:{"x-api-key":apiKey}});if(!file.ok){if(quota.has(file.status))continue;throw new Error("SubDL download failed ("+file.status+").");}const text=await file.text();if(/\.ass\b|\.ssa\b|\[Script Info\]/i.test(String(selected?.format||"")+text.slice(0,300)))throw new Error("SubDL returned an unsupported subtitle format.");return new Response(toWebVtt(text),{headers:{"Cache-Control":"public, max-age=300","Content-Type":"text/vtt; charset=utf-8","X-Subtitle-Source":"subdl","Access-Control-Expose-Headers":"X-Subtitle-Source"}});}
   throw new Error("All configured SubDL API keys are exhausted.");
 }
-async function readSubtitle(request:Request,env:Env){const selected=(new URL(request.url).searchParams.get("provider")||"auto").trim().toLowerCase();const providers=selected==="subdl"?["subdl"]:selected==="opensubtitles"?["opensubtitles"]:["opensubtitles","subdl"];const errors:string[]=[];for(const provider of providers){try{return provider==="opensubtitles"?await readOpenSubtitles(request,env):await readSubdl(request,env);}catch(error){errors.push(error instanceof Error?error.message:provider+" subtitle provider failed.");}}throw new Error(errors.join(" "));}
+async function readSubtitle(request: Request, env: Env) {
+  const selected = (new URL(request.url).searchParams.get("provider") || "auto").trim().toLowerCase();
+  const readers = {
+    opensubtitles: () => readOpenSubtitles(request, env),
+    subdl: () => readSubdl(request, env),
+    subsource: () => readSubsource(request, env, toWebVtt),
+  };
+  type Provider = keyof typeof readers;
+  if (selected !== "auto" && !(selected in readers)) throw new Error("Unknown subtitle provider.");
+  const providers: Provider[] = selected === "auto" ? ["opensubtitles", "subdl", "subsource"] : [selected as Provider];
+  const errors: string[] = [];
+  for (const provider of providers) {
+    try { return await readers[provider](); }
+    catch (error) { errors.push(error instanceof Error ? error.message : provider + " subtitle provider failed."); }
+  }
+  throw new Error(errors.join(" "));
+}
 
 
 export default {
@@ -252,7 +271,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === "/health") {
-      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.OPEN_SUBTITLES_API_KEY), subtitleProviders: { subdl: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.SUBDL_API_KEY_3), opensubtitles: Boolean(env.OPEN_SUBTITLES_API_KEY && env.OPEN_SUBTITLES_USERNAME && env.OPEN_SUBTITLES_PASSWORD) } }, 200, origin);
+      return json({ status: "UP", catalog: Boolean(env.STREAM_CATALOG), upstream: Boolean(env.SOURCE_API_BASE_URL), subtitles: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.SUBDL_API_KEY_3 || env.OPEN_SUBTITLES_API_KEY || env.SUBSOURCE_API_KEY), subtitleProviders: { subsource: Boolean(env.SUBSOURCE_API_KEY?.trim()), subdl: Boolean(env.SUBDL_API_KEY || env.SUBDL_API_KEY_2 || env.SUBDL_API_KEY_3), opensubtitles: Boolean(env.OPEN_SUBTITLES_API_KEY && env.OPEN_SUBTITLES_USERNAME && env.OPEN_SUBTITLES_PASSWORD) } }, 200, origin);
     }
 
 
