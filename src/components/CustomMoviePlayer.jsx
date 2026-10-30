@@ -1522,26 +1522,6 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow={isVidy ? "encrypted-media; autoplay *; fullscreen *; picture-in-picture" : "autoplay; fullscreen; picture-in-picture"}
         />
-        {!isCineSrc && !isVidSrc ? (
-        <div className="player-source-control">
-          <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}>
-            <strong>{isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}</strong>
-          </button>
-          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidy ? "NightOwl 4" : isVidStuck ? "NightOwl 2" : "NightOwl 1")}>
-            <span className="player-setting-label">Source</span>
-            <strong>{isVidy ? "NightOwl 4" : isVidStuck ? "NightOwl 2" : "NightOwl 1"}</strong>
-          </button>
-          {sourceMenuOpen ? (
-            <div className="player-source-menu" role="listbox" aria-label="Playback source">
-              {PLAYER_SOURCE_OPTIONS.map((option) => (
-                <button key={option.id} type="button" role="option" aria-selected={option.id === selectedSource} className={option.id === selectedSource ? "is-selected" : ""} onClick={() => handleSourceChange(option.id)}>
-                  <span>{option.label}</span>{option.id === selectedSource ? <small>Active</small> : null}
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-        ) : null}
         {isCineSrc && (!isReady || !introFinished) ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
