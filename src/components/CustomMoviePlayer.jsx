@@ -709,6 +709,16 @@ export default function CustomMoviePlayer({
 
 
 
+  // Experimental only: Vidy does not document an incoming command API.
+  // Keep native controls available; sending this message does not confirm playback changed.
+  const sendVidyTestCommand = useCallback((command) => {
+    if (!isVidy || !iframeRef.current?.contentWindow || !providerOrigin) return;
+    iframeRef.current.contentWindow.postMessage(
+      { type: "PLAYER_COMMAND", data: { command } },
+      providerOrigin,
+    );
+  }, [isVidy, providerOrigin]);
+
   const sendCommand = useCallback((command, args = []) => {
     if (!isCineSrc || !providerOrigin || !iframeRef.current?.contentWindow) return;
     iframeRef.current.contentWindow.postMessage(
@@ -1522,6 +1532,21 @@ export default function CustomMoviePlayer({
         allowFullScreen
           allow={isVidy ? "encrypted-media; autoplay *; fullscreen *; picture-in-picture" : "autoplay; fullscreen; picture-in-picture"}
         />
+        {isVidy ? (
+          <div
+            className="player-control-row vidy-experimental-playback-controls"
+            role="group"
+            aria-label="Experimental NightOwl play and pause controls"
+            style={{ position: "absolute", bottom: 96, left: 20, zIndex: 50, width: "auto", padding: "6px 10px", borderRadius: 8, background: "rgba(0,0,0,.75)", pointerEvents: "auto" }}
+          >
+            <button type="button" onClick={() => sendVidyTestCommand("play")} aria-label="Play (experimental Vidy control)" title="Test NightOwl Play — Vidy support unverified">
+              <NightowlReferenceIcon name="Play" />
+            </button>
+            <button type="button" onClick={() => sendVidyTestCommand("pause")} aria-label="Pause (experimental Vidy control)" title="Test NightOwl Pause — Vidy support unverified">
+              <NightowlReferenceIcon name="Pause" />
+            </button>
+          </div>
+        ) : null}
         {isCineSrc && (!isReady || !introFinished) ? (
           <div className="nova-source-loading montana-player-intro" role="status" aria-live="polite">
             <div className="montana-player-intro-sheen" aria-hidden="true" />
