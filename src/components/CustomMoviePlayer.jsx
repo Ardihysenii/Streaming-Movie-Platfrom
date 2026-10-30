@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import "./PlayerSettings.css";
 import { useSearchParams } from "next/navigation";
 import {
   FullscreenIcon,
@@ -271,6 +272,7 @@ export default function CustomMoviePlayer({
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsView, setSettingsView] = useState("root");
+  const settingsPanelRef = useRef(null);
   const [soundBoost, setSoundBoost] = useState(100);
   const [videoFit, setVideoFit] = useState("fit");
   const [brightness, setBrightness] = useState(100);
@@ -419,6 +421,37 @@ export default function CustomMoviePlayer({
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [sourcePickerOpen]);
+  useEffect(() => {
+    if (!settingsOpen) return undefined;
+    const previousFocus = document.activeElement;
+    const panel = settingsPanelRef.current;
+    setControlsVisible(true);
+    if (controlsTimerRef.current !== null) window.clearTimeout(controlsTimerRef.current);
+    panel?.focus({ preventScroll: true });
+    const resizePanel = () => panel?.style.setProperty("--settings-available-height", Math.max(120, (playerRef.current?.clientHeight || window.innerHeight) - 116) + "px");
+    resizePanel();
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resizePanel) : null;
+    if (playerRef.current) observer?.observe(playerRef.current);
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setSettingsOpen(false);
+      }
+    };
+    const onPointerDown = (event) => {
+      if (!panel?.contains(event.target) && !event.target.closest?.(".player-settings-control")) setSettingsOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+      observer?.disconnect();
+      if (panel?.contains(document.activeElement) && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [settingsOpen]);
+
   const providerOrigin = useMemo(() => {
     try {
       return new URL(providerBase).origin;
@@ -1657,58 +1690,49 @@ export default function CustomMoviePlayer({
                   <NightowlReferenceIcon name="Settings" />
                 </button>
                 {settingsOpen ? (
-                  <div className={"player-settings-panel" + (["subtitles", "subtitle-customize"].includes(settingsView) ? " player-settings-panel-subtitles" : "")} role="dialog" aria-label="Player settings">
-                    <div className="player-settings-header">
-                      {settingsView !== "root" ? <button type="button" onClick={() => setSettingsView("root")} aria-label="Back to settings">‹</button> : <span />}
-                      <strong>{settingsView === "root" ? "Settings" : settingsView === "audio" ? "Audio" : settingsView === "quality" ? "Quality" : settingsView === "subtitles" ? "Subtitles" : settingsView === "speed" ? "Playback speed" : settingsView === "subtitle-customize" ? "Customize subtitles" : "Playback settings"}</strong>
-                      <button type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">×</button>
+                  <div ref={settingsPanelRef} className="player-settings-panel nightowl-settings" role="dialog" aria-label="Player settings" tabIndex={-1}>
+                    <header className="nightowl-settings-header">
+                      <div><span className="nightowl-settings-eyebrow">MAKE IT YOURS</span><h2>Player settings</h2></div>
+                      <button type="button" className="nightowl-settings-close" onClick={() => setSettingsOpen(false)} aria-label="Close settings">×</button>
+                    </header>
+                    <nav className="nightowl-settings-nav" aria-label="Settings sections">
+                      {[["root", "Playback"], ["subtitles", "Subtitles"], ["subtitle-customize", "Appearance"]].map(([view, label]) => (
+                        <button key={view} type="button" aria-pressed={view === "root" ? !["subtitles", "subtitle-customize"].includes(settingsView) : settingsView === view} onClick={() => setSettingsView(view)}>{label}</button>
+                      ))}
+                    </nav>
+                    <div className="nightowl-settings-content">
+                    {!["subtitles", "subtitle-customize"].includes(settingsView) ? (
+                      <div className="nightowl-settings-section">
+                        <div className="nightowl-settings-intro"><h3>Playback</h3><p>Your picture, sound, and speed.</p></div>
+                        <label className="nightowl-settings-field"><span>Video quality</span><select value={quality} onChange={(event) => handleQualityChange(event.target.value)}>{CINESRC_QUALITY_OPTIONS.map((option) => <option key={option} value={option}>{cineSrcQualityLabel(option)}</option>)}</select>{reportedQuality ? <small>Currently playing at {reportedQuality}</small> : <small>Auto adapts to your connection.</small>}</label>
+                        <label className="nightowl-settings-field"><span>Playback speed</span><select value={playbackRate} onChange={(event) => { const rate = Number(event.target.value); setPlaybackRate(rate); sendCommand("setPlaybackRate", [rate]); }}>{[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => <option key={rate} value={rate}>{rate === 1 ? "Normal · 1×" : rate + "×"}</option>)}</select></label>
+                        <div className="nightowl-settings-info"><span>Audio track</span><strong>Original</strong><small>Available tracks depend on the selected server.</small></div>
+                        <div className="nightowl-settings-field"><span>Picture fit</span><div className="nightowl-settings-segments">{["fit", "fill", "stretch"].map((fit) => <button key={fit} type="button" aria-pressed={videoFit === fit} onClick={() => setVideoFit(fit)}>{fit[0].toUpperCase() + fit.slice(1)}</button>)}</div></div>
+                        <label className="nightowl-settings-range"><span>Brightness</span><output>{brightness}%</output><input type="range" min="40" max="160" step="1" value={brightness} onChange={(event) => setBrightness(Number(event.target.value))} /></label>
+                        <label className="nightowl-settings-range"><span>Sound boost</span><output>{soundBoost}%</output><input type="range" min="100" max="300" step="10" value={soundBoost} onChange={(event) => { const next = Number(event.target.value); setSoundBoost(next); sendCommand("setVolume", [Math.min(1, volume * (next / 100))]); }} /></label>
+                      </div>
+                    ) : settingsView === "subtitles" ? (
+                      <div className="nightowl-settings-section">
+                        <div className="nightowl-settings-toggle-row"><div><h3>Subtitles</h3><p>Choose what you want to read.</p></div><button type="button" className="nightowl-settings-switch" role="switch" aria-checked={subtitlesEnabled} aria-label="Enable subtitles" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span /></button></div>
+                        <div className={"nightowl-settings-status is-" + (subtitlesEnabled ? subtitleStatus : "idle")} role="status"><span className="nightowl-settings-status-dot" /><span>{!subtitlesEnabled ? "Subtitles are off" : subtitleStatus === "loading" ? "Finding your subtitle track…" : subtitleStatus === "error" ? subtitleError || "Track unavailable. Try another provider." : subtitleStatus === "ready" ? "Ready · " + (subtitleLanguageOptions.find(([value]) => value === subtitleLanguage)?.[1] || subtitleLanguage.toUpperCase()) : "Choose a language and provider to find a track."}</span></div>
+                        <label className="nightowl-settings-field"><span>Language</span><select value={subtitleLanguage} onChange={(event) => setSubtitleLanguage(event.target.value)}>{subtitleLanguageOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                        <label className="nightowl-settings-field"><span>Subtitle provider</span><select value={subtitleProvider} onChange={(event) => setSubtitleProvider(event.target.value)}>{SUBTITLE_PROVIDER_OPTIONS.filter(([value]) => value !== "auto").map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><small>If a track is missing or out of sync, try another provider.</small></label>
+                        <small>Use Appearance to adjust the font and subtitle timing.</small>
+                      </div>
+                    ) : (
+                      <div className="nightowl-settings-section">
+                        <div className="nightowl-settings-intro"><h3>Subtitle appearance</h3><p>Comfortable to read. Easy to fine-tune.</p></div>
+                        <div className="nightowl-settings-preview" aria-label="Subtitle style preview"><span style={{ fontFamily: subtitleFontFamily, fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem" }}>Every story starts here.</span><small>STYLE PREVIEW</small></div>
+                        <label className="nightowl-settings-field"><span>Font</span><select value={subtitleFontFamily} onChange={(event) => setSubtitleFontFamily(event.target.value)}>{subtitleFontFamilyOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                        <div className="nightowl-settings-toggle-row"><div><strong>Larger captions</strong><p>Increase the size for easier reading.</p></div><button type="button" className="nightowl-settings-switch" role="switch" aria-checked={subtitleLarge} aria-label="Larger captions" onClick={() => setSubtitleLarge((large) => !large)}><span /></button></div>
+                        <label className="nightowl-settings-range"><span>Font size</span><output>{subtitleFontSize.toFixed(1)}×</output><input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
+                        <label className="nightowl-settings-range"><span>Position</span><output>{subtitlePosition}%</output><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
+                        <div className="nightowl-settings-field"><span>Subtitle timing</span><div className="nightowl-settings-stepper"><button type="button" aria-label="Show subtitles 0.5 seconds earlier" disabled={subtitleOffset >= 25} onClick={() => setSubtitleOffset((value) => Math.min(25, Number((value + 0.5).toFixed(1))))}>Earlier</button><output aria-live="polite">{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</output><button type="button" aria-label="Show subtitles 0.5 seconds later" disabled={subtitleOffset <= -25} onClick={() => setSubtitleOffset((value) => Math.max(-25, Number((value - 0.5).toFixed(1))))}>Later</button></div><small>Adjust in 0.5s steps. Positive: earlier. Negative: later.</small></div>
+                        <button type="button" className="nightowl-settings-reset" onClick={() => { setSubtitleFontFamily("Verdana, sans-serif"); setSubtitleFontSize(1.5); setSubtitleLarge(true); setSubtitlePosition(8); setSubtitleOffset(0); }}>Reset subtitle appearance & timing</button>
+                      </div>
+                    )}
                     </div>
-                    {settingsView === "root" ? (
-                      <div className="player-settings-body">
-                        <div className="player-settings-card">
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("quality")}><span>Quality</span><span>{reportedQuality ? `${reportedQuality} actual` : cineSrcQualityLabel(quality)}<b>›</b></span></button>
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("subtitles")}><span>Subtitles</span><span>{subtitlesEnabled ? subtitleProviderLabel(subtitleProvider) : "Off"}<b>›</b></span></button>
-                          <div className="player-settings-row is-disabled"><span>Audio</span><span>Original</span></div>
-                          <button type="button" className="player-settings-row" onClick={() => setSettingsView("speed")}><span>Playback speed</span><span>{playbackRate}x<b>›</b></span></button>
-                        </div>
-                        <button type="button" className="player-settings-row player-settings-card player-settings-single" onClick={() => setSettingsView("playback")}><span>Playback settings</span><b>›</b></button>
-                      </div>
-                    ) : null}
-                    {settingsView === "audio" ? (<div className="player-settings-body"><div className="player-settings-option is-selected"><span>Original audio</span><b>✓</b></div><p className="player-settings-caption">Audio tracks are supplied by the selected NightOwl server.</p></div>) : null}
-                    {settingsView === "quality" ? (
-                      <div className="player-settings-body player-settings-list">{CINESRC_QUALITY_OPTIONS.map((option) => <button key={option} type="button" className={"player-settings-option" + (option === quality ? " is-selected" : "")} onClick={() => handleQualityChange(option)}><span>{cineSrcQualityLabel(option)}</span>{option === quality ? <b>✓</b> : null}</button>)}</div>
-                    ) : null}
-                    {settingsView === "subtitles" ? (
-                      <div className="player-settings-body player-settings-subtitles">
-                        <button type="button" className="player-settings-toggle" onClick={() => setSubtitlesEnabled((enabled) => !enabled)}><span>Subtitles</span><strong>{subtitlesEnabled ? "On" : "Off"}</strong></button>
-                        <p className="player-settings-caption">{subtitleStatus === "loading" ? "Loading subtitles…" : subtitleStatus === "error" ? subtitleError : subtitleStatus === "ready" ? (subtitleProvider === "auto" ? "" : subtitleProviderLabel(subtitleProvider) + " • ") + subtitleLanguage.toUpperCase() + " subtitle track" : "No subtitle track is available for this title."}</p>
-                        <span className="player-settings-label-block">Subtitle provider</span>
-                        <div className="player-settings-language-grid">{SUBTITLE_PROVIDER_OPTIONS.filter(([value]) => value !== "auto").map(([value, label]) => <button key={value} type="button" className={value === subtitleProvider ? "is-selected" : ""} onClick={() => setSubtitleProvider(value)}>{label}</button>)}</div>
-                        <span className="player-settings-label-block">Language</span>
-                        <div className="nightowl-subtitle-track-list">{subtitleLanguageOptions.map(([value, label]) => <button key={value} type="button" className={value === subtitleLanguage ? "is-selected" : ""} onClick={() => setSubtitleLanguage(value)}><span>{label}</span>{value === subtitleLanguage ? <b>✓</b> : null}</button>)}</div>
-                        <button type="button" className="player-settings-action" onClick={() => setSettingsView("subtitle-customize")}>Style &amp; delay <b>›</b></button>
-                      </div>
-                    ) : null}
-                    {settingsView === "subtitle-customize" ? (
-                      <div className="player-settings-body player-settings-subtitles">
-                        <button className={"player-settings-toggle" + (subtitleLarge ? " is-selected" : "")} type="button" onClick={() => setSubtitleLarge((large) => !large)}><span>Watch Closer</span><strong>{subtitleLarge ? "On" : "Off"}</strong></button>
-                        <span className="player-settings-label-block">Font family</span>
-                        <div className="player-settings-language-grid">{subtitleFontFamilyOptions.map(([value, label]) => <button key={value} type="button" style={{ fontFamily: value }} className={value === subtitleFontFamily ? "is-selected" : ""} onClick={() => setSubtitleFontFamily(value)}>{label}</button>)}</div>
-                        <label className="player-settings-slider-row">Font size <span>{subtitleFontSize.toFixed(1)}x</span><input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
-                        <label className="player-settings-slider-row">Position <span>{subtitlePosition}%</span><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
-                        <label className="player-settings-slider-row">Sync <span>{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</span><input type="range" min="-25" max="25" step="0.5" value={subtitleOffset} onChange={(event) => setSubtitleOffset(Number(event.target.value))} /></label>
-                      </div>
-                    ) : null}
-                    {settingsView === "speed" ? (
-                      <div className="player-settings-body player-settings-list">{[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => <button key={rate} type="button" className={"player-settings-option" + (rate === playbackRate ? " is-selected" : "")} onClick={() => { setPlaybackRate(rate); sendCommand("setPlaybackRate", [rate]); setSettingsView("root"); }}><span>{rate}x</span>{rate === playbackRate ? <b>✓</b> : null}</button>)}</div>
-                    ) : null}
-                    {settingsView === "playback" ? (
-                      <div className="player-settings-body player-settings-playback">
-                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Sound Booster</span><strong>{soundBoost}%</strong></div><input type="range" min="100" max="300" step="10" value={soundBoost} onChange={(event) => { const next = Number(event.target.value); setSoundBoost(next); sendCommand("setVolume", [Math.min(1, volume * (next / 100))]); }} /><div className="player-settings-range-labels"><span>100%</span><span>300%</span></div></div>
-                        <div className="player-settings-feature"><div className="player-settings-feature-title"><span>Video fit</span><strong>{videoFit[0].toUpperCase() + videoFit.slice(1)}</strong></div><div className="player-settings-fit-grid">{["fit", "fill", "stretch"].map((fit) => <button key={fit} type="button" className={videoFit === fit ? "is-selected" : ""} onClick={() => setVideoFit(fit)}>{fit[0].toUpperCase() + fit.slice(1)}</button>)}</div></div>
-                        <label className="player-settings-slider-row">Brightness <span>{brightness}%</span><input type="range" min="40" max="160" step="1" value={brightness} onChange={(event) => setBrightness(Number(event.target.value))} /></label>
-                      </div>
-                    ) : null}
+                    <footer className="nightowl-settings-footer"><span>Changes apply immediately</span><button type="button" onClick={() => setSettingsOpen(false)}>Done</button></footer>
                   </div>
                 ) : null}
               </div>
