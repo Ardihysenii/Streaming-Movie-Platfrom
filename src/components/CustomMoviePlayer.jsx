@@ -54,6 +54,7 @@ const PLAYER_SOURCE_OPTIONS = [
   { id: "cinesrc", label: "NightOwl 1" },
   { id: "vidstuck", label: "NightOwl 2" },
   { id: "vidsrc", label: "NightOwl 3" },
+  { id: "vidy", label: "NightOwl 4" },
 ];
 const SUBTITLE_PROVIDER_OPTIONS = [["auto", "Auto (OpenSubtitles first)"], ["subdl", "SubDL"], ["opensubtitles", "OpenSubtitles"], ["subsource", "SubSource"]];
 
@@ -394,8 +395,9 @@ export default function CustomMoviePlayer({
   const configuredProviderBase = (process.env.NEXT_PUBLIC_VIDEO_PROVIDER_URL || "https://cinesrc.st").replace(/\/+$/, "");
   const isVidStuck = selectedSource === "vidstuck";
   const isVidSrc = selectedSource === "vidsrc";
-  const providerBase = isVidSrc ? "https://vidsrc.mov" : isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
-  const isCineSrc = !isVidStuck && !isVidSrc && /cinesrc\.st/i.test(providerBase);
+  const isVidy = selectedSource === "vidy";
+  const providerBase = isVidy ? "https://www.vidy.st" : isVidSrc ? "https://vidsrc.mov" : isVidStuck ? "https://vidstuck.xyz" : configuredProviderBase;
+  const isCineSrc = !isVidStuck && !isVidSrc && !isVidy && /cinesrc\.st/i.test(providerBase);
 
   useEffect(() => {
     const openSourcePicker = () => {
@@ -458,6 +460,17 @@ export default function CustomMoviePlayer({
   const embedUrl = useMemo(() => {
     if (!activeId || !cineSrcPreferencesReady) return "";
     const cleanId = String(activeId);
+    if (isVidy) {
+      const vidyPath = mediaType === "tv"
+        ? `/tv/${encodeURIComponent(cleanId)}/${seasonNumber ?? 1}/${episodeNumber ?? 1}`
+        : `/movie/${encodeURIComponent(cleanId)}`;
+      const vidyParams = new URLSearchParams({
+        color: "ff003c",
+        autoplay: settings.autoplayPlayer ? "true" : "false",
+      });
+      if (sourceResumeAt > 0) vidyParams.set("progress", String(Math.max(0, Math.floor(sourceResumeAt))));
+      return `${providerBase}${vidyPath}?${vidyParams.toString()}`;
+    }
     const path = mediaType === "tv"
       ? isCineSrc
         ? `/embed/tv/${encodeURIComponent(cleanId)}`
@@ -498,7 +511,7 @@ export default function CustomMoviePlayer({
     }
     const query = params.toString();
     return `${providerBase}${path}${query ? `?${query}` : ""}`;
-  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, isVidStuck, mediaType, providerBase, quality, seasonNumber, selectedServer, selectedSource, settings.autoplayPlayer, sourceResumeAt, subtitleLanguage]);
+  }, [activeId, cineSrcPreferencesReady, episodeNumber, isCineSrc, isVidStuck, isVidy, mediaType, providerBase, quality, seasonNumber, selectedServer, selectedSource, settings.autoplayPlayer, sourceResumeAt, subtitleLanguage]);
 
 
 
@@ -1417,7 +1430,7 @@ export default function CustomMoviePlayer({
       setSourceMenuOpen(false);
       return;
     }
-    const nextResumeAt = nextSource === "vidstuck"
+    const nextResumeAt = nextSource === "vidstuck" || nextSource === "vidy"
       ? Math.max(0, Number(currentTimeRef.current || currentTime) || 0)
       : Math.max(0, Number(resumeAt) || 0);
     setSourceResumeAt(nextResumeAt);
@@ -1507,16 +1520,16 @@ export default function CustomMoviePlayer({
         style={{ filter: "brightness(" + (brightness / 100) + ")" }}
         title="NIGHTOWL video player"
         allowFullScreen
-          allow="autoplay; fullscreen; picture-in-picture"
+          allow={isVidy ? "encrypted-media; autoplay *; fullscreen *; picture-in-picture" : "autoplay; fullscreen; picture-in-picture"}
         />
         {!isCineSrc && !isVidSrc ? (
         <div className="player-source-control">
           <button type="button" className="player-source-button" style={{ display: "flex", marginBottom: 8, justifyContent: "center", width: "100%" }} onClick={() => handleSourceChange(isVidStuck ? "cinesrc" : "vidstuck")} aria-label={isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}>
             <strong>{isVidStuck ? "Play with NightOwl 1" : "Play with NightOwl 2"}</strong>
           </button>
-          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidStuck ? "NightOwl 2" : "NightOwl 1")}>
+          <button type="button" className="player-source-button" onClick={() => setSourceMenuOpen((open) => !open)} aria-haspopup="listbox" aria-expanded={sourceMenuOpen} aria-label={"Source " + (isVidy ? "NightOwl 4" : isVidStuck ? "NightOwl 2" : "NightOwl 1")}>
             <span className="player-setting-label">Source</span>
-            <strong>{isVidStuck ? "NightOwl 2" : "NightOwl 1"}</strong>
+            <strong>{isVidy ? "NightOwl 4" : isVidStuck ? "NightOwl 2" : "NightOwl 1"}</strong>
           </button>
           {sourceMenuOpen ? (
             <div className="player-source-menu" role="listbox" aria-label="Playback source">
@@ -1538,7 +1551,7 @@ export default function CustomMoviePlayer({
             </div>
           </div>
         ) : null}
-      {activeSubtitle ? (
+      {!isVidy && activeSubtitle ? (
         <div className="custom-subtitle-overlay" aria-live="polite" style={{ fontFamily: subtitleFontFamily, fontSize: (subtitleFontSize * (subtitleLarge ? 1.35 : 1)) + "rem", bottom: `${subtitlePosition}%` }}>
           {activeSubtitle.text}
         </div>
