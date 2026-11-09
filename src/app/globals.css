@@ -12527,3 +12527,31 @@ body:has(.hero) .site-header .header-actions {
 .nightowl-source-picker-servers h3 { margin: 0 0 10px; color: #a9a9b5; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .nightowl-source-picker-servers p { margin: 0; color: #c4c4ce; font-size: 13px; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .nightowl-source-picker-backdrop { backdrop-filter: none; } }
+
+/* Phone detail actions: prevent the shared 140px flex basis becoming button height. */
+@media (max-width: 680px) {
+  .detail-page .detail-actions,
+  .detail-page .detail-actions.has-resume {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .detail-page .detail-actions .detail-play-button,
+  .detail-page .detail-actions .detail-my-list-button {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    min-height: 44px;
+    height: auto;
+    min-width: 0;
+  }
+
+  .detail-page .detail-actions .detail-resume-progress {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    margin-top: 8px;
+  }
+}
