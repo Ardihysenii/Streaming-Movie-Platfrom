@@ -328,6 +328,79 @@ export default function CustomMoviePlayer({
     mobileFullscreenRef.current = next;
     setMobileFullscreen(next);
   };
+  // Pin the mobile player to Safari's visible viewport until explicitly minimized.
+  useEffect(() => {
+    if (!mobileFullscreen) return undefined;
+    const player = playerRef.current;
+    const shell = player?.closest(".player-shell");
+    if (!player || !shell) return undefined;
+
+    const savedStyles = [];
+    const remember = (element, properties) => {
+      properties.forEach((property) => savedStyles.push({
+        element,
+        property,
+        value: element.style.getPropertyValue(property),
+        priority: element.style.getPropertyPriority(property),
+      }));
+    };
+    const root = document.documentElement;
+    const body = document.body;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    remember(root, ["overflow", "overscroll-behavior"]);
+    remember(body, ["position", "top", "left", "width", "height", "overflow", "overscroll-behavior"]);
+    remember(shell, ["position", "inset", "top", "left", "right", "bottom", "width", "height", "max-height", "aspect-ratio", "z-index", "overscroll-behavior"]);
+    remember(player, ["position", "inset", "width", "height", "overscroll-behavior"]);
+
+    root.style.setProperty("overflow", "hidden");
+    root.style.setProperty("overscroll-behavior", "none");
+    Object.assign(body.style, {
+      position: "fixed", top: -scrollY + "px", left: -scrollX + "px",
+      width: "100%", height: "100%", overflow: "hidden", overscrollBehavior: "none",
+    });
+    Object.assign(shell.style, {
+      position: "fixed", inset: "auto", right: "auto", bottom: "auto",
+      maxHeight: "none", aspectRatio: "auto", zIndex: "1000", overscrollBehavior: "none",
+    });
+    Object.assign(player.style, {
+      position: "absolute", inset: "0", width: "100%", height: "100%", overscrollBehavior: "none",
+    });
+
+    const viewport = window.visualViewport;
+    const syncViewport = () => {
+      shell.style.top = (viewport?.offsetTop ?? 0) + "px";
+      shell.style.left = (viewport?.offsetLeft ?? 0) + "px";
+      shell.style.width = (viewport?.width ?? window.innerWidth) + "px";
+      shell.style.height = (viewport?.height ?? window.innerHeight) + "px";
+    };
+    const preventPageDrag = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      // Preserve scrubbing, sliders, and scrolling inside the player's menus.
+      if (target?.closest('input, select, textarea, .player-settings-panel, .player-server-menu')) return;
+      if (event.cancelable) event.preventDefault();
+    };
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    window.addEventListener("orientationchange", syncViewport);
+    viewport?.addEventListener("resize", syncViewport);
+    viewport?.addEventListener("scroll", syncViewport);
+    shell.addEventListener("touchmove", preventPageDrag, { passive: false });
+
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+      window.removeEventListener("orientationchange", syncViewport);
+      viewport?.removeEventListener("resize", syncViewport);
+      viewport?.removeEventListener("scroll", syncViewport);
+      shell.removeEventListener("touchmove", preventPageDrag);
+      savedStyles.forEach(({ element, property, value, priority }) => {
+        if (value) element.style.setProperty(property, value, priority);
+        else element.style.removeProperty(property);
+      });
+      window.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+    };
+  }, [mobileFullscreen]);
+
   const [centerFeedback, setCenterFeedback] = useState(null);
   const [seekFeedback, setSeekFeedback] = useState(null);
   const searchParams = useSearchParams();
