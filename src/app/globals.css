@@ -12566,3 +12566,10 @@ body:has(.hero) .site-header .header-actions {
     margin: auto 0;
   }
 }
+
+/* Hide the left-side paused title information on phones, including landscape. */
+@media (max-width: 680px), (max-width: 1024px) and (hover: none) and (pointer: coarse) {
+  .custom-movie-player .player-paused-info {
+    display: none;
+  }
+}
