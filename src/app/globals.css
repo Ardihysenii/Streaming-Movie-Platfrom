@@ -12555,3 +12555,14 @@ body:has(.hero) .site-header .header-actions {
     margin-top: 8px;
   }
 }
+
+/* Keep CineSrc's viewport landscape-shaped in portrait mobile fullscreen,
+   preventing its provider-owned rotation dialog without changing our controls. */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .custom-movie-player.custom-movie-player-cinesrc.is-mobile-fullscreen .provider-player-frame {
+    height: 56.25vw;
+    max-height: 100%;
+    inset: 0;
+    margin: auto 0;
+  }
+}
