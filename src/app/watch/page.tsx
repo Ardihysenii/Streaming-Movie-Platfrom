@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import "./WatchSurround.css";
 import CustomMoviePlayer from "@/components/CustomMoviePlayer";
 import { BackIcon } from "@/components/Icons";
 import { EpisodeBrowser } from "@/components/EpisodeBrowser";
@@ -11,6 +12,100 @@ import { PageLoader } from "@/components/Loading";
 import { getSavedProgress, saveWatchProgress } from "@/lib/storage";
 import { getMovie, getSeries } from "@/lib/tmdb";
 import type { Movie, MovieDetails, SeriesDetails } from "@/lib/types";
+
+type AmbientPalette = { primary: string; secondary: string };
+const AMBIENT_FALLBACK: AmbientPalette = { primary: "76, 96, 142", secondary: "135, 80, 62" };
+
+// Only 1,024 pixels are read once per title, never from a video or iframe.
+function paletteFromPixels(pixels: Uint8ClampedArray): AmbientPalette | null {
+  const buckets = new Map<number, { r: number; g: number; b: number; weight: number; count: number }>();
+  for (let i = 0; i < pixels.length; i += 4) {
+    const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    if (pixels[i + 3] < 128 || max < 32 || min > 220) continue;
+    const key = (r >> 5) * 64 + (g >> 5) * 8 + (b >> 5);
+    const weight = 0.4 + (max - min) / 255;
+    const bucket = buckets.get(key) || { r: 0, g: 0, b: 0, weight: 0, count: 0 };
+    bucket.r += r; bucket.g += g; bucket.b += b;
+    bucket.weight += weight; bucket.count++;
+    buckets.set(key, bucket);
+  }
+  const colors = [...buckets.values()].sort((a, b) => b.weight - a.weight)
+    .map((color) => [color.r / color.count, color.g / color.count, color.b / color.count]);
+  if (!colors.length) return null;
+  const first = colors[0];
+  const second = colors.find((color) => color.reduce((sum, value, i) => sum + (value - first[i]) ** 2, 0) > 6400) || first;
+  const rgb = (color: number[]) => color.map((value) => Math.round(value)).join(", ");
+  return { primary: rgb(first), secondary: rgb(second) };
+}
+
+function WatchAmbient({ backdropPath }: { backdropPath: string | null }) {
+  const [palette, setPalette] = useState(AMBIENT_FALLBACK);
+  const [moving, setMoving] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 900px) and (prefers-reduced-motion: no-preference)");
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const lowPower = navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2;
+    const updateMotion = () => setMoving(query.matches && !document.hidden && !saveData && !lowPower);
+    updateMotion();
+    query.addEventListener("change", updateMotion);
+    document.addEventListener("visibilitychange", updateMotion);
+    return () => {
+      query.removeEventListener("change", updateMotion);
+      document.removeEventListener("visibilitychange", updateMotion);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!backdropPath || !/^\/[a-zA-Z0-9._-]+$/.test(backdropPath)) return;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (saveData) return;
+    let cancelled = false;
+    let image: HTMLImageElement | null = null;
+    const loadPalette = () => {
+      if (cancelled) return;
+      image = new window.Image();
+      image.crossOrigin = "anonymous";
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.onload = () => {
+        if (cancelled || !image) return;
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = 32; canvas.height = 32;
+          const context = canvas.getContext("2d", { willReadFrequently: true });
+          if (!context) return;
+          context.drawImage(image, 0, 0, 32, 32);
+          const next = paletteFromPixels(context.getImageData(0, 0, 32, 32).data);
+          if (next && !cancelled) setPalette(next);
+        } catch {
+          // A missing image or denied canvas read keeps the static fallback.
+        }
+      };
+      image.onerror = () => undefined;
+      image.src = "https://image.tmdb.org/t/p/w300" + backdropPath;
+    };
+    let idle: number | undefined;
+    let timer: number | undefined;
+    if (typeof window.requestIdleCallback === "function") idle = window.requestIdleCallback(loadPalette, { timeout: 2000 });
+    else timer = window.setTimeout(loadPalette, 0);
+    return () => {
+      cancelled = true;
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      if (timer !== undefined) window.clearTimeout(timer);
+      if (image) { image.onload = null; image.onerror = null; image.removeAttribute("src"); }
+    };
+  }, [backdropPath]);
+
+  return (
+    <div className={"watch-ambient-lights" + (moving ? " is-moving" : "")} aria-hidden="true"
+      style={{ "--ambient-primary": palette.primary, "--ambient-secondary": palette.secondary } as CSSProperties}>
+      <div className="watch-ambient-light watch-ambient-light-primary" />
+      <div className="watch-ambient-light watch-ambient-light-secondary" />
+    </div>
+  );
+}
 
 export default function WatchPage() {
   const searchParams = useSearchParams();
@@ -177,12 +272,8 @@ export default function WatchPage() {
     : "";
 
   return (
-    <main className="watch-page watch-page-cinema">
-      {movie.backdrop_path ? (
-        <div className="watch-cinema-ambient" aria-hidden="true">
-          <Image src={"https://image.tmdb.org/t/p/w1280" + movie.backdrop_path} alt="" fill sizes="100vw" />
-        </div>
-      ) : null}
+    <main className="watch-page watch-page-cinema watch-page-immersive">
+      <WatchAmbient key={movie.backdrop_path || "ambient-default"} backdropPath={movie.backdrop_path ?? null} />
       <header className="watch-header watch-cinema-header">
         <Link className="back-link watch-cinema-back" href={detailsHref} aria-label="Back to details" title="Back to details">
           <BackIcon />
@@ -226,6 +317,7 @@ export default function WatchPage() {
             {episodeLabel ? <span className="watch-cinema-episode">{episodeLabel}</span> : null}
             {movie.vote_average > 0 ? <span className="watch-cinema-rating" aria-label={`Rating ${movie.vote_average.toFixed(1)} out of 10`}><span aria-hidden="true">★</span> {movie.vote_average.toFixed(1)}</span> : null}
           </div>
+          {movie.overview ? <p className="watch-cinema-overview">{movie.overview}</p> : null}
         </div>
         <div className="watch-cinema-actions">
           <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
