@@ -5,10 +5,11 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching, readLastWatched } from "@/lib/storage";
-import { discoverAnime, discoverSeries, getComingSoon, getHomeData, getNetflixSeries, isReleased } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getComingSoon, getHomeData, getMovie, getSeries, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
 
 import { selectWeeklyFeatured } from "@/lib/homeFeatured";
+import { famousPicksForWeek, isFamousFeatured } from "@/lib/famousFeatured";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
 
@@ -57,6 +58,7 @@ function releasedHomePool(data: HomeData) {
 export default function HomePage() {
   const [dailyDate, setDailyDate] = useState(() => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
   const [data, setData] = useState<HomeData | null>(null);
+  const [famousFeatured, setFamousFeatured] = useState<{ key: string; items: HomeData["trending"] }>({ key: "", items: [] });
   const [comingSoon, setComingSoon] = useState<HomeData["trending"]>([]);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
   const [lastWatched, setLastWatched] = useState<ContinueWatchingItem | null>(null);
@@ -136,6 +138,33 @@ export default function HomePage() {
     };
   }, [dailyDate, refreshContinue]);
 
+  useEffect(() => {
+    if (homeFilter === "anime") return;
+    const controller = new AbortController();
+    const key = dailyDate + ":" + homeFilter;
+    const picks = famousPicksForWeek(dailyDate, homeFilter === "movies" ? "movie" : homeFilter === "series" ? "tv" : undefined);
+    const load = async () => {
+      const items: HomeData["trending"] = [];
+      // Fetch only this week's selection; failed titles are replaced only by
+      // another famous pick, never by an arbitrary catalog entry.
+      for (let offset = 0; offset < picks.length && items.length < 10; offset += 4) {
+        if (controller.signal.aborted) return;
+        const batch = await Promise.allSettled(picks.slice(offset, offset + 4).map((pick) => (
+          pick.type === "tv" ? getSeries(pick.imdbId, controller.signal) : getMovie(pick.imdbId, controller.signal)
+        )));
+        for (const result of batch) {
+          if (result.status !== "fulfilled") continue;
+          const item = result.value;
+          if (isFamousFeatured(item) && isReleased(item) && !item.adult && !item.genre_ids.includes(16)
+            && item.backdrop_path && item.poster_path) items.push(item);
+        }
+      }
+      if (!controller.signal.aborted) setFamousFeatured({ key, items: items.slice(0, 10) });
+    };
+    void load();
+    return () => controller.abort();
+  }, [dailyDate, homeFilter]);
+
   if (!data) return <PageLoader label="Preparing tonight's selection" />;
 
   const isFilteredHome = homeFilter !== "all";
@@ -203,7 +232,9 @@ export default function HomePage() {
   // Animation stays in its browsing catalog, never in the hero or Top 10.
   // Both featured sections share the same fresh weekly selection and lead.
   const featuredMovies = homeFilter === "anime" ? [] : selectWeeklyFeatured(
-    filterForHome(releasedHomeItems, homeFilter),
+    filterForHome(famousFeatured.key === dailyDate + ":" + homeFilter && famousFeatured.items.length
+      ? famousFeatured.items
+      : releasedHomeItems, homeFilter),
     dailyDate,
   );
   const topTenMovies = featuredMovies;
