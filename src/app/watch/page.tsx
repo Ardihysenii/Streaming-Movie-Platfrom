@@ -1,108 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import "./WatchSurround.css";
+import "./WatchReference.css";
 import CustomMoviePlayer from "@/components/CustomMoviePlayer";
 import { BackIcon } from "@/components/Icons";
 import { EpisodeBrowser } from "@/components/EpisodeBrowser";
 import { PageLoader } from "@/components/Loading";
 import { getSavedProgress, saveWatchProgress } from "@/lib/storage";
-import { getMovie, getSeries } from "@/lib/tmdb";
+import { getMovie, getSeries, imageUrl } from "@/lib/tmdb";
 import type { Movie, MovieDetails, SeriesDetails } from "@/lib/types";
 
-type AmbientPalette = { primary: string; secondary: string };
-const AMBIENT_FALLBACK: AmbientPalette = { primary: "76, 96, 142", secondary: "135, 80, 62" };
-
-// Only 1,024 pixels are read once per title, never from a video or iframe.
-function paletteFromPixels(pixels: Uint8ClampedArray): AmbientPalette | null {
-  const buckets = new Map<number, { r: number; g: number; b: number; weight: number; count: number }>();
-  for (let i = 0; i < pixels.length; i += 4) {
-    const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    if (pixels[i + 3] < 128 || max < 32 || min > 220) continue;
-    const key = (r >> 5) * 64 + (g >> 5) * 8 + (b >> 5);
-    const weight = 0.4 + (max - min) / 255;
-    const bucket = buckets.get(key) || { r: 0, g: 0, b: 0, weight: 0, count: 0 };
-    bucket.r += r; bucket.g += g; bucket.b += b;
-    bucket.weight += weight; bucket.count++;
-    buckets.set(key, bucket);
-  }
-  const colors = [...buckets.values()].sort((a, b) => b.weight - a.weight)
-    .map((color) => [color.r / color.count, color.g / color.count, color.b / color.count]);
-  if (!colors.length) return null;
-  const first = colors[0];
-  const second = colors.find((color) => color.reduce((sum, value, i) => sum + (value - first[i]) ** 2, 0) > 6400) || first;
-  const rgb = (color: number[]) => color.map((value) => Math.round(value)).join(", ");
-  return { primary: rgb(first), secondary: rgb(second) };
-}
-
+// Decorative title artwork only; never samples or overlays the video/iframe.
 function WatchAmbient({ backdropPath }: { backdropPath: string | null }) {
-  const [palette, setPalette] = useState(AMBIENT_FALLBACK);
-  const [moving, setMoving] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 900px) and (prefers-reduced-motion: no-preference)");
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    const lowPower = navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2;
-    const updateMotion = () => setMoving(query.matches && !document.hidden && !saveData && !lowPower);
-    updateMotion();
-    query.addEventListener("change", updateMotion);
-    document.addEventListener("visibilitychange", updateMotion);
-    return () => {
-      query.removeEventListener("change", updateMotion);
-      document.removeEventListener("visibilitychange", updateMotion);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!backdropPath || !/^\/[a-zA-Z0-9._-]+$/.test(backdropPath)) return;
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (saveData) return;
-    let cancelled = false;
-    let image: HTMLImageElement | null = null;
-    const loadPalette = () => {
-      if (cancelled) return;
-      image = new window.Image();
-      image.crossOrigin = "anonymous";
-      image.decoding = "async";
-      image.fetchPriority = "low";
-      image.onload = () => {
-        if (cancelled || !image) return;
-        try {
-          const canvas = document.createElement("canvas");
-          canvas.width = 32; canvas.height = 32;
-          const context = canvas.getContext("2d", { willReadFrequently: true });
-          if (!context) return;
-          context.drawImage(image, 0, 0, 32, 32);
-          const next = paletteFromPixels(context.getImageData(0, 0, 32, 32).data);
-          if (next && !cancelled) setPalette(next);
-        } catch {
-          // A missing image or denied canvas read keeps the static fallback.
-        }
-      };
-      image.onerror = () => undefined;
-      image.src = "https://image.tmdb.org/t/p/w300" + backdropPath;
-    };
-    let idle: number | undefined;
-    let timer: number | undefined;
-    if (typeof window.requestIdleCallback === "function") idle = window.requestIdleCallback(loadPalette, { timeout: 2000 });
-    else timer = window.setTimeout(loadPalette, 0);
-    return () => {
-      cancelled = true;
-      if (idle !== undefined) window.cancelIdleCallback(idle);
-      if (timer !== undefined) window.clearTimeout(timer);
-      if (image) { image.onload = null; image.onerror = null; image.removeAttribute("src"); }
-    };
-  }, [backdropPath]);
-
   return (
-    <div className={"watch-ambient-lights" + (moving ? " is-moving" : "")} aria-hidden="true"
-      style={{ "--ambient-primary": palette.primary, "--ambient-secondary": palette.secondary } as CSSProperties}>
-      <div className="watch-ambient-light watch-ambient-light-primary" />
-      <div className="watch-ambient-light watch-ambient-light-secondary" />
+    <div className="watch-film-backdrop" aria-hidden="true">
+      {backdropPath ? (
+        <Image src={imageUrl(backdropPath, "w1280")} alt="" fill sizes="100vw" priority />
+      ) : null}
     </div>
   );
 }
@@ -271,9 +189,12 @@ export default function WatchPage() {
     ? [Math.floor(runtimeMinutes / 60) ? `${Math.floor(runtimeMinutes / 60)}h` : "", runtimeMinutes % 60 ? `${runtimeMinutes % 60}m` : ""].filter(Boolean).join(" ")
     : "";
 
+  const credits = "directors" in movie ? movie.directors : movie.creators;
+  const creditsLabel = "directors" in movie ? "Director" : "Creator";
+
   return (
-    <main className="watch-page watch-page-cinema watch-page-immersive">
-      <WatchAmbient key={movie.backdrop_path || "ambient-default"} backdropPath={movie.backdrop_path ?? null} />
+    <main className="watch-page watch-page-cinema watch-page-immersive watch-page-reference">
+      <WatchAmbient key={movie.backdrop_path || "ambient-default"} backdropPath={movie.backdrop_path ?? movie.poster_path ?? null} />
       <header className="watch-header watch-cinema-header">
         <Link className="back-link watch-cinema-back" href={detailsHref} aria-label="Back to details" title="Back to details">
           <BackIcon />
@@ -306,30 +227,47 @@ export default function WatchPage() {
         />
       </section>
 
-      <section className="watch-cinema-info" aria-label="Now watching">
+      <section className="watch-cinema-info watch-film-info" aria-label="Now watching">
+        <div className="watch-film-poster">
+          <Image src={imageUrl(movie.poster_path, "w342")} alt={movie.title + " poster"} fill sizes="(max-width: 680px) 64px, 84px" />
+        </div>
         <div className="watch-cinema-title-group">
-          <p className="watch-cinema-kicker"><span aria-hidden="true" />Now watching</p>
-          <h1>{movie.title}</h1>
+          <div className="watch-film-title-line">
+            <h1>{movie.title}</h1>
+            {releaseYear ? <span className="watch-film-year">{releaseYear}</span> : null}
+          </div>
           <div className="watch-cinema-facts">
             <span className="watch-cinema-type">{isSeries ? "Series" : "Film"}</span>
-            {releaseYear ? <span>{releaseYear}</span> : null}
             {runtimeLabel ? <span>{runtimeLabel}</span> : null}
             {episodeLabel ? <span className="watch-cinema-episode">{episodeLabel}</span> : null}
             {movie.vote_average > 0 ? <span className="watch-cinema-rating" aria-label={`Rating ${movie.vote_average.toFixed(1)} out of 10`}><span aria-hidden="true">★</span> {movie.vote_average.toFixed(1)}</span> : null}
           </div>
           {movie.overview ? <p className="watch-cinema-overview">{movie.overview}</p> : null}
         </div>
-        <div className="watch-cinema-actions">
-          <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
-          <button
-            className="watch-cinema-source-action"
-            type="button"
-            onClick={() => {
-              window.dispatchEvent(new Event("nova:open-custom-source-picker"));
-            }}
-          >
-            Change server
-          </button>
+        <div className="watch-film-sidebar">
+          {movie.genres.length ? (
+            <ul className="watch-film-genres" aria-label="Genres">
+              {movie.genres.slice(0, 4).map((genre) => <li key={genre.id}>{genre.name}</li>)}
+            </ul>
+          ) : null}
+          {movie.cast.length || credits.length ? (
+            <dl className="watch-film-credits">
+              {movie.cast.length ? <div><dt>Starring</dt><dd>{movie.cast.slice(0, 5).map((person) => person.name).join(", ")}</dd></div> : null}
+              {credits.length ? <div><dt>{creditsLabel}</dt><dd>{credits.map((person) => person.name).join(", ")}</dd></div> : null}
+            </dl>
+          ) : null}
+          <div className="watch-cinema-actions">
+            <Link className="watch-cinema-details" href={detailsHref}>About this title <span aria-hidden="true">↗</span></Link>
+            <button
+              className="watch-cinema-source-action"
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new Event("nova:open-custom-source-picker"));
+              }}
+            >
+              Change server
+            </button>
+          </div>
         </div>
       </section>
 
