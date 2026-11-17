@@ -8,6 +8,8 @@ import { LoadingSpinner } from "./Loading";
 import { getSeasonDetails, imageUrl } from "@/lib/tmdb";
 import { readContinueWatching } from "@/lib/storage";
 import type { SeasonDetails, SeriesDetails } from "@/lib/types";
+import { getNextEpisode } from "@/lib/nextEpisode";
+import styles from "./EpisodeBrowser.module.css";
 
 export function EpisodeBrowser({
   series,
@@ -75,6 +77,11 @@ export function EpisodeBrowser({
       || `episode ${episode.episode_number}`.includes(cleanQuery)
     ));
   }, [query, season]);
+
+  const nextEpisode = useMemo(
+    () => getNextEpisode(series, continueItems),
+    [series, continueItems],
+  );
 
   const currentSeason = series.seasons.find((item) => item.season_number === seasonNumber);
 
@@ -158,13 +165,18 @@ export function EpisodeBrowser({
         <div className="episode-list" tabIndex={0} aria-label={`Season ${seasonNumber} episodes`}>
           {episodes.map((episode) => {
             const episodeProgress = progressForEpisode(episode);
+            const isNextEpisode = nextEpisode?.seasonNumber === episode.season_number
+              && nextEpisode.episodeNumber === episode.episode_number
+              && Boolean(episode.air_date)
+              && episode.air_date <= new Date().toISOString().slice(0, 10);
             return (
               <Link
-                className="episode-card"
+                className={`episode-card${isNextEpisode ? ` ${styles.nextEpisode}` : ""}`}
                 href={`/watch/?id=${encodeURIComponent(String(series.tmdb_id ?? series.id))}&imdbId=${encodeURIComponent(String(series.id))}&type=tv&season=${episode.season_number}&episode=${episode.episode_number}`}
                 key={episode.id}
               >
                 <div className="episode-copy">
+                  {isNextEpisode ? <span className={styles.badge}>Next episode</span> : null}
                   <div className="episode-title-row">
                     <span>{episode.episode_number}.</span>
                     <h3>{episode.name}</h3>
