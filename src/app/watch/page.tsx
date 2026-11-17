@@ -62,6 +62,7 @@ export default function WatchPage() {
   const [episodeNumber, setEpisodeNumber] = useState<number | undefined>();
   const [resumeAt, setResumeAt] = useState(0);
   const [continueItem, setContinueItem] = useState<Movie | null>(null);
+  const watchPageRef = useRef<HTMLElement>(null);
   const latestProgressRef = useRef(0);
   const lastSavedProgressRef = useRef(0);
 
@@ -150,6 +151,31 @@ export default function WatchPage() {
     };
   }, [continueItem]);
 
+  // Reserve the actual info-panel height before sizing the desktop frame.
+  // This observes page layout only, never the video, iframe, or controls.
+  useEffect(() => {
+    const page = watchPageRef.current;
+    const header = page?.querySelector<HTMLElement>(".watch-cinema-header");
+    const info = page?.querySelector<HTMLElement>(".watch-film-info");
+    if (!page || !header || !info) return;
+    const measure = () => {
+      const headerStyle = window.getComputedStyle(header);
+      const pageStyle = window.getComputedStyle(page);
+      page.style.setProperty("--watch-header-height", Math.ceil(header.getBoundingClientRect().height + (parseFloat(headerStyle.marginBottom) || 0)) + "px");
+      page.style.setProperty("--watch-info-height", Math.ceil(info.getBoundingClientRect().height) + "px");
+      page.style.setProperty("--watch-page-spacing", ((parseFloat(pageStyle.paddingTop) || 0) + 22) + "px");
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    observer.observe(info);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [movie, missingId]);
+
   const handleProgress = (currentTime: number, duration: number) => {
     if (!continueItem || !Number.isFinite(currentTime) || currentTime <= 0) return;
     latestProgressRef.current = currentTime;
@@ -193,7 +219,7 @@ export default function WatchPage() {
   const creditsLabel = "directors" in movie ? "Director" : "Creator";
 
   return (
-    <main className="watch-page watch-page-cinema watch-page-immersive watch-page-reference">
+    <main ref={watchPageRef} className="watch-page watch-page-cinema watch-page-immersive watch-page-reference">
       <WatchAmbient key={movie.backdrop_path || "ambient-default"} backdropPath={movie.backdrop_path ?? movie.poster_path ?? null} />
       <header className="watch-header watch-cinema-header">
         <Link className="back-link watch-cinema-back" href={detailsHref} aria-label="Back to details" title="Back to details">
