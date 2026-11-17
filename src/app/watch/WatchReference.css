@@ -1,0 +1,119 @@
+/* Watch Page presentation only. No iframe, video, subtitle, or player-control rules. */
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference {
+  --watch-frame-width: 1180px;
+  padding-top: 22px;
+  background: #0a0a0c;
+}
+.watch-page-reference .watch-film-backdrop {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(1200px, 100%);
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  background: radial-gradient(ellipse at 50% 18%, #343437, #0a0a0c 80%);
+  mask-image: linear-gradient(#000 0%, #000 60%, transparent 100%);
+}
+.watch-page-reference .watch-film-backdrop img {
+  object-fit: cover;
+  object-position: center 30%;
+  filter: blur(44px) saturate(.8) brightness(.82);
+  transform: scale(1.12);
+  opacity: .85;
+}
+.watch-page-reference .watch-film-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #08090c24, #08090c30 40%, #08090c 100%);
+}
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-header,
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info,
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-episodes {
+  width: min(100%, var(--watch-frame-width));
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+/* Size only the normal outer frame. Native and mobile fullscreen remain untouched. */
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference > .player-shell:not(:fullscreen):not(:has(:fullscreen)):not(:has(.is-mobile-fullscreen)) {
+  width: min(100%, var(--watch-frame-width));
+  margin-inline: auto;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 0 0 1px #ffffff12, 0 20px 60px #00000030;
+}
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) minmax(240px, .58fr);
+  align-items: start;
+  gap: 24px;
+  padding: 25px;
+  border: 1px solid #ffffff12;
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(115deg, #ffffff0b, #ffffff02), #101014a8;
+  box-shadow: 0 24px 65px #00000026;
+  backdrop-filter: blur(20px);
+}
+.watch-page-reference .watch-film-poster {
+  position: relative;
+  width: 84px;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #ffffff0a;
+  box-shadow: 0 5px 20px #00000040;
+}
+.watch-page-reference .watch-film-poster img { object-fit: cover; }
+.watch-page-reference .watch-film-title-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info h1 {
+  font-size: clamp(19px, 1.8vw, 26px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  text-transform: uppercase;
+}
+.watch-page-reference .watch-film-year { color: #e1dfdc99; font-size: 12px; font-weight: 600; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-facts { margin-top: 9px; gap: 8px 12px; font-size: 11px; color: #d4d1d0b3; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-type { font-size: 9px; padding: 2px 6px; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-overview {
+  display: block;
+  max-width: none;
+  margin: 12px 0 0;
+  color: #e4e1debd;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow: visible;
+}
+.watch-page-reference .watch-film-sidebar { min-width: 0; }
+.watch-page-reference .watch-film-genres { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 14px; list-style: none; }
+.watch-page-reference .watch-film-genres li { padding: 5px 9px; border: 1px solid #ffffff18; border-radius: 99px; background: #ffffff0c; color: #e5e1df; font-size: 9px; font-weight: 600; line-height: 1.2; letter-spacing: .025em; text-transform: uppercase; }
+.watch-page-reference .watch-film-genres li:first-child { border-color: rgba(var(--accent-rgb), .28); background: rgba(var(--accent-rgb), .15); color: #fff0f3; }
+.watch-page-reference .watch-film-credits { display: grid; gap: 10px; margin: 0; color: #dfdcd9b8; font-size: 11px; line-height: 1.6; }
+.watch-page-reference .watch-film-credits div { min-width: 0; }
+.watch-page-reference .watch-film-credits dt { display: inline; margin-right: 5px; color: #d2ccc38c; font-size: 9px; font-weight: 650; text-transform: uppercase; letter-spacing: .05em; }
+.watch-page-reference .watch-film-credits dt::after { content: ":"; }
+.watch-page-reference .watch-film-credits dd { display: inline; margin: 0; overflow-wrap: anywhere; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-actions { justify-content: flex-start; gap: 4px 16px; margin-top: 12px; max-width: none; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-details,
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-source-action { min-height: 32px; padding: 4px 0; border-color: transparent; background: transparent; color: #d7d2d0b3; font-size: 10px; }
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-details:hover,
+.watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-source-action:hover { color: #fff; background: transparent; border-color: transparent; }
+@media (max-width: 899px) {
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info { grid-template-columns: 72px minmax(0, 1fr); padding: 22px; gap: 18px; }
+  .watch-page-reference .watch-film-poster { width: 72px; }
+  .watch-page-reference .watch-film-sidebar { grid-column: 2; }
+  .watch-page-reference .watch-film-backdrop img { filter: blur(30px) saturate(.8) brightness(.75); }
+}
+@media (max-width: 680px) {
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference { padding: 14px 12px 36px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info { grid-template-columns: 64px minmax(0, 1fr); gap: 16px; padding: 18px 14px; }
+  .watch-page-reference .watch-film-poster { width: 64px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info h1 { font-size: 18px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-overview { font-size: 11px; line-height: 1.65; }
+  .watch-page-reference .watch-film-sidebar { grid-column: 1 / -1; }
+  .watch-page-reference .watch-film-genres { margin-bottom: 12px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info { backdrop-filter: none; background: #171719; }
+}
