@@ -127,3 +127,57 @@
     max-height: none;
   }
 }
+
+/* Phone controls only: keep the existing handlers, icons and desktop UI. */
+@media (max-width: 767px), (max-width: 1024px) and (hover: none) and (pointer: coarse) {
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .custom-provider-controls {
+    min-height: 0;
+    padding: 8px 8px 6px;
+    box-sizing: border-box;
+  }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-progress-row { gap: 0; margin: 0 4px 2px; width: calc(100% - 8px); }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-progress-row .player-progress { height: 24px; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-time-progress { margin: -2px 0 0; font-size: 10px; line-height: 12px; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-row { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; gap: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-row > button,
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-volume-control > button,
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-settings-button,
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-server-button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 10px; transform: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-row > button:nth-child(-n+3) { display: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-volume-control { flex: 0 0 44px; gap: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-volume { display: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-row svg,
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-volume-control > button svg { width: 22px; height: 22px; transform: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-spacer { flex: 1 1 0; min-width: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-center-play { display: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center { display: flex; top: 36%; gap: clamp(20px, 8vw, 36px); }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button { display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center svg { width: 28px; height: 28px; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button:nth-child(2) svg { width: 36px; height: 36px; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-paused-topline { inset-inline: 64px; top: 10px; padding-top: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-paused-topline-logo { height: 22px; max-width: 100%; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-paused-actions { top: 4px; right: 6px; gap: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-cast-button { display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-paused-actions svg { width: 22px; height: 22px; }
+}
+
+/* Phone information card: poster/title header, then a genuinely full-width synopsis. */
+@media (max-width: 767px) {
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference > .player-shell:not(:fullscreen):not(:has(:fullscreen)):not(:has(.is-mobile-fullscreen)) { aspect-ratio: 16 / 10; min-height: 190px; max-height: none; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference { padding-inline: 10px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info { grid-template-columns: 64px minmax(0, 1fr); gap: 12px 14px; padding: 18px 16px; }
+  .watch-page-reference .watch-film-poster { grid-column: 1; grid-row: 1 / span 2; width: 64px; align-self: start; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-title-group { display: contents; }
+  .watch-page-reference .watch-film-title-line { grid-column: 2; grid-row: 1; align-self: end; gap: 5px 8px; min-width: 0; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info h1 { font-size: clamp(18px, 5vw, 22px); line-height: 1.2; }
+  .watch-page-reference .watch-film-year { font-size: 12px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-facts { grid-column: 2; grid-row: 2; align-self: start; margin-top: 0; gap: 6px 9px; font-size: 12px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-overview { grid-column: 1 / -1; grid-row: 3; margin: 2px 0 0; font-size: 14px; line-height: 1.65; color: #d4d2d3; }
+  .watch-page-reference .watch-film-sidebar { grid-column: 1 / -1; grid-row: 4; }
+  .watch-page-reference .watch-film-genres { gap: 6px; margin: 2px 0 14px; }
+  .watch-page-reference .watch-film-genres li { padding: 6px 10px; font-size: 10px; }
+  .watch-page-reference .watch-film-credits { gap: 10px; font-size: 12px; line-height: 1.65; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-details,
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-source-action { flex: 1 1 120px; min-height: 44px; padding: 10px 12px; border: 1px solid #ffffff18; border-radius: 7px; background: #ffffff06; font-size: 12px; text-align: center; }
+}
