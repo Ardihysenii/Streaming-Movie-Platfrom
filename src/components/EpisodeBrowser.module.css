@@ -1,0 +1,33 @@
+.nextEpisode:global(.episode-card) {
+  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 72%), #0d0f11;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.nextEpisode:global(.episode-card):hover,
+.nextEpisode:global(.episode-card):focus-visible {
+  border-color: var(--accent);
+  background-color: #131619;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  color: color-mix(in srgb, var(--accent) 65%, white);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.badge::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  flex: 0 0 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
