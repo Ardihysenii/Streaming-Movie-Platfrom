@@ -176,7 +176,6 @@ export function EpisodeBrowser({
                 key={episode.id}
               >
                 <div className="episode-copy">
-                  {isNextEpisode ? <span className={styles.badge}>Next episode</span> : null}
                   <div className="episode-title-row">
                     <span>{episode.episode_number}.</span>
                     <h3>{episode.name}</h3>
