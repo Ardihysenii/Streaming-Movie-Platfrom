@@ -117,3 +117,13 @@
 @media (prefers-reduced-transparency: reduce) {
   .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-film-info { backdrop-filter: none; background: #171719; }
 }
+
+/* Keep the approved width, but reserve room for the full information panel.
+   Only normal desktop layout changes; mobile and fullscreen keep their sizing. */
+@media (min-width: 900px) {
+  .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference > .player-shell:not(:fullscreen):not(:has(:fullscreen)):not(:has(.is-mobile-fullscreen)) {
+    aspect-ratio: auto;
+    height: min(56.25vw, max(180px, calc(100svh - var(--watch-info-height, 260px) - var(--watch-header-height, 66px) - var(--watch-page-spacing, 44px))));
+    max-height: none;
+  }
+}
