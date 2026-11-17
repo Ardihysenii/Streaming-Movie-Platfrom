@@ -5,8 +5,10 @@ import { Hero } from "@/components/Hero";
 import { PageLoader } from "@/components/Loading";
 import { ContinueRail, ForYouRail, GenreRail, MoodRail, MovieRail, TopTenRail } from "@/components/MovieRail";
 import { readContinueWatching, readLastWatched } from "@/lib/storage";
-import { discoverAnime, discoverSeries, getComingSoon, getHomeData, getMovie, getNetflixSeries, isReleased } from "@/lib/tmdb";
+import { discoverAnime, discoverSeries, getComingSoon, getHomeData, getNetflixSeries, isReleased } from "@/lib/tmdb";
 import type { ContinueWatchingItem, HomeData } from "@/lib/types";
+
+import { selectWeeklyFeatured } from "@/lib/homeFeatured";
 
 type HomeFilter = "all" | "movies" | "series" | "anime";
 
@@ -54,7 +56,6 @@ function releasedHomePool(data: HomeData) {
 
 export default function HomePage() {
   const [dailyDate, setDailyDate] = useState(() => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
-  const [openingMovie, setOpeningMovie] = useState<HomeData["trending"][number] | null>(null);
   const [data, setData] = useState<HomeData | null>(null);
   const [comingSoon, setComingSoon] = useState<HomeData["trending"]>([]);
   const [netflixSeries, setNetflixSeries] = useState<HomeData["trending"]>([]);
@@ -68,13 +69,6 @@ export default function HomePage() {
     const timer = window.setInterval(() => setDailyDate(new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())), 60_000);
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    if (dailyDate !== "2026-10-07") return;
-    const controller = new AbortController();
-    getMovie(977942, controller.signal).then(setOpeningMovie).catch(() => undefined);
-    return () => controller.abort();
-  }, [dailyDate]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -140,7 +134,7 @@ export default function HomePage() {
       window.removeEventListener("nova:continue-updated", refreshContinue);
       window.removeEventListener("storage", refreshContinue);
     };
-  }, [refreshContinue]);
+  }, [dailyDate, refreshContinue]);
 
   if (!data) return <PageLoader label="Preparing tonight's selection" />;
 
@@ -206,26 +200,14 @@ export default function HomePage() {
   });
   const currentSeriesPool = uniqueMovies(data.airingSeries, recentTrendingSeries);
   const releasedHomeItems = releasedHomePool(data);
-  // One shared daily lead for the opening hero and Top 1 (Budapest calendar day).
-  const dailyPool = releasedHomeItems
-    .filter((movie) => movie.backdrop_path && movie.poster_path && movie.title.trim().toLowerCase() !== "runner")
-    .sort((a, b) => movieIdentity(a).localeCompare(movieIdentity(b), "en"));
-  const dayOffset = Math.max(0, Math.floor((Date.parse(dailyDate + "T00:00:00Z") - Date.parse("2026-10-07T00:00:00Z")) / 86_400_000));
-  const dailyLead = dailyDate === "2026-10-07" && openingMovie
-    ? openingMovie
-    : dailyPool.length ? dailyPool[dayOffset % dailyPool.length] : undefined;
-  const mixedHomepageFeatured = dailyLead
-    ? [dailyLead, ...excludeMovies(releasedHomeItems, [dailyLead])]
-    : releasedHomeItems;
-  const mixedTopTenFeatured = mixedHomepageFeatured.filter(
-    (movie) => movie.title.trim().toLowerCase() !== "runner",
+  // Animation stays in its browsing catalog, never in the hero or Top 10.
+  // Both featured sections share the same fresh weekly selection and lead.
+  const featuredMovies = homeFilter === "anime" ? [] : selectWeeklyFeatured(
+    filterForHome(releasedHomeItems, homeFilter),
+    dailyDate,
   );
-  const topTenMovies = isFilteredHome
-    ? filteredSections.topTen
-    : mixedTopTenFeatured.slice(0, 10);
-  const heroMovies = isFilteredHome
-    ? filteredSections.hero
-    : mixedHomepageFeatured.slice(0, 10);
+  const topTenMovies = featuredMovies;
+  const heroMovies = featuredMovies;
   const discoveryPool = isFilteredHome ? filteredSections.mood : allHomeMovies.slice(0, 50);
   const currentUpcomingSeries = isFilteredHome
     ? filteredSections.current
@@ -251,9 +233,9 @@ export default function HomePage() {
   const categoryLabel = homeFilter === "series" ? "TV Shows" : homeFilter === "anime" ? "Anime" : "Movies";
   return (
     <main className="home-page">
-      <Hero key={`${homeFilter}:${dailyDate}:${heroMovies[0] ? movieIdentity(heroMovies[0]) : "empty"}`} movies={heroMovies} />
+      {heroMovies.length ? <Hero key={`${homeFilter}:${dailyDate}:${heroMovies[0] ? movieIdentity(heroMovies[0]) : "empty"}`} movies={heroMovies} /> : null}
       <div className="home-content">
-        <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} />
+        {topTenMovies.length ? <TopTenRail movies={topTenMovies} title={isFilteredHome ? `Top 10 ${categoryLabel} on` : "Top 10 on"} /> : null}
         {filteredContinue.length ? <ContinueRail items={filteredContinue} onChange={refreshContinue} /> : null}
         <ForYouRail watched={lastWatched && filterForHome([lastWatched], homeFilter).length ? lastWatched : null} />
         {filterForHome(comingSoon, homeFilter).length ? (
