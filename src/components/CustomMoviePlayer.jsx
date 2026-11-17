@@ -1584,24 +1584,7 @@ export default function CustomMoviePlayer({
                   />
                 ) : <span>{title}</span>}
               </div>
-              <div className="player-paused-info">
-                <p className="player-paused-eyebrow">You are watching</p>
-                {logoUrl ? (
-                  <img
-                    className="player-paused-title-logo"
-                    src={logoUrl}
-                    alt={title}
-                    width={logoWidth}
-                    height={logoHeight}
-                  />
-                ) : <h2>{title}</h2>}
-                <div className="player-paused-meta">
-                  {releaseYear ? <span>{releaseYear}</span> : null}
-                  {formatRuntimeLabel(runtimeMinutes) ? <span>{formatRuntimeLabel(runtimeMinutes)}</span> : null}
-                  {Number(rating) > 0 ? <span className="player-paused-rating">★ {Number(rating).toFixed(1)}</span> : null}
-                </div>
-                {overview ? <p className="player-paused-overview">{overview}</p> : null}
-              </div>
+
             </div>
           ) : null}
               <div className="player-paused-actions">
