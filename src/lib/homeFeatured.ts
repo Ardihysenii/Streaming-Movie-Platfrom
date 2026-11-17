@@ -1,4 +1,5 @@
 import type { Movie } from "./types";
+import { isFamousFeatured } from "./famousFeatured";
 
 // Stable within a Budapest calendar week; automatically advances on Mondays.
 // The caller supplies released titles from the refreshed catalog.
@@ -6,7 +7,7 @@ export function selectWeeklyFeatured(items: Movie[], calendarDate: string, limit
   const seen = new Set<string>();
   const pool = items.filter((item) => {
     const key = `${item.media_type ?? "movie"}:${item.tmdb_id ?? item.id}`;
-    if (seen.has(key) || item.adult || !item.genre_ids.length || item.genre_ids.includes(16)
+    if (!isFamousFeatured(item) || seen.has(key) || item.adult || !item.genre_ids.length || item.genre_ids.includes(16)
       || !item.backdrop_path || !item.poster_path || item.title.trim().toLowerCase() === "runner") return false;
     seen.add(key);
     return true;
