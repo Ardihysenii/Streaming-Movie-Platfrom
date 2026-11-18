@@ -150,8 +150,13 @@
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-volume-control > button svg { width: 22px; height: 22px; transform: none; }
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-control-spacer { flex: 1 1 0; min-width: 0; }
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-center-play { display: none; }
-  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center { display: flex; top: 36%; gap: clamp(20px, 8vw, 36px); }
-  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button { display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center { display: flex; position: absolute; inset: auto; left: 50%; top: 36%; transform: translate(-50%, -50%); width: max-content; align-items: center; justify-content: center; gap: clamp(20px, 8vw, 36px); z-index: 7; opacity: 0; pointer-events: none; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center.is-visible { opacity: 1; pointer-events: auto; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button { display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; border: 1px solid #ffffff38; border-radius: 50%; background: #090a0c80; color: #fff; box-shadow: 0 3px 12px #00000030; -webkit-tap-highlight-color: transparent; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button:active { background: #ffffff28; }
+  .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center,
+  .watch-page-reference .custom-movie-player-cinesrc:fullscreen .custom-player-ui .nightowl-mobile-center { top: 50%; }
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center svg { width: 28px; height: 28px; }
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .nightowl-mobile-center button:nth-child(2) svg { width: 36px; height: 36px; }
   .watch-page-reference .custom-movie-player-cinesrc .custom-player-ui .player-paused-topline { inset-inline: 64px; top: 10px; padding-top: 0; }
@@ -180,4 +185,20 @@
   .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
   .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-details,
   .watch-page.watch-page-cinema.watch-page-immersive.watch-page-reference .watch-cinema-source-action { flex: 1 1 120px; min-height: 44px; padding: 10px 12px; border: 1px solid #ffffff18; border-radius: 7px; background: #ffffff06; font-size: 12px; text-align: center; }
+}
+
+/* The mobile fullscreen class remains authoritative even on webviews whose
+   pointer/hover media queries change when the phone rotates. */
+@media (max-width: 1024px) {
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center {
+    display: flex; position: absolute; inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; align-items: center; justify-content: center; gap: clamp(20px, 8vw, 36px); z-index: 7; opacity: 0; pointer-events: none;
+  }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center.is-visible { opacity: 1; pointer-events: auto; }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center button {
+    display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; border: 1px solid #ffffff38; border-radius: 50%; background: #090a0c80; color: #fff; box-shadow: 0 3px 12px #00000030;
+  }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center svg { width: 28px; height: 28px; }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .nightowl-mobile-center button:nth-child(2) svg { width: 36px; height: 36px; }
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .player-control-row > button:nth-child(-n+3),
+  .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .player-center-play { display: none; }
 }
