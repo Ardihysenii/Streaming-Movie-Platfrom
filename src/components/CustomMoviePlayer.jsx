@@ -228,6 +228,15 @@ function NightowlReferenceIcon({ name }) {
   }
 }
 
+// Match phone detection in the fullscreen path, including landscape phones.
+function defaultSubtitleFontSize() {
+  if (typeof window === "undefined") return 1.5;
+  const mobile = window.innerWidth <= 1024
+    && (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
+      || navigator.maxTouchPoints > 0);
+  return mobile ? 0.9 : 1.5;
+}
+
 export default function CustomMoviePlayer({
   tmdbId,
   imdbId,
@@ -284,6 +293,9 @@ export default function CustomMoviePlayer({
   const [subtitleLanguage, setSubtitleLanguage] = useState("en");
   const [subtitleProvider, setSubtitleProvider] = useState(readSubtitleProviderPreference);
   const [subtitleFontSize, setSubtitleFontSize] = useState(1.5);
+  useEffect(() => {
+    setSubtitleFontSize(defaultSubtitleFontSize());
+  }, []);
   const [subtitleLarge, setSubtitleLarge] = useState(true);
   const [subtitleFontFamily, setSubtitleFontFamily] = useState("Verdana, sans-serif");
   const [subtitlePosition, setSubtitlePosition] = useState(8);
@@ -1711,7 +1723,7 @@ export default function CustomMoviePlayer({
                         <label className="nightowl-settings-range"><span>Font size</span><output>{subtitleFontSize.toFixed(1)}×</output><input type="range" min="0.8" max="2" step="0.1" value={subtitleFontSize} onChange={(event) => setSubtitleFontSize(Number(event.target.value))} /></label>
                         <label className="nightowl-settings-range"><span>Position</span><output>{subtitlePosition}%</output><input type="range" min="8" max="76" step="1" value={subtitlePosition} onChange={(event) => setSubtitlePosition(Number(event.target.value))} /></label>
                         <div className="nightowl-settings-field"><span>Subtitle timing</span><div className="nightowl-settings-stepper"><button type="button" aria-label="Show subtitles 0.5 seconds earlier" disabled={subtitleOffset >= 25} onClick={() => setSubtitleOffset((value) => Math.min(25, Number((value + 0.5).toFixed(1))))}>Earlier</button><output aria-live="polite">{subtitleOffset > 0 ? "+" : ""}{subtitleOffset.toFixed(1)}s</output><button type="button" aria-label="Show subtitles 0.5 seconds later" disabled={subtitleOffset <= -25} onClick={() => setSubtitleOffset((value) => Math.max(-25, Number((value - 0.5).toFixed(1))))}>Later</button></div><small>Adjust in 0.5s steps. Positive: earlier. Negative: later.</small></div>
-                        <button type="button" className="nightowl-settings-reset" onClick={() => { setSubtitleFontFamily("Verdana, sans-serif"); setSubtitleFontSize(1.5); setSubtitleLarge(true); setSubtitlePosition(8); setSubtitleOffset(0); }}>Reset subtitle appearance & timing</button>
+                        <button type="button" className="nightowl-settings-reset" onClick={() => { setSubtitleFontFamily("Verdana, sans-serif"); setSubtitleFontSize(defaultSubtitleFontSize()); setSubtitleLarge(true); setSubtitlePosition(8); setSubtitleOffset(0); }}>Reset subtitle appearance & timing</button>
                       </div>
                     )}
                     </div>
