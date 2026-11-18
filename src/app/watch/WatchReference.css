@@ -202,3 +202,20 @@
   .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .player-control-row > button:nth-child(-n+3),
   .watch-page-reference .custom-movie-player-cinesrc.is-mobile-fullscreen .custom-player-ui .player-center-play { display: none; }
 }
+
+/* Keep Watch Page episodes centered inside the phone page gutters. */
+@media (max-width: 767px) {
+  .watch-page-reference .watch-cinema-episodes .episodes-section {
+    width: 100%; max-width: 100%; min-width: 0; margin-inline: 0; box-sizing: border-box;
+  }
+  .watch-page-reference .watch-cinema-episodes .episodes-heading,
+  .watch-page-reference .watch-cinema-episodes .episode-controls {
+    width: 100%; margin-inline: 0; box-sizing: border-box;
+  }
+  .watch-page-reference .watch-cinema-episodes .episode-list {
+    width: 100%; max-width: 100%; padding-inline: 0; box-sizing: border-box; scrollbar-gutter: stable both-edges;
+  }
+  .watch-page-reference .watch-cinema-episodes .episode-card {
+    width: 100%; min-width: 0; box-sizing: border-box;
+  }
+}
